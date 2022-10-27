@@ -6,7 +6,12 @@ from datetime import datetime
 from .exporter import Exporter
 from ..constants import ImportExportConstants
 from ..kmodel.kCluster import KCluster
-from ..utils.utils import create_folder
+
+
+def create_folder(filename):
+    file_folder = os.path.dirname(filename)
+    if not os.path.exists(file_folder):
+        os.makedirs(file_folder, 0o777)
 
 
 def dict_to_yaml(dictionary: dict):

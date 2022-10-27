@@ -1,17 +1,11 @@
 import yaml
 from yaml.loader import SafeLoader
+from microfreshener.core.logging import MyLogger
 
 from project.kmodel.kCluster import KCluster, KObjectKind
 from project.kmodel.kObject import KObject
 from project.kObjectFactory import KObjectFactory
-from project.utils.logger import MyLogger
 from .importer import Importer, get_filenames_from_directory
-from ..kmodel.kDeployment import KDeployment
-from ..kmodel.kIngress import KIngress
-from ..kmodel.kPod import KPod
-from ..kmodel.kReplicaSet import KReplicaSet
-from ..kmodel.kService import KService
-from ..kmodel.kStatefulSet import KStatefulSet
 
 
 def is_yaml(filename):
