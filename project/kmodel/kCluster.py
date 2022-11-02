@@ -3,7 +3,7 @@ from project.kmodel.kIngress import KIngress
 from project.kmodel.kObject import KObject
 from enum import Enum
 
-from project.kmodel.kPod import KPod
+from project.kmodel.kPod import KPod, KPodTemplateSpec
 from project.kmodel.kReplicaSet import KReplicaSet
 from project.kmodel.kService import KService
 from project.kmodel.kStatefulSet import KStatefulSet
@@ -55,5 +55,16 @@ class KCluster:
     def print_cluster(self):
         print("Cluster info:")
         objects = [(key.name, len(val)) for key, val in self.cluster_objects.items()]
-        sumlist = [v for k,v in objects]
+        sumlist = [v for k, v in objects]
         print(f" Objects: {sum(sumlist)} {dict(objects)}")
+
+    def get_object_by_name(self, name: str) -> KObject:
+        for obj in self.get_all_objects():
+            if obj.metadata.name == name:
+                return obj
+
+    def get_pod_template_spec_by_name(self, name: str) -> KPodTemplateSpec:
+        for obj in self.get_all_objects():
+            if isinstance(obj, KDeployment) or isinstance(obj, KStatefulSet) or isinstance(obj, KReplicaSet):
+                return obj.spec.template
+

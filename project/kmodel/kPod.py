@@ -33,7 +33,7 @@ class KPod(V1Pod, KObject):
 
         return pod
 
-    def get_containers(self):
+    def get_containers(self) -> list[KContainer]:
         return self.spec.containers
 
     def get_labels(self) -> dict[str, str]:

@@ -1,14 +1,6 @@
-from project.utils.utils import *
+from project.utils import *
 import six
 
-
-# class IDGenerator:
-#     id = 0
-#
-#     @staticmethod
-#     def get_id():
-#         IDGenerator.id += 1
-#         return IDGenerator.id
 
 def parse_list(destination_class, dictionary_list):
     object_list = list()
