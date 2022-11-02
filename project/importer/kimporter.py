@@ -14,7 +14,7 @@ def get_filenames_from_directory(path) -> list:
     return files
 
 
-class Importer(ABC):
+class KImporter(ABC):
 
     def __init__(self):
         self.non_parsed: list[(str, str)] = list()

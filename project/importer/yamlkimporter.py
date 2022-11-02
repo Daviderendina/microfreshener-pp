@@ -5,7 +5,7 @@ from microfreshener.core.logging import MyLogger
 from project.kmodel.kCluster import KCluster, KObjectKind
 from project.kmodel.kObject import KObject
 from project.kObjectFactory import KObjectFactory
-from .importer import Importer, get_filenames_from_directory
+from .kimporter import KImporter, get_filenames_from_directory
 
 
 def is_yaml(filename):
@@ -22,7 +22,7 @@ def read_data_from_file(filename) -> list:
     return [i for i in read_data if i is not None]
 
 
-class YamlImporter(Importer):
+class YamlKImporter(KImporter):
 
     def __init__(self):
         super().__init__()
@@ -30,8 +30,7 @@ class YamlImporter(Importer):
 
     def Import(self, path: str) -> KCluster:
         filename_list = get_filenames_from_directory(path=path)
-        MyLogger.get_logger().debug("Found {} files in folder {}: {}".format(
-            len(filename_list), path, filename_list))
+        MyLogger().get_logger().debug(f"Found {len(filename_list)} files in folder {path}: {filename_list}")
 
         for file in filename_list:
             if is_yaml(file):
@@ -52,7 +51,7 @@ class YamlImporter(Importer):
     def add_object_to_cluster(self, object: KObject):
         kind: KObjectKind = KObjectKind.get_from_class(object.__class__)
         if kind is None:
-            MyLogger.get_logger().debug(f"Cannot add object to cluster: {object.__class__} type not found "
-                                    f"(KObjectKind.get_from_class)")
+            MyLogger().get_logger().debug(f"Cannot add object to cluster: {object.__class__} type not found "
+                                          f"(KObjectKind.get_from_class)")
         else:
             self.cluster.add_object(object, kind)
