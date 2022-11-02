@@ -5,7 +5,6 @@ from microfreshener.core.model.nodes import Service, MessageRouter
 
 from project.extender.extender import KubeExtender
 from project.extender.kubeworker import ContainerWorker, Compute
-from project.importer.yamlkimporter import YamlKImporter
 from project.kmodel.kCluster import KCluster, KObjectKind
 from project.kmodel.kDeployment import KDeployment
 from project.kmodel.kPod import KPod
@@ -30,18 +29,7 @@ def _check_for_compute_added(model) -> (int, int):
     return compute_found, relationship_found
 
 
-class TestKubeExtender(TestCase):
-
-    # TODO manca tesstare le relazioni pure
-
-    def test_get_dict(self):
-        pass
-
-        importer = YamlKImporter().Import(
-            "/home/davide/PycharmProjects/microfreshener-update(OLD)/data/yaml_files/test")
-        for k, v in importer.cluster_objects.items():
-            print(v[0])
-
+class TestContainerExtender(TestCase):
 
     def test_container_no_pod(self):
         model = MicroToscaModel(name="container-test-model")

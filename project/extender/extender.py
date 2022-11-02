@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from microfreshener.core.model.microtosca import MicroToscaModel
 
-from project.extender.kubeworker import KubeWorker, IstioWorker, ContainerWorker
+from project.extender.kubeworker import KubeWorker, IstioWorker, ContainerWorker, DatabaseWorker
 from project.kmodel.kCluster import KCluster
 
 
@@ -27,10 +27,10 @@ class KubeExtender(Extender):
     def extend(self, model: MicroToscaModel, kube_cluster: KCluster) -> MicroToscaModel:
         extended_model = model
         for worker in self.worker_list:
-            extended_model = worker.refine(model=model, kubecluster=kube_cluster)
+            extended_model = worker.refine(model=model, kube_cluster=kube_cluster)
         return extended_model
 
     def set_all_workers(self):
-        self.worker_list = [IstioWorker(), ContainerWorker()]
+        self.worker_list = [IstioWorker(), ContainerWorker(), DatabaseWorker()]
 
 

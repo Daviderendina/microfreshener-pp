@@ -1,3 +1,4 @@
+from kubernetes.client import V1ContainerPort
 from kubernetes.client.models import V1Container
 
 from project.kmodel.kObject import KObject
@@ -21,3 +22,11 @@ class KContainer(V1Container, KObject):
         container.set_attribute_order(dictionary)
 
         return container
+
+    def get_container_ports(self) -> list[int]:
+        result = list()
+        for container_port in self.ports:
+            port = container_port.get("containerPort", None)
+            if port is not None:
+                result.append(port)
+        return result
