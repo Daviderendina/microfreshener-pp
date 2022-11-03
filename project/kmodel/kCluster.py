@@ -15,7 +15,9 @@ class KObjectKind(Enum):
     REPLICASET = "ReplicaSet",
     POD = "Pod",
     DEPLOYMENT = "Deployment",
-    INGRESS = "Ingress"
+    INGRESS = "Ingress",
+    ISTIO_VIRTUAL_SERVICE = "VirtualService",
+    ISTIO_DESTINATION_RULE = "DestinationRule"
 
     @staticmethod
     def get_members() -> list:
@@ -62,6 +64,9 @@ class KCluster:
         for obj in self.get_all_objects():
             if obj.metadata.name == name:
                 return obj
+
+    def get_objects_by_kind(self, kind: KObjectKind):
+        return self.cluster_objects.get(kind, [])
 
     def get_pod_template_spec_by_name(self, name: str) -> KPodTemplateSpec:
         for obj in self.get_all_objects():

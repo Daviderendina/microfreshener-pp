@@ -1,4 +1,3 @@
-from kubernetes.client import V1ContainerPort
 from kubernetes.client.models import V1Container
 
 from project.kmodel.kObject import KObject
