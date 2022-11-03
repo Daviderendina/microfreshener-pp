@@ -8,7 +8,7 @@ from project.kmodel.kCluster import KCluster, KObjectKind
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kPod import KPod
 
-from tests.kube_objects_dict import POD_WITH_ONE_CONTAINER, POD_WITH_TWO_CONTAINER
+from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, POD_WITH_TWO_CONTAINER
 
 
 class TestDatabaseExtender(TestCase):

@@ -12,7 +12,7 @@ from project.kmodel.kReplicaSet import KReplicaSet
 from project.kmodel.kService import KService
 from project.kmodel.kStatefulSet import KStatefulSet
 
-from tests.kube_objects_dict import *
+from tests.data.kube_objects_dict import *
 
 
 def _check_for_compute_added(model) -> (int, int):
