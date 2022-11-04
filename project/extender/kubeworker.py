@@ -19,7 +19,6 @@ class Compute(Service):
         return '{} ({})'.format(self.name, 'compute')
 
 
-# TODO i nomi non mi piacciono
 class KubeWorker:
 
     @abstractmethod
@@ -29,7 +28,7 @@ class KubeWorker:
 
 class IstioWorker(KubeWorker):
     # TODO
-    # Aggiorna le relationi nel grafo mettendo
+    # Aggiorna le relazioni nel grafo mettendo
     # 1) service discovery
     # 2) timeout - c'è da capire se ho coperto tutti i casi possibili
     # 3) circuit breaker - manca la fase di testing
@@ -50,7 +49,8 @@ class IstioWorker(KubeWorker):
             timeouts: list[(list, str)] = vservice.get_timeouts()
             for (route, destination, timeout) in timeouts:
                 # 1) RUOTE uguale a DESTINATION (a.k.a. HOST)
-                if route == destination and kube_cluster.get_object_by_name(destination):  # TODO impossibile perché non ho la parte di svc.local.default nel nome che prendo io
+                if route == destination and kube_cluster.get_object_by_full_qualified_name(destination):
+                    # TODO impossibile perché non ho la parte di svc.local.default nel nome che prendo io
                     node = [n for n in model.nodes if n.name == route]
                     if len(node) != 0:
                         for interaction in list(node.incoming_interactions):
@@ -64,12 +64,13 @@ class IstioWorker(KubeWorker):
 
                 # 2) RUOTE è un URL
                 # 3) ROUTE è la wildcard *
-                # Anche di questi due casi probabilmente posso fottermene TODO Jacopo
+                    # Anche di questi due casi probabilmente posso fottermene TODO Jacopo
 
                 # 4) ROUTE e DESTINATION sono due servizi diversi  -> trovo quella relazione e la cambio, ma è un caso
-                # Chiedere a Jacopo, ma per me questo caso semplicemente non esiste. TODO Jacopo
+                    # Chiedere a Jacopo, ma per me questo caso semplicemente non esiste. TODO Jacopo
 
         # Check for timeouts defined with destination rule
+            # Devo capire il campo ConnectionPoolSettings.TCPSettings.connectionTimeout come funziona #TODO
 
     def _check_for_circuit_breaker(self, model: MicroToscaModel, kube_cluster: KCluster):
         # Prendo tutte le DestinationRule
@@ -85,34 +86,24 @@ class IstioWorker(KubeWorker):
 class ContainerWorker(KubeWorker):
 
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
-        print("Starting container worker")  # TODO logger
         for node in list(model.nodes):
             if isinstance(node, Service):
-                kobject = kube_cluster.get_object_by_name(node.name)
+                kobject = kube_cluster.get_object_by_full_qualified_name(node.name)
 
                 if kobject is not None and isinstance(kobject, KPod):
                     self._add_compute_nodes(model=model, service_node=node, container_list=kobject.get_containers())
                 else:
-                    pod_template = kube_cluster.get_pod_template_spec_by_name(node.name)
+                    pod_template = kube_cluster.get_pod_template_spec_by_full_qualified_name(node.name)
                     if pod_template is not None:
                         self._add_compute_nodes(model=model, service_node=node,
                                                 container_list=pod_template.get_containers())
 
     def _add_compute_nodes(self, model: MicroToscaModel, service_node: Service, container_list: list[KContainer]):
         for container in container_list:
-            # TODO qui ho avuto un problema con i nomi. Per ricrearlo, basta usare direttamente container.name al posto di compute_name
-            # In pratica, avere un Service e un Compute node con lo stesso nome non è possibile.
             compute_name = container.name + "/" + service_node.name
             compute_node = Compute(compute_name)
             model.add_node(compute_node)
             model.add_interaction(source_node=service_node, target_node=compute_node)
-
-
-'''
-class ServiceWorker(KubeWorker):
-    pass
-    # Confermo che per i KubernetesService non serve fare nulla, viene già controllato tutto dal Miner
-'''
 
 
 class IngressWorker(KubeWorker):
@@ -144,7 +135,7 @@ class DatabaseWorker(KubeWorker):
 
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
         for service_node in [s for s in model.nodes if isinstance(s, Service)]:
-            kobject = kube_cluster.get_object_by_name(service_node.name)
+            kobject = kube_cluster.get_object_by_full_qualified_name(service_node.name)
 
             if isinstance(kobject, KPod):
                 containers = kobject.get_containers()

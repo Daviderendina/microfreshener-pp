@@ -38,6 +38,7 @@ class KObjectKind(Enum):
 
 
 class KCluster:
+    DEFAULT_NAMESPACE = "default"
 
     def __init__(self):
         self.cluster_objects: dict[KObjectKind: list[KObject]] = dict()
@@ -60,16 +61,45 @@ class KCluster:
         sumlist = [v for k, v in objects]
         print(f" Objects: {sum(sumlist)} {dict(objects)}")
 
-    def get_object_by_name(self, name: str) -> KObject:
-        for obj in self.get_all_objects():
-            if obj.metadata.name == name:
-                return obj
-
     def get_objects_by_kind(self, kind: KObjectKind):
         return self.cluster_objects.get(kind, [])
 
-    def get_pod_template_spec_by_name(self, name: str) -> KPodTemplateSpec:
+    def get_object_by_full_qualified_name(self, name_with_namespace: str) -> KObject:
+        temp = []
+        for obj in self.get_all_objects():
+            if name_with_namespace == obj.get_name_dot_namespace():
+                return obj
+
+        return self._search_for_unnamed_match(name_with_namespace)
+
+    def get_pod_template_spec_by_full_qualified_name(self, name_with_namespace: str) -> KPodTemplateSpec:
         for obj in self.get_all_objects():
             if isinstance(obj, KDeployment) or isinstance(obj, KStatefulSet) or isinstance(obj, KReplicaSet):
-                return obj.spec.template
+                if name_with_namespace == obj.get_pod_template_spec().get_name_dot_namespace():
+                    return obj.spec.template
+
+        return self._search_for_unnamed_match_pod_spec(name_with_namespace)
+
+    def _search_for_unnamed_match(self, name: str) -> KObject:
+        found_likely_objects = []
+        for obj in self.get_all_objects():
+            if not obj.metadata.name and obj.metadata.generate_name:
+                if name.startswith(obj.metadata.generate_name) and name.endswith(obj.get_namespace()):
+                    found_likely_objects.append(obj)
+
+        if len(found_likely_objects) == 1:
+            return found_likely_objects[0]
+
+    def _search_for_unnamed_match_pod_spec(self, name: str) -> KPodTemplateSpec:
+        found_likely_objects = []
+        for obj in self.get_all_objects():
+            if isinstance(obj, KDeployment) or isinstance(obj, KReplicaSet) or isinstance(obj, KStatefulSet):
+                pod_template_spec = obj.get_pod_template_spec()
+
+                if not pod_template_spec.metadata.name:
+                    if name.startswith(obj.metadata.name) and name.endswith("."+pod_template_spec.get_namespace()):
+                        found_likely_objects.append(pod_template_spec)
+
+        if len(found_likely_objects) == 1:
+            return found_likely_objects[0]
 

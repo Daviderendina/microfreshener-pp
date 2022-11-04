@@ -31,7 +31,7 @@ def _check_for_compute_added(model) -> (int, int):
 
 class TestContainerExtender(TestCase):
 
-    def test_container_no_pod(self):
+    def test_no_pod(self):
         model = MicroToscaModel(name="container-test-model")
         cluster = KCluster()
 
@@ -49,7 +49,7 @@ class TestContainerExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
         self.assertEqual(len(list(model.nodes)), 1)
 
-    def test_container_with_pod_one_container(self):
+    def test_pod_with_one_container(self):
         model = MicroToscaModel(name="container-test-model")
         cluster = KCluster()
 
@@ -58,8 +58,8 @@ class TestContainerExtender(TestCase):
         cluster.add_object(svc, KObjectKind.SERVICE)
         cluster.add_object(pod, KObjectKind.POD)
 
-        model.add_node(MessageRouter(name=svc.metadata.name))
-        model.add_node(Service(name=pod.metadata.name))
+        model.add_node(MessageRouter(name=svc.get_name_dot_namespace()+".svc"))
+        model.add_node(Service(name=pod.get_name_dot_namespace()))
 
         self.assertEqual(len(cluster.cluster_objects.items()), 2)
         self.assertEqual(len(list(model.nodes)), 2)
@@ -75,7 +75,7 @@ class TestContainerExtender(TestCase):
         self.assertEqual(compute_found, 1)
         self.assertEqual(relationship_found, 1)
 
-    def test_container_with_pod_two_container(self):
+    def test_pod_with_two_container(self):
         model = MicroToscaModel(name="container-test-model")
         cluster = KCluster()
 
@@ -84,8 +84,8 @@ class TestContainerExtender(TestCase):
         cluster.add_object(svc, KObjectKind.SERVICE)
         cluster.add_object(pod, KObjectKind.POD)
 
-        model.add_node(MessageRouter(name=svc.metadata.name))
-        model.add_node(Service(name=pod.metadata.name))
+        model.add_node(MessageRouter(name=svc.get_name_dot_namespace()+".svc"))
+        model.add_node(Service(name=pod.get_name_dot_namespace()))
 
         self.assertEqual(len(cluster.cluster_objects.items()), 2)
         self.assertEqual(len(list(model.nodes)), 2)
@@ -101,14 +101,14 @@ class TestContainerExtender(TestCase):
         self.assertEqual(compute_found, 2)
         self.assertEqual(relationship_found, 2)
 
-    def test_container_with_deploy_one_container(self):
+    def test_deploy_with_one_container(self):
         model = MicroToscaModel(name="container-test-model")
         cluster = KCluster()
 
         deploy = KDeployment.from_dict(DEPLOYMENT_WITH_ONE_CONTAINER)
         cluster.add_object(deploy, KObjectKind.DEPLOYMENT)
 
-        model.add_node(Service(name=deploy.spec.template.metadata.name))  # TODO siamo sicuri?
+        model.add_node(Service(name=deploy.get_pod_template_spec().get_name_dot_namespace()))
 
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
         self.assertEqual(len(list(model.nodes)), 1)
@@ -131,7 +131,7 @@ class TestContainerExtender(TestCase):
         deploy = KDeployment.from_dict(DEPLOYMENT_WITH_TWO_CONTAINER)
         cluster.add_object(deploy, KObjectKind.DEPLOYMENT)
 
-        model.add_node(Service(name=deploy.spec.template.metadata.name))  # TODO siamo sicuri?
+        model.add_node(Service(name=deploy.get_pod_template_spec().get_name_dot_namespace()))
 
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
         self.assertEqual(len(list(model.nodes)), 1)
@@ -154,7 +154,7 @@ class TestContainerExtender(TestCase):
         rs = KReplicaSet.from_dict(REPLICASET_WITH_ONE_CONTAINER)
         cluster.add_object(rs, KObjectKind.REPLICASET)
 
-        model.add_node(Service(name=rs.spec.template.metadata.name))  # TODO siamo sicuri?
+        model.add_node(Service(name=rs.get_pod_template_spec().get_name_dot_namespace()))
 
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
         self.assertEqual(len(list(model.nodes)), 1)
@@ -177,7 +177,10 @@ class TestContainerExtender(TestCase):
         statefulset = KStatefulSet.from_dict(STATEFULSET_WITH_ONE_CONTAINER)
         cluster.add_object(statefulset, KObjectKind.STATEFULSET)
 
-        model.add_node(Service(name=statefulset.spec.template.metadata.name))  # TODO siamo sicuri?
+        template = statefulset.get_pod_template_spec()
+        name = statefulset.metadata.name + "-ABCDD1234." + statefulset.get_namespace() if not template.metadata.name \
+            else template.get_name_dot_namespace()
+        model.add_node(Service(name=name))
 
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
         self.assertEqual(len(list(model.nodes)), 1)

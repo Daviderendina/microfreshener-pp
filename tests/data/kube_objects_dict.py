@@ -79,7 +79,7 @@ DEPLOYMENT_WITH_ONE_CONTAINER = {
         'template': {
             'metadata': {
                 'labels': {'svc': 'ftgo-cdc-service'},
-                'name': "container-c"
+                'name': "pod-c"
             },
             'spec': {
                 'containers': [
@@ -159,7 +159,7 @@ STATEFULSET_WITH_ONE_CONTAINER = {
     'kind': 'StatefulSet',
     'metadata': {'name': 'test-statefulset'},
     'spec': {
-        'min_ready_seconds': 10,
+        'minReadySeconds': 10,
         'replicas': 3,
         'selector': {'matchLabels': {'app': 'nginx'}},
         'serviceName': 'nginx',

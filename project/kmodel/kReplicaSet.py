@@ -27,6 +27,9 @@ class KReplicaSet(V1ReplicaSet, KObject):
     def get_pod_spec(self) -> KPodTemplateSpec:
         return self.spec.template
 
+    def get_pod_template_spec(self) -> KPodTemplateSpec:
+        return self.spec.template
+
 
 class KReplicaSetSpec(V1ReplicaSetSpec, KObject):
 

@@ -12,9 +12,11 @@ def parse_list(destination_class, dictionary_list):
 
 
 class KObject:
-    #TODO usare il costruttore qui?
+    # TODO usare il costruttore qui?
     export_filename = "no_name_set.yaml"
     export_attribute_order = []
+
+    DEFAULT_NAMESPACE = "default"
 
     #    id = -1
 
@@ -61,3 +63,11 @@ class KObject:
             attribute = get_dict_key_by_value(self.attribute_map, key)
             if hasattr(self, attribute) and key not in except_attributes:
                 setattr(self, attribute, dictionary.get(key, ""))
+
+    def get_name_dot_namespace(self):
+        return (self.metadata.name if self.metadata.name else "") + "." + self.get_namespace()
+        #return self.metadata.name + "." + self.get_namespace()
+
+    def get_namespace(self):
+        return self.metadata.namespace if self.metadata.namespace else self.DEFAULT_NAMESPACE
+

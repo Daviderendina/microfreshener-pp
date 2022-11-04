@@ -20,7 +20,7 @@ class KStatefulSet(V1StatefulSet, KObject):
 
         return stateful_set
 
-    def get_pod_spec(self) -> KPodTemplateSpec:
+    def get_pod_template_spec(self) -> KPodTemplateSpec:
         return self.spec.template
 
 
@@ -49,3 +49,4 @@ class KStatefulSetSpec(V1StatefulSetSpec, KObject):
         spec.set_attribute_order(dictionary)
 
         return spec
+
