@@ -12,11 +12,8 @@ from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, POD_WITH_TWO_CO
 
 
 class TestDatabaseExtender(TestCase):
-    # TODO manca la parte di testing legata alle relazioni tra il nodo che vado a ricreare e gli altri del modello
-    # Inoltre non sono molto sicuro che il tutto sia corretto
 
     def test_database_found(self):
-
         model = MicroToscaModel(name="container-test-model")
         cluster = KCluster()
 
@@ -31,12 +28,12 @@ class TestDatabaseExtender(TestCase):
 
         databaseNode = Service(pod.metadata.name)
         model.add_node(databaseNode)
-        svcUsesDB = Service("svcUses")
-        svcUsedByDB = Service("svcUsed")
-        model.add_node(svcUsesDB)
-        model.add_node(svcUsedByDB)
-        model.add_interaction(source_node=svcUsesDB, target_node=databaseNode)
-        model.add_interaction(source_node=databaseNode, target_node=svcUsedByDB)
+        svcUsesDB1 = Service("svcUses1")
+        svcUsesDB2 = Service("svcUses2")
+        model.add_node(svcUsesDB1)
+        model.add_node(svcUsesDB2)
+        model.add_interaction(source_node=svcUsesDB1, target_node=databaseNode)
+        model.add_interaction(source_node=svcUsesDB2, target_node=databaseNode)
 
         extender: KubeExtender = KubeExtender(worker_list=[DatabaseWorker()])
         extender.extend(model, cluster)
@@ -45,8 +42,18 @@ class TestDatabaseExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
         self.assertEqual(len(list(model.nodes)), 3)
 
+        databaseNode = [n for n in model.nodes if n.name == databaseNode.name][0]
+
         # Check that Service node had been converted to Database
-        self.assertTrue(isinstance(list(model.nodes)[0], Datastore))
+        self.assertTrue(isinstance(databaseNode, Datastore))
+
+        # Check that interactions had been maintained
+        self.assertEqual(len(svcUsesDB1.incoming_interactions), 0)
+        self.assertEqual(len(svcUsesDB1.interactions), 1)
+        self.assertEqual(len(svcUsesDB2.incoming_interactions), 0)
+        self.assertEqual(len(svcUsesDB2.interactions), 1)
+        self.assertEqual(len(databaseNode.incoming_interactions), 2)
+        self.assertEqual(len(databaseNode.interactions), 0)
 
     def test_database_not_found(self):
         model = MicroToscaModel(name="container-test-model")
@@ -70,7 +77,7 @@ class TestDatabaseExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
         self.assertEqual(len(list(model.nodes)), 1)
 
-        # Check that Service node had been converted to Database
+        # Check that Service node had not been converted to Database
         self.assertFalse(isinstance(list(model.nodes)[0], Datastore))
 
     def test_database_double_container(self):
@@ -95,5 +102,5 @@ class TestDatabaseExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
         self.assertEqual(len(list(model.nodes)), 1)
 
-        # Check that Service node had been converted to Database
-        self.assertTrue(isinstance(list(model.nodes)[0], Datastore))
+        # Check that Service node had not been converted to Datastore
+        self.assertFalse(isinstance(list(model.nodes)[0], Datastore))
