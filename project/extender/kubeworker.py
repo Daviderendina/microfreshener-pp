@@ -121,7 +121,7 @@ class IngressWorker(KubeWorker):
 
 class EdgeWorker(KubeWorker):
     pass
-    # TODO effettua una serie di controlli per vedere che non ci siano Proxy, Endpoints, Entrypoint e tutte ste cazzate
+    # TODO effettua una serie di controlli per vedere che non ci siano Proxy, Endpoints, Entrypoint (?) e tutte ste cazzate
     # che espongano i nodi all'esterno ---> Non penso sia necessario
 
 
