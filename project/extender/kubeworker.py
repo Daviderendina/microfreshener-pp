@@ -1,25 +1,19 @@
 from abc import abstractmethod, ABC
 
 from microfreshener.core.model import MicroToscaModel
-from microfreshener.core.model.nodes import Service, Datastore
+from microfreshener.core.model.nodes import Service, Datastore, MessageRouter
 
 from project.kmodel.istio import DestinationRule
 from project.kmodel.kCluster import KCluster, KObjectKind
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kPod import KPod
 
-
-# TODO da rimuovere quando pubblico su pip il package
-class Compute(Service):
-
-    def __init__(self, name):
-        super(Compute, self).__init__(name)
-
-    def __str__(self):
-        return '{} ({})'.format(self.name, 'compute')
+from project.core_classes import Compute, DeployedOn
+from project.kmodel.kService import KService
 
 
 class KubeWorker:
+    # TODO devono avere un ordine di exec perché ad esempio quello dei service va fatto prima di quello di istio
 
     @abstractmethod
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster) -> MicroToscaModel:
@@ -84,8 +78,11 @@ class IstioWorker(KubeWorker):
 
 
 class ContainerWorker(KubeWorker):
+    #TODO da sistemare la storia del nome
 
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
+
+
         for node in list(model.nodes):
             if isinstance(node, Service):
                 kobject = kube_cluster.get_object_by_full_qualified_name(node.name)
@@ -117,6 +114,52 @@ class IngressWorker(KubeWorker):
     # Sembra che il miner si preoccupi solo del controller, probabilmente perché le route le prende dinamicamente
 
     # Prima di aggiungere la risorsa, devo accertarmi che ci sia almeno un controller disponibile per gestirla, altrimenti ignoro tutto
+
+
+class ServiceWorker(KubeWorker):
+    ''' TODO
+    Si potrebbe fare che se trovo già il service nel model, sistemo tutte le relazioni che trovo e le forzo a passare
+    dal MessageRouter. Questo però non mi sembra giusto, poiché se il servizio c'è ma non viene utilizzato, significa
+    che lo sviluppatore molto probabilmente ne è al corrente.
+
+    Se decido di fare divarsemente, posso fare che cerco tutti i pod esposti dal service e sistemo poi tutte le
+    relazioni che mi risultano sbagliate
+    '''
+
+    def refine(self, model: MicroToscaModel, kube_cluster: KCluster) -> MicroToscaModel:
+        for svc in kube_cluster.get_objects_by_kind(KObjectKind.SERVICE):
+            if not self._is_svc_in_model(model=model, service=svc):
+                node_name = svc.get_name_dot_namespace() + ".svc.cluster.local"
+                message_router_node = MessageRouter(name=node_name)
+                if self._is_edge_service(message_router_node):
+                    model.edge.add_member(message_router_node)
+                model.add_node(message_router_node)
+
+                #TODO prima bisogna capire se un Service rappresenta un Pod oppure un Container
+                exponed_pods = kube_cluster.find_pods_exposed_by_service(service=svc)
+
+                for pod in exponed_pods:
+                    service_found: Service = self._find_tosca_service_by_pod(model=model, pod=pod)
+                    model.add_interaction(source_node=message_router_node, target_node=service_found) #TODO non sono sicuro questo funzioni
+                    for relationship in service_found.incoming_interactions:
+                        relationship.target_node = message_router_node
+                        relationship.service_discovery = True
+
+    def _is_svc_in_model(self, model: MicroToscaModel, service: KService):
+        search_name = service.get_name_dot_namespace()
+        return search_name in list(map(lambda node: node.name, model.nodes))
+
+    def _find_tosca_service_by_pod(self, model: MicroToscaModel, pod: KPod) -> Service:
+        for node in model.nodes:
+            if node.name == pod.get_name_dot_namespace(): #TODO occhio al nome
+                return node
+
+    def _is_edge_service(self, service: KService):
+        #TODO è tutto?
+        return service.spec.type == "NodePort" or service.spec.type == "LoadBalancer" #TODO external name?
+
+
+
 
 
 class EdgeWorker(KubeWorker):

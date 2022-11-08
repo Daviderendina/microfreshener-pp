@@ -97,9 +97,16 @@ class KCluster:
                 pod_template_spec = obj.get_pod_template_spec()
 
                 if not pod_template_spec.metadata.name:
-                    if name.startswith(obj.metadata.name) and name.endswith("."+pod_template_spec.get_namespace()):
+                    if name.startswith(obj.metadata.name) and name.endswith("." + pod_template_spec.get_namespace()):
                         found_likely_objects.append(pod_template_spec)
 
         if len(found_likely_objects) == 1:
             return found_likely_objects[0]
 
+    def find_pods_exposed_by_service(self, service: KService) -> list[KPod]:
+        exposed_pods = []
+        for pod in self.get_objects_by_kind(KObjectKind.POD):
+            # Cerco attraverso i miei KObject cosa espone cosa 
+            if len([value for value in pod.get_labels() if value in service.get_selectors()]) > 0:
+                exposed_pods.append(pod)
+        return exposed_pods
