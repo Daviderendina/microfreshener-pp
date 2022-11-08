@@ -1,40 +1,11 @@
 from project.kmodel.kDeployment import KDeployment
-from project.kmodel.kIngress import KIngress
 from project.kmodel.kObject import KObject
-from enum import Enum
 
 from project.kmodel.kPod import KPod, KPodTemplateSpec
 from project.kmodel.kReplicaSet import KReplicaSet
 from project.kmodel.kService import KService
 from project.kmodel.kStatefulSet import KStatefulSet
-
-
-class KObjectKind(Enum):
-    STATEFULSET = "StatefulSet",
-    SERVICE = "Service",
-    REPLICASET = "ReplicaSet",
-    POD = "Pod",
-    DEPLOYMENT = "Deployment",
-    INGRESS = "Ingress",
-    ISTIO_VIRTUAL_SERVICE = "VirtualService",
-    ISTIO_DESTINATION_RULE = "DestinationRule"
-
-    @staticmethod
-    def get_members() -> list:
-        return [KObjectKind.STATEFULSET]
-
-    @staticmethod
-    def get_from_class(class_type: type):
-        type_kind_mapping: dict[class_type, KObjectKind] = {
-            KPod: KObjectKind.POD,
-            KDeployment: KObjectKind.DEPLOYMENT,
-            KIngress: KObjectKind.INGRESS,
-            KReplicaSet: KObjectKind.REPLICASET,
-            KStatefulSet: KObjectKind.STATEFULSET,
-            KService: KObjectKind.SERVICE
-        }
-
-        return type_kind_mapping.get(class_type, None)
+from project.kmodel.kobject_kind import KObjectKind
 
 
 class KCluster:
@@ -61,7 +32,7 @@ class KCluster:
         sumlist = [v for k, v in objects]
         print(f" Objects: {sum(sumlist)} {dict(objects)}")
 
-    def get_objects_by_kind(self, kind: KObjectKind):
+    def get_objects_by_kind(self, kind: KObjectKind) -> list[KObject]:
         return self.cluster_objects.get(kind, [])
 
     def get_object_by_full_qualified_name(self, name_with_namespace: str) -> KObject:

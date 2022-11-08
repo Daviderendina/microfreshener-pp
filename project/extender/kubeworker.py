@@ -30,13 +30,11 @@ class IstioWorker(KubeWorker):
     # Inoltre c'è da vedere se aggiungere anche i Gateway
 
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
-        # Check for gateways - Cerco se sono presenti gateway e li aggiungo? La vedo un po' fine a se stessa come cosa,
-        #  in quanto forse non impatterebbe con la ricerca degli smell (vero obiettivo del tool). Questo pensiero può
-        #  essere fatto anche per i punti 3 e 4 di _check_for_timeouts TODO Jacopo
-        self._check_for_circuit_breaker(model=model, kube_cluster=kube_cluster)
-        self._check_for_timeouts(model=model, kube_cluster=kube_cluster)
+        self._search_for_gateways(model=model, kube_cluster=kube_cluster)
+        self._search_for_circuit_breaker(model=model, kube_cluster=kube_cluster)
+        self._search_for_timeouts(model=model, kube_cluster=kube_cluster)
 
-    def _check_for_timeouts(self, model: MicroToscaModel, kube_cluster: KCluster):
+    def _search_for_timeouts(self, model: MicroToscaModel, kube_cluster: KCluster):
         # Check for timeouts defined with virtual services
         virtual_services = kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_VIRTUAL_SERVICE)
         for vservice in virtual_services:
@@ -58,15 +56,15 @@ class IstioWorker(KubeWorker):
 
                 # 2) RUOTE è un URL
                 # 3) ROUTE è la wildcard *
-                    # Anche di questi due casi probabilmente posso fottermene TODO Jacopo
+                # Anche di questi due casi probabilmente posso fottermene TODO Jacopo
 
                 # 4) ROUTE e DESTINATION sono due servizi diversi  -> trovo quella relazione e la cambio, ma è un caso
-                    # Chiedere a Jacopo, ma per me questo caso semplicemente non esiste. TODO Jacopo
+                # Chiedere a Jacopo, ma per me questo caso semplicemente non esiste. TODO Jacopo
 
         # Check for timeouts defined with destination rule
-            # Devo capire il campo ConnectionPoolSettings.TCPSettings.connectionTimeout come funziona #TODO
+        # Devo capire il campo ConnectionPoolSettings.TCPSettings.connectionTimeout come funziona #TODO
 
-    def _check_for_circuit_breaker(self, model: MicroToscaModel, kube_cluster: KCluster):
+    def _search_for_circuit_breaker(self, model: MicroToscaModel, kube_cluster: KCluster):
         # Prendo tutte le DestinationRule
         rules: list[DestinationRule] = kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_DESTINATION_RULE)
         for rule in rules:
@@ -76,12 +74,36 @@ class IstioWorker(KubeWorker):
                     for r in node.incoming_interactions:
                         r.set_circuit_breaker(True)
 
+    def _search_for_gateways(self, model, kube_cluster):
+        # TODO per prima cosa c'è da capire come funziona il campo selector e che relazione abbia con i pod.
+        virtual_services = kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_VIRTUAL_SERVICE)
+
+        for gateway in kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_GATEWAY):
+            gateway_vs = [vs for vs in virtual_services
+                          if gateway.spec.name in vs.get_gateways() and vs.get_namespace() == gateway.get_namespace()]
+            #TODO namespace
+
+            if len(gateway_vs) > 0:
+                gateway_node = MessageRouter(gateway.get_name_dot_namespace())
+                model.edge.add_member(gateway_node)
+                model.add_node(gateway_node)
+
+                # TODO ma il nodo VirtualService va aggiunto come MessageRouter?
+                for vs in gateway_vs:
+                    destinations = vs.get_destinations_with_namespace()
+                    tosca_service_nodes = [s for s in model.nodes if isinstance(s, Service) and s.name in destinations]
+
+                    for node in tosca_service_nodes:
+                        model.add_interaction(source_node=gateway_node, target_node=node) # TODO service discovery ?
+                        model.edge.remove_member(node)
+            else:
+                pass #TODO cosa faccio?
+
 
 class ContainerWorker(KubeWorker):
-    #TODO da sistemare la storia del nome
+    # TODO da sistemare la storia del nome
 
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
-
 
         for node in list(model.nodes):
             if isinstance(node, Service):
@@ -135,12 +157,13 @@ class ServiceWorker(KubeWorker):
                     model.edge.add_member(message_router_node)
                 model.add_node(message_router_node)
 
-                #TODO prima bisogna capire se un Service rappresenta un Pod oppure un Container
+                # TODO prima bisogna capire se un Service rappresenta un Pod oppure un Container
                 exponed_pods = kube_cluster.find_pods_exposed_by_service(service=svc)
 
                 for pod in exponed_pods:
                     service_found: Service = self._find_tosca_service_by_pod(model=model, pod=pod)
-                    model.add_interaction(source_node=message_router_node, target_node=service_found) #TODO non sono sicuro questo funzioni
+                    model.add_interaction(source_node=message_router_node,
+                                          target_node=service_found)  # TODO non sono sicuro questo funzioni
                     for relationship in service_found.incoming_interactions:
                         relationship.target_node = message_router_node
                         relationship.service_discovery = True
@@ -151,15 +174,12 @@ class ServiceWorker(KubeWorker):
 
     def _find_tosca_service_by_pod(self, model: MicroToscaModel, pod: KPod) -> Service:
         for node in model.nodes:
-            if node.name == pod.get_name_dot_namespace(): #TODO occhio al nome
+            if node.name == pod.get_name_dot_namespace():  # TODO occhio al nome
                 return node
 
     def _is_edge_service(self, service: KService):
-        #TODO è tutto?
-        return service.spec.type == "NodePort" or service.spec.type == "LoadBalancer" #TODO external name?
-
-
-
+        # TODO è tutto?
+        return service.spec.type == "NodePort" or service.spec.type == "LoadBalancer"  # TODO external name?
 
 
 class EdgeWorker(KubeWorker):

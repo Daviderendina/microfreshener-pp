@@ -22,6 +22,22 @@ class VirtualService(KObject):
                             result.append((host, destination, timeout))
         return result
 
+    def get_destinations(self) -> list[str]:
+        result: list[str] = []
+        for http_route in self.data.get('spec', {}).get('http', []):
+            for destination_route in http_route.get('route', []):
+                destination = destination_route.get('destination', {}).get('host', None)
+                if destination is not None:
+                    result.append(destination)
+        return result
+
+    def get_destinations_with_namespace(self) -> list[str]:
+        d = self.get_destinations()
+        return list(map(lambda x: x + "." + self.get_namespace(), d))
+
+    def get_gateways(self) -> list[str]:
+        return self.data.get("spec", {}).get("gateways", [])
+
 
 class DestinationRule(KObject):
 
@@ -38,3 +54,11 @@ class DestinationRule(KObject):
 
     def get_host(self):
         return self.spec.host
+
+class Gateway(KObject):
+    def __init__(self, data: dict):
+        self.data: dict = data
+
+    @staticmethod
+    def from_dict(dictionary: dict):
+        return Gateway(data=dictionary)
