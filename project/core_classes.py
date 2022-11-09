@@ -1,6 +1,7 @@
-from microfreshener.core.errors import MicroToscaModelError
-from microfreshener.core.model import Relationship
-from microfreshener.core.model.nodes import Service
+import six
+from microfreshener.core.errors import *
+from microfreshener.core.model import *
+from microfreshener.core.model.nodes import *
 
 
 # TODO da rimuovere quando pubblico su pip il package

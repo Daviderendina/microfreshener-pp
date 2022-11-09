@@ -101,21 +101,25 @@ class IstioWorker(KubeWorker):
 
 
 class ContainerWorker(KubeWorker):
-    # TODO da sistemare la storia del nome
 
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
+        pods = [(p.get_name_dot_namespace(), p.get_containers()) for p in kube_cluster.get_objects_by_kind(KObjectKind.POD)]
+        pods += [(p.get_name_dot_namespace(), p.get_pod_template_spec().get_containers()) for p in
+                 kube_cluster.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.REPLICASET, KObjectKind.STATEFULSET)]
 
-        for node in list(model.nodes):
-            if isinstance(node, Service):
-                kobject = kube_cluster.get_object_by_full_qualified_name(node.name)
+        for name, containers in pods:
+            compute_node = Compute(name)
+            added = False
+            for container in containers:
+                container_fullname = container.name + "." + name
+                service_node = next(iter([s for s in model.nodes if s.name == container_fullname]), None)
+                # TODO se non trova il nodo nel modello TOSCA, non lo aggiunge
+                if service_node is not None:
+                    if not added:
+                        model.add_node(compute_node)
+                        added=True
 
-                if kobject is not None and isinstance(kobject, KPod):
-                    self._add_compute_nodes(model=model, service_node=node, container_list=kobject.get_containers())
-                else:
-                    pod_template = kube_cluster.get_pod_template_spec_by_full_qualified_name(node.name)
-                    if pod_template is not None:
-                        self._add_compute_nodes(model=model, service_node=node,
-                                                container_list=pod_template.get_containers())
+                    model.add_deployed_on(source_node=service_node, target_node=compute_node)
 
     def _add_compute_nodes(self, model: MicroToscaModel, service_node: Service, container_list: list[KContainer]):
         for container in container_list:

@@ -32,8 +32,11 @@ class KCluster:
         sumlist = [v for k, v in objects]
         print(f" Objects: {sum(sumlist)} {dict(objects)}")
 
-    def get_objects_by_kind(self, kind: KObjectKind) -> list[KObject]:
-        return self.cluster_objects.get(kind, [])
+    def get_objects_by_kind(self, *args) -> list[KObject]:
+        result = []
+        for arg in args:
+            result += self.cluster_objects.get(arg, [])
+        return result
 
     def get_object_by_full_qualified_name(self, name_with_namespace: str) -> KObject:
         temp = []
