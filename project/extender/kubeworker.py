@@ -1,14 +1,13 @@
 from abc import abstractmethod, ABC
 
 from microfreshener.core.model import MicroToscaModel
-from microfreshener.core.model.nodes import Service, Datastore, MessageRouter
+from microfreshener.core.model.nodes import Service, Datastore, MessageRouter, Compute
 
 from project.kmodel.istio import DestinationRule
 from project.kmodel.kCluster import KCluster, KObjectKind
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kPod import KPod
 
-from project.core_classes import Compute, DeployedOn
 from project.kmodel.kService import KService
 
 
@@ -107,17 +106,17 @@ class ContainerWorker(KubeWorker):
         pods += [(p.get_name_dot_namespace(), p.get_pod_template_spec().get_containers()) for p in
                  kube_cluster.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.REPLICASET, KObjectKind.STATEFULSET)]
 
-        for name, containers in pods:
-            compute_node = Compute(name)
+        for pod_name_dot_namespace, containers in pods:
+            compute_node = Compute(pod_name_dot_namespace)
             added = False
             for container in containers:
-                container_fullname = container.name + "." + name
+                container_fullname = container.name + "." + pod_name_dot_namespace
                 service_node = next(iter([s for s in model.nodes if s.name == container_fullname]), None)
                 # TODO se non trova il nodo nel modello TOSCA, non lo aggiunge
                 if service_node is not None:
                     if not added:
                         model.add_node(compute_node)
-                        added=True
+                        added = True
 
                     model.add_deployed_on(source_node=service_node, target_node=compute_node)
 
