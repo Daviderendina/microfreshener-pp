@@ -1,3 +1,4 @@
+from project.kmodel.kContainer import KContainer
 from project.kmodel.kDeployment import KDeployment
 from project.kmodel.kObject import KObject
 
@@ -38,49 +39,35 @@ class KCluster:
             result += self.cluster_objects.get(arg, [])
         return result
 
-    def get_object_by_full_qualified_name(self, name_with_namespace: str) -> KObject:
-        temp = []
-        for obj in self.get_all_objects():
-            if name_with_namespace == obj.get_name_dot_namespace():
-                return obj
+    def get_container_by_tosca_model_name(self, service_name: str) -> KContainer:
+        for pod in self.get_objects_by_kind(KObjectKind.POD):
+            for container in pod.get_containers():
+                tosca_name = container.name + "." + pod.get_name_dot_namespace()
+                if tosca_name == service_name:
+                    return container
 
-        return self._search_for_unnamed_match(name_with_namespace)
-
-    def get_pod_template_spec_by_full_qualified_name(self, name_with_namespace: str) -> KPodTemplateSpec:
-        for obj in self.get_all_objects():
-            if isinstance(obj, KDeployment) or isinstance(obj, KStatefulSet) or isinstance(obj, KReplicaSet):
-                if name_with_namespace == obj.get_pod_template_spec().get_name_dot_namespace():
-                    return obj.spec.template
-
-        return self._search_for_unnamed_match_pod_spec(name_with_namespace)
-
-    def _search_for_unnamed_match(self, name: str) -> KObject:
-        found_likely_objects = []
-        for obj in self.get_all_objects():
-            if not obj.metadata.name and obj.metadata.generate_name:
-                if name.startswith(obj.metadata.generate_name) and name.endswith(obj.get_namespace()):
-                    found_likely_objects.append(obj)
-
-        if len(found_likely_objects) == 1:
-            return found_likely_objects[0]
-
-    def _search_for_unnamed_match_pod_spec(self, name: str) -> KPodTemplateSpec:
-        found_likely_objects = []
-        for obj in self.get_all_objects():
-            if isinstance(obj, KDeployment) or isinstance(obj, KReplicaSet) or isinstance(obj, KStatefulSet):
-                pod_template_spec = obj.get_pod_template_spec()
-
-                if not pod_template_spec.metadata.name:
-                    if name.startswith(obj.metadata.name) and name.endswith("." + pod_template_spec.get_namespace()):
-                        found_likely_objects.append(pod_template_spec)
-
-        if len(found_likely_objects) == 1:
-            return found_likely_objects[0]
+        for template in self.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.STATEFULSET, KObjectKind.REPLICASET):
+            for container in template.get_pod_template_spec().get_containers():
+                tosca_name = container.name + template.get_name_dot_namespace()
+                if tosca_name == service_name:
+                    return container
 
     def find_pods_exposed_by_service(self, service: KService) -> list[KPod]:
         exposed_pods = []
         for pod in self.get_objects_by_kind(KObjectKind.POD):
-            # Cerco attraverso i miei KObject cosa espone cosa 
-            if len([value for value in pod.get_labels() if value in service.get_selectors()]) > 0:
-                exposed_pods.append(pod)
+            if pod.get_labels():
+                service_selectors = [k+":"+v for k,v in service.get_selectors().items()]
+                pod_labels = [k+":"+v for k,v in pod.get_labels().items()]
+                if len([value for value in pod_labels if value in service_selectors]) > 0:
+                    exposed_pods.append(pod)
+        return exposed_pods
+
+    def find_pods_defining_object_exposed_by_service(self, service: KService) -> list[KObject]:
+        exposed_pods = []
+        for template_defining_obj in self.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.REPLICASET, KObjectKind.STATEFULSET):
+            service_selectors = [k + ":" + v for k, v in service.get_selectors().items()]
+            pod_labels = [k + ":" + v for k, v in template_defining_obj.get_labels().items()]
+            if len([value for value in pod_labels if value in service_selectors]) > 0:
+                exposed_pods.append(template_defining_obj)
+
         return exposed_pods

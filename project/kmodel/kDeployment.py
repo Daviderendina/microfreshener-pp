@@ -3,7 +3,7 @@ from kubernetes.client.models import V1Deployment
 
 from project.kmodel.kObject import KObject
 from project.kmodel.kMetadata import KMetadata
-from project.kmodel.kPod import KPodTemplateSpec, KPodSpec
+from project.kmodel.kPod import KPodTemplateSpec
 
 
 # Considerazioni sul Deployment

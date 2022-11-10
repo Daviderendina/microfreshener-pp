@@ -11,7 +11,7 @@ DEFAULT_SVC = {
                 'targetPort': 80
             }
         ],
-        'selector': {'app.kubernetes.io/name': 'proxy'}
+        'selector': {'app': 'test'}
     }
 }
 
@@ -19,7 +19,6 @@ POD_WITH_ONE_CONTAINER = {
     'apiVersion': 'v1',
     'kind': 'Pod',
     'metadata': {
-        'labels': {'app': 'test'},
         'name': 'test-pod-one-container'
     },
     'spec': {
