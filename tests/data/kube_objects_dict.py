@@ -19,7 +19,7 @@ POD_WITH_ONE_CONTAINER = {
     'apiVersion': 'v1',
     'kind': 'Pod',
     'metadata': {
-        'labels': {'app': 'pod-a'},
+        'labels': {'app': 'test'},
         'name': 'test-pod-one-container'
     },
     'spec': {

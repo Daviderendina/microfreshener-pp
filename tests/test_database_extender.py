@@ -8,7 +8,7 @@ from project.kmodel.kCluster import KCluster, KObjectKind
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kPod import KPod
 
-from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, POD_WITH_TWO_CONTAINER
+from data.kube_objects_dict import POD_WITH_ONE_CONTAINER
 
 
 class TestDatabaseExtender(TestCase):
@@ -26,7 +26,7 @@ class TestDatabaseExtender(TestCase):
 
         cluster.add_object(pod, KObjectKind.POD)
 
-        databaseNode = Service(pod.metadata.name)
+        databaseNode = Service(pod.get_containers()[0].name + "." + pod.get_name_dot_namespace())
         model.add_node(databaseNode)
         svcUsesDB1 = Service("svcUses1")
         svcUsesDB2 = Service("svcUses2")
@@ -78,29 +78,4 @@ class TestDatabaseExtender(TestCase):
         self.assertEqual(len(list(model.nodes)), 1)
 
         # Check that Service node had not been converted to Database
-        self.assertFalse(isinstance(list(model.nodes)[0], Datastore))
-
-    def test_database_double_container(self):
-        model = MicroToscaModel(name="container-test-model")
-        cluster = KCluster()
-
-        pod = KPod.from_dict(POD_WITH_TWO_CONTAINER)
-
-        # Change pod port
-        container_to_change: KContainer = pod.get_containers()[0]
-        for port in container_to_change.ports:
-            port["containerPort"] = 3306
-
-        cluster.add_object(pod, KObjectKind.POD)
-
-        model.add_node(Service(pod.metadata.name))
-
-        extender: KubeExtender = KubeExtender(worker_list=[DatabaseWorker()])
-        extender.extend(model, cluster)
-
-        # Check nodes present
-        self.assertEqual(len(cluster.cluster_objects.items()), 1)
-        self.assertEqual(len(list(model.nodes)), 1)
-
-        # Check that Service node had not been converted to Datastore
         self.assertFalse(isinstance(list(model.nodes)[0], Datastore))
