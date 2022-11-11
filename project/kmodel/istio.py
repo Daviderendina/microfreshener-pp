@@ -38,6 +38,12 @@ class VirtualService(KObject):
     def get_gateways(self) -> list[str]:
         return self.data.get("spec", {}).get("gateways", [])
 
+    def get_hosts(self):
+        return self.data.get("spec", {}).get("hosts", [])
+
+    def get_selectors(self) -> dict[str, str]:
+        return self.spec.selector
+
 
 class DestinationRule(KObject):
 
@@ -55,6 +61,7 @@ class DestinationRule(KObject):
     def get_host(self):
         return self.spec.host
 
+
 class Gateway(KObject):
     def __init__(self, data: dict):
         self.data: dict = data
@@ -62,3 +69,13 @@ class Gateway(KObject):
     @staticmethod
     def from_dict(dictionary: dict):
         return Gateway(data=dictionary)
+
+    def get_name(self):
+        return self.data.get("metadata", {}).get("name", "")
+
+    def get_all_host_exposed(self):
+        result = []
+        servers = self.data.get("spec", {}).get("servers", [])
+        for server in servers:
+            result += server.get("hosts", [])
+        return result
