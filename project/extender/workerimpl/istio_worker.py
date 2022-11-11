@@ -59,18 +59,17 @@ class IstioWorker(KubeWorker):
                         for interaction in list(node.incoming_interactions):
                             interaction.set_timeout(True)
                             '''
-                                In questo caso, ho fatto che il timeout viene direttamente applicato a tutte le 
-                                connessioni in entrata al pod. Forse però questo è sbagliato, o forse sarebbe meglio
-                                mettere davanti al pod un MessageRouter (il VirtualService) che comunica attraverso 
-                                timeout con il pod.
-                                '''  # TODO chiedere a Jacopo
+                            In questo caso, ho fatto che il timeout viene direttamente applicato a tutte le connessioni 
+                            in entrata al pod. Forse però questo è sbagliato, o forse sarebbe meglio
+                            mettere davanti al pod un MessageRouter (il VirtualService) che comunica attraverso 
+                            timeout con il pod.
+                            '''  # TODO chiedere a Jacopo
 
-                # 2) RUOTE è un URL
-                # 3) ROUTE è la wildcard *
+                # 2) RUOTE è un URL/la wildcard *
                 # Anche di questi due casi probabilmente posso fottermene TODO Jacopo
 
                 # 4) ROUTE e DESTINATION sono due servizi diversi  -> trovo quella relazione e la cambio, ma è un caso
-                # Chiedere a Jacopo, ma per me questo caso semplicemente non esiste. TODO Jacopo
+                # Chiedere a Jacopo, ma per me questo caso semplicemente non esiste.
 
         # Check for timeouts defined with destination rule
         # Devo capire il campo ConnectionPoolSettings.TCPSettings.connectionTimeout come funziona #TODO

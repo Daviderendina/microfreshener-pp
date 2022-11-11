@@ -6,12 +6,6 @@ from project.kmodel.kMetadata import KMetadata
 from project.kmodel.kPod import KPodTemplateSpec
 
 
-# Considerazioni sul Deployment
-#  Deve essere obbligatoriamente definito con selector e template, altrimenti kubectl mostra errore.
-#  TODO Nel deployment non ci sono definiti Pod, ma PodSpec. Questo devo considerarlo quando vado a cercare smell e a
-#   mostrare il grafico
-
-
 class KDeployment(V1Deployment, KObject):
 
     @staticmethod
