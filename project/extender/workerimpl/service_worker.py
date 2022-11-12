@@ -8,6 +8,7 @@ from project.kmodel.kobject_kind import KObjectKind
 
 class ServiceWorker(KubeWorker):
     #TODO manca da mettere il service discovery!
+
     ''' TODO
     Si potrebbe fare che se trovo già il service nel model, sistemo tutte le relazioni che trovo e le forzo a passare
     dal MessageRouter. Questo però non mi sembra giusto, poiché se il servizio c'è ma non viene utilizzato, significa

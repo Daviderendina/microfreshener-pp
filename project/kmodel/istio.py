@@ -19,6 +19,7 @@ class VirtualService(KObject):
                     for destination_route in http_route.get('route', []):
                         destination = destination_route.get('destination', {}).get('host', None)
                         if destination is not None:
+
                             result.append((host, destination, timeout))
         return result
 
@@ -60,6 +61,10 @@ class DestinationRule(KObject):
 
     def get_host(self):
         return self.spec.host
+
+    def get_timeout(self) -> str:
+        return self.data.get("spec", {}).get("trafficPolicy", {}).get("connectionPool", {})\
+            .get("tcp", {}).get("connectTimeout", None)
 
 
 class Gateway(KObject):

@@ -39,6 +39,7 @@ class KCluster:
             result += self.cluster_objects.get(arg, [])
         return result
 
+    # Starting from
     def get_container_by_tosca_model_name(self, service_name: str) -> KContainer:
         for pod in self.get_objects_by_kind(KObjectKind.POD):
             for container in pod.get_containers():
@@ -51,6 +52,7 @@ class KCluster:
                 tosca_name = container.name + template.get_name_dot_namespace()
                 if tosca_name == service_name:
                     return container
+
 
     def find_pods_exposed_by_service(self, service: KService) -> list[KPod]:
         exposed_pods = []
