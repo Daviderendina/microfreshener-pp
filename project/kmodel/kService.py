@@ -20,6 +20,12 @@ class KService(V1Service, KObject):
     def get_selectors(self) -> dict[str, str]:
         return self.spec.selector
 
+    '''
+    Return true if the service is accessible from outside the network
+    '''
+    def is_reachable_from_outside(self):
+        return self.spec.type != "ClusterIP"
+
 class KServiceSpec(V1ServiceSpec, KObject):
 
     @staticmethod

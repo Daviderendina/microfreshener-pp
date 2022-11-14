@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, Datastore
+from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, Edge
 
 from project.extender.extender import KubeExtender
-from project.extender.kubeworker import ServiceWorker
+from project.extender.workerimpl.service_worker import ServiceWorker
 from project.kmodel.kCluster import KCluster
 from project.kmodel.kPod import KPod
 from project.kmodel.kService import KService
@@ -178,7 +178,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(list(model.nodes)), 4)
 
     '''
-    Test case: il MessageRouter è già presente
+    Test case: MessageRouter found
     '''
     def test_service_is_present(self):
         model = MicroToscaModel(name="service-model")
@@ -226,3 +226,90 @@ class TestServiceExtender(TestCase):
 
         self.assertEqual(len(cluster.get_all_objects()), 3)
         self.assertEqual(len(list(model.nodes)), 3)
+
+
+    '''
+    Test case: Service node is edge node and K8s Service is exponed on the host (for ex. NodePort)
+    '''
+    def test_tosca_service_edge_and_with_kservice_published(self):
+        model = MicroToscaModel(name="service-model")
+        model.add_group(Edge("edge"))
+        cluster = KCluster()
+
+        # Add objects to cluster
+        k_svc = KService.from_dict(DEFAULT_SVC)
+        pod = KPod.from_dict(POD_WITH_ONE_CONTAINER)
+        k_svc.spec.type = "NodePort"
+        pod.metadata.labels = {'app': 'test'}
+        cluster.add_object(k_svc, KObjectKind.SERVICE)
+        cluster.add_object(pod, KObjectKind.POD)
+
+        # Add Service to Tosca Model
+        svc = Service(pod.get_containers()[0].name + "." + pod.get_name_dot_namespace())
+        model.add_node(svc)
+        model.edge.add_member(svc)
+
+        self.assertEqual(len(cluster.get_all_objects()), 2)
+        self.assertEqual(len(list(model.nodes)), 1)
+
+        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender.extend(model, cluster)
+
+        count = 0
+        for node in model.nodes:
+            if isinstance(node, MessageRouter):
+                count += 1
+                mr = node
+        self.assertEqual(count, 1)
+
+        self.assertEqual(len(svc.interactions), 0)
+        self.assertEqual(len(svc.incoming_interactions), 1)
+        self.assertTrue(svc not in model.edge)
+        self.assertTrue(mr in model.edge)
+        self.assertEqual(len(mr.interactions), 1)
+        self.assertEqual(len(cluster.get_all_objects()), 2)
+        self.assertEqual(len(list(model.nodes)), 2)
+
+
+
+    '''
+    Test case: Service node is edge node and K8s Service is ClusterIP
+    '''
+    def test_tosca_service_edge_and_with_kservice_clusterip(self):
+        model = MicroToscaModel(name="service-model")
+        model.add_group(Edge("edge"))
+        cluster = KCluster()
+
+        # Add objects to cluster
+        k_svc = KService.from_dict(DEFAULT_SVC)
+        pod = KPod.from_dict(POD_WITH_ONE_CONTAINER)
+        k_svc.spec.type = "ClusterIP"
+        pod.metadata.labels = {'app': 'test'}
+        cluster.add_object(k_svc, KObjectKind.SERVICE)
+        cluster.add_object(pod, KObjectKind.POD)
+
+        # Add Service to Tosca Model
+        svc = Service(pod.get_containers()[0].name + "." + pod.get_name_dot_namespace())
+        model.add_node(svc)
+        model.edge.add_member(svc)
+
+        self.assertEqual(len(cluster.get_all_objects()), 2)
+        self.assertEqual(len(list(model.nodes)), 1)
+
+        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender.extend(model, cluster)
+
+        count = 0
+        for node in model.nodes:
+            if isinstance(node, MessageRouter):
+                count += 1
+                mr = node
+        self.assertEqual(count, 1)
+
+        self.assertEqual(len(svc.interactions), 0)
+        self.assertEqual(len(svc.incoming_interactions), 1)
+        self.assertTrue(svc in model.edge)
+        self.assertTrue(mr not in model.edge)
+        self.assertEqual(len(mr.interactions), 1)
+        self.assertEqual(len(cluster.get_all_objects()), 2)
+        self.assertEqual(len(list(model.nodes)), 2)

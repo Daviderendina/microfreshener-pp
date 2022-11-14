@@ -3,6 +3,7 @@ from microfreshener.core.model.nodes import Compute, Service, MessageRouter
 
 from project.extender.kubeworker import KubeWorker
 from project.kmodel.kCluster import KCluster
+from project.kmodel.kService import KService
 from project.kmodel.kobject_kind import KObjectKind
 
 
@@ -36,11 +37,21 @@ class ServiceWorker(KubeWorker):
                         if service_node is None:
                             pass #TODO se prima faccio il controllo potrebbe non servire far nulla qui
 
-                        for r in [r for r in service_node.incoming_interactions if isinstance(r, InteractsWith)]:
-                            model.add_interaction(source_node=r.source, target_node=message_router_node)
-                            model.delete_relationship(r)
-                        model.add_interaction(source_node=message_router_node, target_node=service_node)
-
+                        # Case: service is edge node without interactions
+                        if len(service_node.incoming_interactions) == 0 and service_node in model.edge:
+                            kservice: KService = kube_cluster.get_object_by_name_and_kind(message_router_node.name, KObjectKind.SERVICE)
+                            if kservice:
+                                if kservice.is_reachable_from_outside():
+                                    model.edge.add_member(message_router_node)
+                                    model.edge.remove_member(service_node)
+                                    model.add_interaction(source_node=message_router_node, target_node=service_node)
+                                else:
+                                    model.add_interaction(source_node=message_router_node, target_node=service_node)
+                        else:
+                            for r in [r for r in service_node.incoming_interactions if isinstance(r, InteractsWith)]:
+                                model.add_interaction(source_node=r.source, target_node=message_router_node)
+                                model.delete_relationship(r)
+                            model.add_interaction(source_node=message_router_node, target_node=service_node)
             # If node is found but is not MessageRouter
             elif not isinstance(message_router_node, MessageRouter):
                 incoming_interactions = message_router_node.incoming_interactions.copy()

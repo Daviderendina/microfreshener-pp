@@ -1,11 +1,9 @@
-from project.kmodel.kContainer import KContainer
-from project.kmodel.kDeployment import KDeployment
-from project.kmodel.kObject import KObject
+import re
 
-from project.kmodel.kPod import KPod, KPodTemplateSpec
-from project.kmodel.kReplicaSet import KReplicaSet
+from project.kmodel.kContainer import KContainer
+from project.kmodel.kObject import KObject
+from project.kmodel.kPod import KPod
 from project.kmodel.kService import KService
-from project.kmodel.kStatefulSet import KStatefulSet
 from project.kmodel.kobject_kind import KObjectKind
 
 
@@ -39,7 +37,6 @@ class KCluster:
             result += self.cluster_objects.get(arg, [])
         return result
 
-    # Starting from
     def get_container_by_tosca_model_name(self, service_name: str) -> KContainer:
         for pod in self.get_objects_by_kind(KObjectKind.POD):
             for container in pod.get_containers():
@@ -52,7 +49,6 @@ class KCluster:
                 tosca_name = container.name + template.get_name_dot_namespace()
                 if tosca_name == service_name:
                     return container
-
 
     def find_pods_exposed_by_service(self, service: KService) -> list[KPod]:
         exposed_pods = []
@@ -73,3 +69,24 @@ class KCluster:
                 exposed_pods.append(template_defining_obj)
 
         return exposed_pods
+
+    def get_object_by_name_and_kind(self, name: str, kind: KObjectKind) -> KObject:
+        for obj in self.get_objects_by_kind(kind):
+
+            # Case: name is FQDN
+            result = re.match(obj.get_name_dot_namespace()+r"[.][a-zA-Z]*[.]cluster[.]local", name)
+            if result and result.string == name:
+                return obj
+
+            # Case: name is <name>.<namespace>
+            if obj.get_name_dot_namespace() == name:
+                return obj
+
+            # Case: name is only <name>
+            possible = []
+            if obj.metadata.name == name:
+                possible.append(obj)
+            if len(possible) == 1:
+                return possible[0]
+
+

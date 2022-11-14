@@ -2,7 +2,10 @@ from abc import abstractmethod
 
 from microfreshener.core.model.microtosca import MicroToscaModel
 
-from project.extender.kubeworker import KubeWorker, IstioWorker, ContainerWorker, DatabaseWorker
+from project.extender.kubeworker import KubeWorker
+from project.extender.workerimpl.container_worker import ContainerWorker
+from project.extender.workerimpl.database_worker import DatabaseWorker
+from project.extender.workerimpl.istio_worker import IstioWorker
 from project.kmodel.kCluster import KCluster
 
 
