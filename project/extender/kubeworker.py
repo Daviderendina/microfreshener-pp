@@ -1,11 +1,8 @@
 from abc import abstractmethod
 
-from microfreshener.core.model import MicroToscaModel, InteractsWith
-from microfreshener.core.model.nodes import Service, Datastore, MessageRouter, Compute
+from microfreshener.core.model import MicroToscaModel
 
-from project.kmodel.istio import DestinationRule, Gateway, VirtualService
-from project.kmodel.kCluster import KCluster, KObjectKind
-from project.kmodel.kContainer import KContainer
+from project.kmodel.kCluster import KCluster
 
 
 class KubeWorker:
@@ -14,20 +11,6 @@ class KubeWorker:
     @abstractmethod
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster) -> MicroToscaModel:
         pass
-
-
-class IngressWorker(KubeWorker):
-
-    def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
-        pass
-    # TODO controlla che
-    #  i tool non si siano persi alcun Ingress per strada
-    #  non si sia perso qualche IngressController (che viene segnato come MsgRouter)
-    #  potrebbe anche sistemare il fatto delle relazioni
-    # Sembra che il miner si preoccupi solo del controller, probabilmente perché le route le prende dinamicamente
-
-    # Prima di aggiungere la risorsa, devo accertarmi che ci sia almeno un controller disponibile per gestirla, altrimenti ignoro tutto
-
 
 
 class EdgeWorker(KubeWorker):

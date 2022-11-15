@@ -181,3 +181,35 @@ STATEFULSET_WITH_ONE_CONTAINER = {
                 'resources': {'requests': {'storage': '1Gi'}},
                 'storageClassName': 'my-storage-class'}}]},
     'status': None}
+
+
+DEFAULT_SVC_INGRESS = {
+    "apiVersion": "networking.k8s.io/v1",
+    "kind": "Ingress",
+    "metadata": {
+        "name": "minimal - ingress"
+    },
+    "spec": {
+        "ingressClassName": "nginx - example",
+        "rules": [
+            {
+                "http" : {
+                    "paths" : [
+                        {
+                            "path": "/testpath",
+                            "pathType": "Prefix",
+                            "backend" : {
+                                "service" : {
+                                    "name" : "test",
+                                    "port" : {
+                                        "number" : 80
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
