@@ -11,6 +11,7 @@ class IngressWorker(KubeWorker):
     INGRESS_CONTROLLER_DEFAULT_NAME = "ingress-controller"
 
     def __init__(self):
+        super().__init__()
         self.model = None
         self.kube_cluster = None
 

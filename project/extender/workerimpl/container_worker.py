@@ -9,6 +9,7 @@ from project.kmodel.kobject_kind import KObjectKind
 class ContainerWorker(KubeWorker):
 
     def __init__(self):
+        super().__init__()
         self.kube_cluster = None
         self.model = None
 

@@ -23,6 +23,7 @@ class ServiceWorker(KubeWorker):
     _SVC_HOSTNAME = ".svc.cluster.local"
 
     def __init__(self):
+        super().__init__()
         self.model = None
         self.kube_cluster = None
 

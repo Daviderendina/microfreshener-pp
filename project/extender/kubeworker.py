@@ -6,7 +6,9 @@ from project.kmodel.kCluster import KCluster
 
 
 class KubeWorker:
-    # TODO devono avere un ordine di exec perché ad esempio quello dei service va fatto prima di quello di istio
+
+    def __init__(self):
+        self.executed_only_after_workers = []
 
     @abstractmethod
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster) -> MicroToscaModel:

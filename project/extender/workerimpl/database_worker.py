@@ -9,6 +9,7 @@ class DatabaseWorker(KubeWorker):
     DATABASE_PORTS = [1433, 1434, 3306, 3050, 5432, 27017]  # TODO cercare tutte le porte standard dei DB
 
     def __init__(self):
+        super().__init__()
         self.kube_cluster = None
         self.model = None
 

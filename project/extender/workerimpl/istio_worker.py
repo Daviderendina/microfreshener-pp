@@ -1,6 +1,7 @@
 from microfreshener.core.model import MicroToscaModel, MessageRouter, InteractsWith
 
 from project.extender.kubeworker import KubeWorker
+from project.extender.workerimpl.service_worker import ServiceWorker
 from project.kmodel.istio import Gateway, VirtualService, DestinationRule
 from project.kmodel.kCluster import KCluster
 from project.kmodel.kService import KService
@@ -28,8 +29,10 @@ class IstioWorker(KubeWorker):
     # TODO mi manca da capire il service discovery
 
     def __init__(self):
+        super().__init__()
         self.model = None
         self.kube_cluster = None
+        self.executed_only_after_workers.append(ServiceWorker)
 
     def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
         self.model = model
