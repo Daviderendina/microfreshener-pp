@@ -3,7 +3,7 @@ from unittest import TestCase
 from microfreshener.core.model import MicroToscaModel, Service, Datastore
 
 from project.extender.extender import KubeExtender
-from project.extender.kubeworker import DatabaseWorker
+from project.extender.extender import DatabaseWorker
 from project.kmodel.kCluster import KCluster, KObjectKind
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kPod import KPod
