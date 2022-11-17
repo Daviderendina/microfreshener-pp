@@ -26,8 +26,6 @@ def _find_node_by_name(model: MicroToscaModel, name: str):
 class IstioWorker(KubeWorker):
     GATEWAY_NODE_GENERIC_NAME = "istio-ingress-gateway"
 
-    # TODO mi manca da capire il service discovery
-
     def __init__(self):
         super().__init__()
         self.model = None

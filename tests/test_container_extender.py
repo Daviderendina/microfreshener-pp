@@ -1,11 +1,11 @@
 from unittest import TestCase
 
 from microfreshener.core.model.microtosca import MicroToscaModel
-from microfreshener.core.model.nodes import Service, MessageRouter
+from microfreshener.core.model.nodes import Service, MessageRouter, Compute
 from microfreshener.core.model.relationships import DeployedOn
 
 from project.extender.extender import KubeExtender
-from project.extender.kubeworker import ContainerWorker, Compute
+from project.extender.workerimpl.container_worker import ContainerWorker
 from project.kmodel.kCluster import KCluster, KObjectKind
 from project.kmodel.kDeployment import KDeployment
 from project.kmodel.kPod import KPod
