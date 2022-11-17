@@ -3,6 +3,7 @@ from abc import abstractmethod
 from microfreshener.core.model import MicroToscaModel
 
 from project.kmodel.kCluster import KCluster
+from project.kmodel.kobject_kind import KObjectKind
 
 
 class KubeWorker:

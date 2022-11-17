@@ -8,15 +8,6 @@ from project.kmodel.kobject_kind import KObjectKind
 
 # TODO manca da mettere il service discovery!
 
-''' TODO
-Si potrebbe fare che se trovo già il service nel model, sistemo tutte le relazioni che trovo e le forzo a passare
-dal MessageRouter. Questo però non mi sembra giusto, poiché se il servizio c'è ma non viene utilizzato, significa
-che lo sviluppatore molto probabilmente ne è al corrente.
-
-Se decido di fare divarsemente, posso fare che cerco tutti i pod esposti dal service e sistemo poi tutte le
-relazioni che mi risultano sbagliate
-'''
-
 
 class ServiceWorker(KubeWorker):
 

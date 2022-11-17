@@ -3,7 +3,7 @@ from abc import abstractmethod
 from microfreshener.core.model.microtosca import MicroToscaModel
 
 from project.extender.kubeworker import KubeWorker
-from project.extender.workerimpl.container_worker import ContainerWorker
+from project.extender.workerimpl.compute_node_worker import ComputeNodeWorker
 from project.extender.workerimpl.database_worker import DatabaseWorker
 from project.extender.workerimpl.istio_worker import IstioWorker
 from project.kmodel.kCluster import KCluster
@@ -43,6 +43,6 @@ class KubeExtender(Extender):
         return extended_model
 
     def set_all_workers(self):
-        self.worker_list = [IstioWorker(), ContainerWorker(), DatabaseWorker()]
+        self.worker_list = [IstioWorker(), ComputeNodeWorker(), DatabaseWorker()]
 
 
