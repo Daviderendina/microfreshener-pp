@@ -68,7 +68,7 @@ class IstioWorker(KubeWorker):
     def _search_for_timeouts_with_destination_rule(self):
         for rule in self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_DESTINATION_RULE):
             if rule.get_timeout() is not None:
-                mr_node = _find_node_by_name(rule.get_host())
+                mr_node = _find_node_by_name(model=self.model, name=rule.get_host())
                 for r in list(mr_node.incoming_interactions):
                     r.set_timeout(True)
 
@@ -93,14 +93,17 @@ class IstioWorker(KubeWorker):
                     for service in self.kube_cluster.get_objects_by_kind(KObjectKind.SERVICE):
                         if service.get_name_dot_namespace() in virtual_service.get_destinations():
 
-                            is_one_pod_exposed = self._has_pod_exposed(gateway, service)
+                            is_one_pod_exposed = self._has_pod_exposed(gateway=gateway, service=service)
                             if is_one_pod_exposed:
                                 service_node = _find_node_by_name(self.model, service.get_name_dot_namespace()
-                                                                  + ".svc.local.cluster")
+                                                                  + ".svc.cluster.local")
 
                                 if service_node is not None:
                                     self.model.edge.remove_member(service_node)
                                     self.model.add_interaction(source_node=gateway_node, target_node=service_node)
+
+        if len(gateway_node.interactions) + len(gateway_node.incoming_interactions) == 0:
+            self.model.delete_node(gateway_node)
 
     def _find_or_create_gateway(self) -> MessageRouter:
         gateway_node = _find_node_by_name(self.model, self.GATEWAY_NODE_GENERIC_NAME)

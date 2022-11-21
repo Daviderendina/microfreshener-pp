@@ -1,5 +1,7 @@
 from project.kmodel.kObject import KObject
 
+DEFAULT_NAMESPACE = "default"
+DEFAULT_NAME = "<DEFAULT_NAME>"
 
 class VirtualService(KObject):
 
@@ -45,6 +47,13 @@ class VirtualService(KObject):
     def get_selectors(self) -> dict[str, str]:
         return self.spec.selector
 
+    def get_name_dot_namespace(self):
+        name = self.data.get("metadata", {}).get("name", DEFAULT_NAME)
+        return name + "." + self.get_namespace()
+
+    def get_namespace(self):
+        return self.data.get("metadata", {}).get("namespace", DEFAULT_NAMESPACE)
+
 
 class DestinationRule(KObject):
 
@@ -60,12 +69,18 @@ class DestinationRule(KObject):
             # and self.data.get("spec", {}).get("trafficPolicy", {}).get("outlierDetection", None) is not None
 
     def get_host(self):
-        return self.spec.host
+        return self.data.get("spec", {}).get("host", None)
 
     def get_timeout(self) -> str:
         return self.data.get("spec", {}).get("trafficPolicy", {}).get("connectionPool", {})\
-            .get("tcp", {}).get("connectTimeout", None)
+            .get("tcp", {}).get("connectionTimeout", None)
 
+    def get_name_dot_namespace(self):
+        name = self.data.get("metadata", {}).get("name", DEFAULT_NAME)
+        return name + "." + self.get_namespace()
+
+    def get_namespace(self):
+        return self.data.get("metadata", {}).get("namespace", DEFAULT_NAMESPACE)
 
 class Gateway(KObject):
     def __init__(self, data: dict):
@@ -84,3 +99,13 @@ class Gateway(KObject):
         for server in servers:
             result += server.get("hosts", [])
         return result
+
+    def get_name_dot_namespace(self):
+        name = self.data.get("metadata", {}).get("name", DEFAULT_NAME)
+        return name + "." + self.get_namespace()
+
+    def get_namespace(self):
+        return self.data.get("metadata", {}).get("namespace", DEFAULT_NAMESPACE)
+
+    def get_selectors(self) -> list:
+        return self.data.get("spec", {}).get("selector", [])
