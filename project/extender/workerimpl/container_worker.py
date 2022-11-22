@@ -24,3 +24,4 @@ class ContainerWorker(KubeWorker):
                 for pod in self.kube_cluster.get_objects_by_kind(KObjectKind.POD):
                     if pod.spec.host_network == True:
                             self.model.edge.add_member(service)
+        #TODO hostPort? hostIP?

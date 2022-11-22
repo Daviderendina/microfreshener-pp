@@ -36,8 +36,15 @@ class IstioWorker(KubeWorker):
         self.model = model
         self.kube_cluster = kube_cluster
 
+        #TODO creo (o trovo) il nodo che rappresenta il gateway, e se trovo il match allora metto un'interaction
+        # dal gateway al Kubernetes Service
         self._search_for_gateways()
+
+        #TODO Se c'è definito un CB per un nodo, allora lo imposto a tutto ciò in ingresso. Per come è definito in Istio,
+        # il CB si applica a TUTTE le connessioni in ingresso
         self._search_for_circuit_breaker()
+
+        #TODO Anche qui i timeout sono impostati sui Kube Service e per tutte le connessioni in ingresso al nodo
         self._search_for_timeouts()
 
     def _search_for_timeouts(self):
@@ -46,7 +53,7 @@ class IstioWorker(KubeWorker):
 
     def _search_for_timeouts_with_virtual_service(self):
         for vservice in self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_VIRTUAL_SERVICE):
-            # TODO anche qui, do per scontato che nei VServices route e destination siamo definiti come FQDN
+            #TODO anche qui, do per scontato che nei VServices route e destination siamo definiti come FQDN
             timeouts: list[(list, str)] = vservice.get_timeouts()
             for (route, destination, timeout) in timeouts:
                 if route == destination:
