@@ -23,20 +23,18 @@ class ServiceWorker(KubeWorker):
         self.kube_cluster = kube_cluster
         
         for kube_service_name, exposed_containers in self._build_data_structure(kube_cluster=kube_cluster).items():
-            message_router_node = next(iter([mr for mr in model.nodes if mr.name + self._SVC_HOSTNAME == kube_service_name]), None)
+            message_router_node = next(iter([mr for mr in model.nodes if mr.name == kube_service_name]), None)
 
             if message_router_node is None:
                 if exposed_containers:
                     self._handle_node_not_found(kube_service_name, exposed_containers)
             elif not isinstance(message_router_node, MessageRouter):
                 self._handle_found_not_message_router(kube_service_name, message_router_node)
-            else: # If node is found
-                pass #TODO leggi commento
-                ''' 
-                Se trovo il nodo del message router ho due strade:
-                 A) Me ne frego, perché comunque assumo che sia tutto giusto così come sia (niente è stato dimenticato)  
-                 B) Sistemo tutto per passare dal service
-                '''
+            else:
+                for service_node in [i.target for i in message_router_node.interactions if isinstance(i, InteractsWith)]:
+                    for int in [i for i in service_node.incoming_interactions if isinstance(i.source, Service)]:
+                        model.add_interaction(source_node=int.source, target_node=message_router_node)
+                        model.delete_relationship(int)
 
     def _handle_node_not_found(self, kube_service_name: str, exposed_containers: list):
         message_router_node = MessageRouter(kube_service_name)

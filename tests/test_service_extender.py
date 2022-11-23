@@ -41,7 +41,7 @@ class TestServiceExtender(TestCase):
         svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
         svc2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_name_dot_namespace())
         svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace())
-        mr = Service(k_svc.get_name_dot_namespace())
+        mr = Service(k_svc.get_name_dot_namespace() + ".svc.cluster.local")
         model.add_node(svc1)
         model.add_node(svc2)
         model.add_node(svc3)
@@ -198,11 +198,11 @@ class TestServiceExtender(TestCase):
         # Add Service to Tosca Model
         svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
         svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace())
-        mr = MessageRouter(k_svc.get_name_dot_namespace())
+        mr = MessageRouter(k_svc.get_name_dot_namespace() + ".svc.cluster.local")
         model.add_node(svc1)
         model.add_node(svc3)
         model.add_node(mr)
-        model.add_interaction(source_node=svc1, target_node=mr)
+        model.add_interaction(source_node=svc1, target_node=svc3)
         model.add_interaction(source_node=mr, target_node=svc3)
 
         self.assertEqual(len(cluster.get_all_objects()), 3)
@@ -269,7 +269,6 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(mr.interactions), 1)
         self.assertEqual(len(cluster.get_all_objects()), 2)
         self.assertEqual(len(list(model.nodes)), 2)
-
 
 
     '''

@@ -7,7 +7,7 @@ from project.kmodel.kContainer import KContainer
 
 class DatabaseWorker(KubeWorker):
     DATABASE_PORTS = [1433, 1434, 3306, 3050, 5432, 27017]  # TODO cercare tutte le porte standard dei DB
-    DATABASE_NAMES = ["mysql", "mongodb", "mongo-db", "database"]  # TODO ampliare
+    DATABASE_NAMES = ["mysql", "mariadb", "mongodb", "mongo-db", "database"]  # TODO ampliare
 
     def __init__(self):
         super().__init__()
@@ -47,5 +47,6 @@ class DatabaseWorker(KubeWorker):
     def _is_database(self, container: KContainer):
         ports_check = len([v for v in container.get_container_ports() if v in self.DATABASE_PORTS]) > 0
         name_check = len([n for n in self.DATABASE_NAMES if n.upper() in container.name.upper()]) > 0
+        #TODO capire se fare altri check
 
         return ports_check or name_check
