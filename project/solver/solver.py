@@ -16,12 +16,10 @@ class Refactoring:
 
     @abstractmethod
     def apply(self, smell: Smell):
-        # TODO in ogni classe devo controllare che lo smell sia accettato
         pass
 
 
-class UnsupportedRefactoringForSmellError(Exception):
-    # TODO trovare un nome appropriato
+class RefactoringNotSupportedError(Exception):
     pass
 
 
@@ -32,7 +30,7 @@ class AddAPIGatewayRefactoring(Refactoring):
 
     def apply(self, smell: Smell):
         if not isinstance(smell, NoApiGatewaySmell):
-            raise UnsupportedRefactoringForSmellError
+            raise RefactoringNotSupportedError
 
 
 class SplitServicesRefactoring(Refactoring):
@@ -42,7 +40,7 @@ class SplitServicesRefactoring(Refactoring):
 
     def apply(self, smell: Smell):
         if not isinstance(smell, MultipleServicesInOneContainerSmell):
-            raise UnsupportedRefactoringForSmellError
+            raise RefactoringNotSupportedError
 
         # compute_node = smell.node
 
@@ -60,7 +58,7 @@ class SplitServicesRefactoring(Refactoring):
 
         pass
 
-        #TODO devo fare in questo caso anche il refactoring del modello!! Questo deve ovviamente essere fatto prima di arrivare qui
+        #TODO devo fare in questo caso anche il refactoring del MicroToscaModel!! Questo deve ovviamente essere fatto prima di arrivare qui
 
 
 class UseTimeoutRefactoring(Refactoring):
@@ -70,7 +68,7 @@ class UseTimeoutRefactoring(Refactoring):
 
     def apply(self, smell: Smell):
         if not isinstance(smell, WobblyServiceInteractionSmell):
-            raise UnsupportedRefactoringForSmellError()
+            raise RefactoringNotSupportedError()
 
         if isinstance(smell.node, Service):
             for link in smell.links_cause:
@@ -93,7 +91,7 @@ class AddMessageRouterRefactoring(Refactoring):
 
     def apply(self, smell: Smell):
         if not isinstance(smell, EndpointBasedServiceInteractionSmell):
-            raise UnsupportedRefactoringForSmellError
+            raise RefactoringNotSupportedError
 
         if isinstance(smell.node, Service):
             for link in [l for l in smell.links_cause if isinstance(l.target, Service)]:
@@ -114,7 +112,7 @@ class AddCircuitBreakerRefactoring(Refactoring):
 
     def apply(self, smell: Smell):
         if not isinstance(smell, WobblyServiceInteractionSmell):
-            raise UnsupportedRefactoringForSmellError
+            raise RefactoringNotSupportedError
 
         if isinstance(smell.node, Service):
             for link in smell.links_cause:

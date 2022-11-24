@@ -31,6 +31,9 @@ class ServiceWorker(KubeWorker):
             elif not isinstance(message_router_node, MessageRouter):
                 self._handle_found_not_message_router(kube_service_name, message_router_node)
             else:
+                #TODO in questo caso non so se è giusto quello che ho fatto, non ho capito bene se:
+                # 1) Devo fare così come ho fatto
+                # 2) Devo aggiungere un altro nodo che rappresenta quel servizio, tenendo così i due servizi "paralleli"
                 for service_node in [i.target for i in message_router_node.interactions if isinstance(i, InteractsWith)]:
                     for int in [i for i in service_node.incoming_interactions if isinstance(i.source, Service)]:
                         model.add_interaction(source_node=int.source, target_node=message_router_node)
@@ -44,22 +47,20 @@ class ServiceWorker(KubeWorker):
             service_node: Service = next(iter([s for s in self.model.nodes if s.name == container_name[1]]), None)
 
             if service_node is None:
-                pass  # TODO se prima faccio il controllo potrebbe non servire far nulla qui
-
-            # Case: service is edge node without interactions
-            if len(service_node.incoming_interactions) == 0 and service_node in self.model.edge:
-                kservice: KService = self.kube_cluster.get_object_by_name_and_kind(message_router_node.name,
-                                                                              KObjectKind.SERVICE)
-                if kservice:
-                    if kservice.is_reachable_from_outside():
-                        self.model.edge.add_member(message_router_node)
-                        self.model.edge.remove_member(service_node)
+                # Case: service is edge node without interactions
+                if len(service_node.incoming_interactions) == 0 and service_node in self.model.edge:
+                    kservice: KService = self.kube_cluster.get_object_by_name_and_kind(message_router_node.name,
+                                                                                  KObjectKind.SERVICE)
+                    if kservice:
+                        if kservice.is_reachable_from_outside():
+                            self.model.edge.add_member(message_router_node)
+                            self.model.edge.remove_member(service_node)
+                        self.model.add_interaction(source_node=message_router_node, target_node=service_node)
+                else:
+                    self._relink_relations(new_target=message_router_node,
+                                           relations=[r for r in service_node.incoming_interactions if
+                                                      isinstance(r, InteractsWith)])
                     self.model.add_interaction(source_node=message_router_node, target_node=service_node)
-            else:
-                self._relink_relations(new_target=message_router_node,
-                                       relations=[r for r in service_node.incoming_interactions if
-                                                  isinstance(r, InteractsWith)])
-                self.model.add_interaction(source_node=message_router_node, target_node=service_node)
 
     def _handle_found_not_message_router(self, kube_service_name: str, message_router_node: MessageRouter):
         incoming_interactions = message_router_node.incoming_interactions.copy()

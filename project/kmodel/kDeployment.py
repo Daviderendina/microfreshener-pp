@@ -39,6 +39,8 @@ class KDeploymentSpec(V1DeploymentSpec, KObject):
         template_attribute=KDeploymentSpec.attribute_map["template"]
         replicas_attribute=KDeploymentSpec.attribute_map["replicas"]
 
+        #TODO occhio ai template che forse è una lista
+
         spec = KDeploymentSpec(
             selector=dictionary.get(selector_attribute, ""),
             template=KPodTemplateSpec.from_dict(dictionary.get(template_attribute, None)),

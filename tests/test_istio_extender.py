@@ -247,11 +247,6 @@ class TestIstioExtender(TestCase):
     # TEST GATEWAY
 
     def test_gateway_found(self):
-        # TODO
-        pass
-        # Vedere lo schema nella galleria del telefono, che spiega un po' quali siano gli attori in gioco per un
-        # gateway e le relazioni. In particolare, le frecce grosse rappresentano il flusso della comunicazione tra gli
-        # oggetti mentre quelle piccole il matching che ci deve essere tra i vari attributi degli stessi
 
         model = MicroToscaModel(name="service-model")
         model.add_group(Edge("edge"))

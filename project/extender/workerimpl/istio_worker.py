@@ -36,15 +36,8 @@ class IstioWorker(KubeWorker):
         self.model = model
         self.kube_cluster = kube_cluster
 
-        #TODO creo (o trovo) il nodo che rappresenta il gateway, e se trovo il match allora metto un'interaction
-        # dal gateway al Kubernetes Service
         self._search_for_gateways()
-
-        #TODO Se c'è definito un CB per un nodo, allora lo imposto a tutto ciò in ingresso. Per come è definito in Istio,
-        # il CB si applica a TUTTE le connessioni in ingresso
         self._search_for_circuit_breaker()
-
-        #TODO Anche qui i timeout sono impostati sui Kube Service e per tutte le connessioni in ingresso al nodo
         self._search_for_timeouts()
 
     def _search_for_timeouts(self):
@@ -68,9 +61,6 @@ class IstioWorker(KubeWorker):
                     if route_mr_node is not None and destination_mr_node is not None:
                         for r in [r for r in route_mr_node.interactions if r.target == destination_mr_node]:
                             r.set_timeout(True)
-
-                # 2) RUOTE è un URL/la wildcard *
-                # Anche di questi due casi probabilmente posso fottermene TODO Jacopo
 
     def _search_for_timeouts_with_destination_rule(self):
         for rule in self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_DESTINATION_RULE):
