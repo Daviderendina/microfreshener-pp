@@ -18,6 +18,12 @@ class KCluster:
             self.cluster_objects[kind] = list()
         self.cluster_objects[kind].append(obj)
 
+    def remove_object(self, obj: KObject, kind: KObjectKind):
+        #TODO forse vale la pena rimuovere il kind
+        if kind in self.cluster_objects.keys():
+            self.cluster_objects[kind].remove(obj)
+
+
     def get_all_objects(self):
         result = list()
         for kType in self.cluster_objects.keys():
@@ -70,8 +76,10 @@ class KCluster:
 
         return exposed_pods
 
-    def get_object_by_name_and_kind(self, name: str, kind: KObjectKind) -> KObject:
-        for obj in self.get_objects_by_kind(kind):
+    def get_object_by_name(self, name: str, kind: KObjectKind = None) -> KObject:
+        object_list = self.get_objects_by_kind(kind) if kind else self.get_all_objects()
+
+        for obj in object_list:
 
             # Case: name is FQDN
             result = re.match(obj.get_name_dot_namespace()+r"[.][a-zA-Z]*[.]cluster[.]local", name)

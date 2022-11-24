@@ -36,6 +36,9 @@ class KPod(V1Pod, KObject):
     def get_containers(self) -> list[KContainer]:
         return self.spec.containers
 
+    def set_containers(self, container_list: list[KContainer]):
+        self.spec.containers = container_list
+
     def get_labels(self) -> dict[str, str]:
         return self.metadata.labels
 
@@ -85,5 +88,9 @@ class KPodTemplateSpec(V1PodTemplateSpec, KObject):
 
     def get_containers(self) -> list[KContainer]:
         return self.spec.containers
+
+    def set_containers(self, container_list: list[KContainer]):
+        self.spec.containers = container_list
+
 
 

@@ -49,8 +49,8 @@ class ServiceWorker(KubeWorker):
             if service_node is None:
                 # Case: service is edge node without interactions
                 if len(service_node.incoming_interactions) == 0 and service_node in self.model.edge:
-                    kservice: KService = self.kube_cluster.get_object_by_name_and_kind(message_router_node.name,
-                                                                                  KObjectKind.SERVICE)
+                    kservice: KService = self.kube_cluster.get_object_by_name(message_router_node.name,
+                                                                              KObjectKind.SERVICE)
                     if kservice:
                         if kservice.is_reachable_from_outside():
                             self.model.edge.add_member(message_router_node)

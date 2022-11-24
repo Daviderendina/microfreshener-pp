@@ -9,7 +9,7 @@ from project.analyser.smell import MultipleServicesInOneContainerSmell
 class MultipleServicesInOneContainerSmellSniffer(NodeSmellSniffer):
 
     def __str__(self):
-        return 'SharedPersistencySmellSniffer({})'.format(super(NodeSmellSniffer, self).__str__())
+        return 'MultipleServicesInOneContainerSmellSniffer({})'.format(super(NodeSmellSniffer, self).__str__())
 
     @visitor(Compute)
     def snif(self, Compute) -> MultipleServicesInOneContainerSmell:

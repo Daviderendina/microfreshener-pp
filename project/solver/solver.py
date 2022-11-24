@@ -3,9 +3,12 @@ from abc import abstractmethod
 from microfreshener.core.analyser.smell import Smell, NoApiGatewaySmell, WobblyServiceInteractionSmell, \
     EndpointBasedServiceInteractionSmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
+from microfreshener.core.model.nodes import Compute
 
 from project.analyser.smell import MultipleServicesInOneContainerSmell
 from project.kmodel.kCluster import KCluster
+from project.kmodel.kPod import KPod
+from project.kmodel.kobject_kind import KObjectKind
 
 
 class Refactoring:
@@ -39,26 +42,32 @@ class SplitServicesRefactoring(Refactoring):
         super().__init__(model, cluster)
 
     def apply(self, smell: Smell):
+        import copy
+
         if not isinstance(smell, MultipleServicesInOneContainerSmell):
             raise RefactoringNotSupportedError
 
-        # compute_node = smell.node
+        compute_node: Compute = smell.node
+        compute_object = self.cluster.get_object_by_name(compute_node.name)
 
-        # kobject = trovo l'oggetto che definisce quei due pod
+        if compute_object:
+            self.cluster.remove_object(compute_object, KObjectKind.get_from_class(compute_object.__class__))
 
-        # for service_node in compute_node.incoming_interactions:
+            name_count = 1
+            for container in compute_object.get_containers().copy():
+                object_copy = copy.deepcopy(compute_object)
+                object_copy.set_containers([container])
+                object_copy.metadata.name += f"_{name_count}"
 
-            # Devo fare una copia del kobject
+                self.cluster.add_object(object_copy, KObjectKind.get_from_class(object_copy.__class__))
 
-            # Togliere uno dei due container
+                name_count += 1
+            pass
 
-            # Cambiare il nomde dell'oggetto (posso semplicemente aggiungere '-1' oppure '-2' a cosa già c'è, anche per le label mi conviene fare lo stesso)
-
-            # Prendo il servizio che espone il pod e aggiungo solo una porta (siamo sicuri?)
-
-        pass
 
         #TODO devo fare in questo caso anche il refactoring del MicroToscaModel!! Questo deve ovviamente essere fatto prima di arrivare qui
+
+        #TODO devo ovviamente esportare anche i nuovi files
 
 
 class UseTimeoutRefactoring(Refactoring):

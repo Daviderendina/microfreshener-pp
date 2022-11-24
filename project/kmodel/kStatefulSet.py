@@ -1,6 +1,7 @@
 from kubernetes.client import V1StatefulSetSpec
 from kubernetes.client.models import V1StatefulSet
 
+from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
 from project.kmodel.kMetadata import KMetadata
 from project.kmodel.kPod import KPodTemplateSpec
@@ -22,6 +23,13 @@ class KStatefulSet(V1StatefulSet, KObject):
 
     def get_pod_template_spec(self) -> KPodTemplateSpec:
         return self.spec.template
+
+    def get_containers(self):
+        return self.get_pod_template_spec().get_containers()
+
+    def set_containers(self, container_list: list[KContainer]):
+        self.get_pod_template_spec().spec.containers = container_list
+
 
 
 class KStatefulSetSpec(V1StatefulSetSpec, KObject):
