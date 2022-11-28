@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
@@ -46,13 +47,13 @@ class KCluster:
     def get_container_by_tosca_model_name(self, service_name: str) -> KContainer:
         for pod in self.get_objects_by_kind(KObjectKind.POD):
             for container in pod.get_containers():
-                tosca_name = container.name + "." + pod.get_name_dot_namespace()
+                tosca_name = container.name + "." + pod.get_fullname()
                 if tosca_name == service_name:
                     return container
 
         for template in self.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.STATEFULSET, KObjectKind.REPLICASET):
             for container in template.get_pod_template_spec().get_containers():
-                tosca_name = container.name + template.get_name_dot_namespace()
+                tosca_name = container.name + template.get_fullname()
                 if tosca_name == service_name:
                     return container
 
@@ -82,12 +83,12 @@ class KCluster:
         for obj in object_list:
 
             # Case: name is FQDN
-            result = re.match(obj.get_name_dot_namespace()+r"[.][a-zA-Z]*[.]cluster[.]local", name)
+            result = re.match(obj.get_fullname() + r"[.][a-zA-Z]*[.]cluster[.]local", name)
             if result and result.string == name:
                 return obj
 
             # Case: name is <name>.<namespace>
-            if obj.get_name_dot_namespace() == name:
+            if obj.get_fullname() == name:
                 return obj
 
             # Case: name is only <name>
@@ -96,5 +97,16 @@ class KCluster:
                 possible.append(obj)
             if len(possible) == 1:
                 return possible[0]
+
+    def find_service_which_expose_object(self, object: KObject) -> list[KService]:
+        object_labels = object.metadata.labels
+        exposing_svc = []
+
+        for svc in self.get_objects_by_kind(KObjectKind.SERVICE):
+            matching_labels = [l for l in object_labels.items() if l in svc.get_selectors().items()]
+            if len(matching_labels) > 0:
+                exposing_svc.append(svc)
+
+        return exposing_svc
 
 

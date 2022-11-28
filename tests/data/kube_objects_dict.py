@@ -28,7 +28,14 @@ POD_WITH_ONE_CONTAINER = {
                 'image': 'local/test-image:latest',
                 'name': 'container-a',
                 'ports': [
-                    {'containerPort': 8000}
+                    {
+                        'containerPort': 8000
+                    },
+                    {
+                        'name': 'ottanta',
+                        'containerPort': 80,
+                        'protocol': 'TCP'
+                    }
                 ]
             }
         ]

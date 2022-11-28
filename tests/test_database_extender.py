@@ -26,7 +26,7 @@ class TestDatabaseExtender(TestCase):
 
         cluster.add_object(pod, KObjectKind.POD)
 
-        databaseNode = Service(pod.get_containers()[0].name + "." + pod.get_name_dot_namespace())
+        databaseNode = Service(pod.get_containers()[0].name + "." + pod.get_fullname())
         model.add_node(databaseNode)
         svcUsesDB1 = Service("svcUses1")
         svcUsesDB2 = Service("svcUses2")
@@ -69,7 +69,7 @@ class TestDatabaseExtender(TestCase):
 
         cluster.add_object(pod, KObjectKind.POD)
 
-        databaseNode = Service(pod.get_containers()[0].name + "." + pod.get_name_dot_namespace())
+        databaseNode = Service(pod.get_containers()[0].name + "." + pod.get_fullname())
         model.add_node(databaseNode)
         svcUsesDB1 = Service("svcUses1")
         svcUsesDB2 = Service("svcUses2")

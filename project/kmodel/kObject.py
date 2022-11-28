@@ -61,13 +61,18 @@ class KObject:
     def set_all_attributes_except(self, dictionary: dict, except_attributes: list = []):
         for key, value in dictionary.items():
             attribute = get_dict_key_by_value(self.attribute_map, key)
-            if hasattr(self, attribute) and key not in except_attributes:
+            if attribute and hasattr(self, attribute) and key not in except_attributes:
                 setattr(self, attribute, dictionary.get(key, ""))
 
-    def get_name_dot_namespace(self):
-        return (self.metadata.name if self.metadata.name else "") + "." + self.get_namespace()
-        #return self.metadata.name + "." + self.get_namespace()
+    def get_fullname(self):
+        name = self.metadata.name if self.metadata.name else ""
+        return name + "." + self.get_namespace()
 
     def get_namespace(self):
         return self.metadata.namespace if self.metadata.namespace else self.DEFAULT_NAMESPACE
 
+    def set_labels(self, labels: dict):
+        if not self.metadata.labels:
+            self.metadata.labels = labels
+        else:
+            self.metadata.labels.update(labels)

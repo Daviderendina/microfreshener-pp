@@ -34,9 +34,9 @@ class TestIstioExtender(TestCase):
 
         k_virtualservice = VirtualService(VIRTUAL_SERVICE_TIMEOUT)
         k_virtualservice.data.get("spec", {}).get("hosts", []) \
-            .append(k_service.get_name_dot_namespace() + ".svc.cluster.local")
+            .append(k_service.get_fullname() + ".svc.cluster.local")
         k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"]["host"] = \
-            k_service.get_name_dot_namespace() + ".svc.cluster.local"
+            k_service.get_fullname() + ".svc.cluster.local"
 
         cluster.add_object(k_service, KObjectKind.SERVICE)
         cluster.add_object(k_pod_1, KObjectKind.POD)
@@ -44,9 +44,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_virtualservice, KObjectKind.ISTIO_VIRTUAL_SERVICE)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_name_dot_namespace())
-        mr_node = MessageRouter(k_service.get_name_dot_namespace() + ".svc.cluster.local")
+        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname())
+        mr_node = MessageRouter(k_service.get_fullname() + ".svc.cluster.local")
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(mr_node)
@@ -91,7 +91,7 @@ class TestIstioExtender(TestCase):
         k_pod_2.metadata.name = k_pod_2.metadata.name + "_2"
         k_pod_3.metadata.name = k_pod_3.metadata.name + "_3"
 
-        k_container_3_name = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace()
+        k_container_3_name = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname()
         k_virtualservice = VirtualService(VIRTUAL_SERVICE_TIMEOUT)
         k_virtualservice.data.get("spec", {}).get("hosts", []).append(k_container_3_name)
         k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"]["host"] = k_container_3_name
@@ -102,9 +102,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_virtualservice, KObjectKind.ISTIO_VIRTUAL_SERVICE)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_name_dot_namespace())
-        service_node_3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace())
+        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname())
+        service_node_3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname())
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(service_node_3)
@@ -148,7 +148,7 @@ class TestIstioExtender(TestCase):
         k_pod_2.metadata.name = k_pod_2.metadata.name + "_2"
 
         k_destinationrule = DestinationRule(DESTINATION_RULE_TIMEOUT)
-        k_destinationrule.data["spec"]["host"] = k_service.get_name_dot_namespace() + ".svc.cluster.local"
+        k_destinationrule.data["spec"]["host"] = k_service.get_fullname() + ".svc.cluster.local"
 
         cluster.add_object(k_service, KObjectKind.SERVICE)
         cluster.add_object(k_pod_1, KObjectKind.POD)
@@ -156,9 +156,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_destinationrule, KObjectKind.ISTIO_DESTINATION_RULE)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_name_dot_namespace())
-        mr_node = MessageRouter(k_service.get_name_dot_namespace() + ".svc.cluster.local")
+        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname())
+        mr_node = MessageRouter(k_service.get_fullname() + ".svc.cluster.local")
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(mr_node)
@@ -203,7 +203,7 @@ class TestIstioExtender(TestCase):
         k_pod_2.metadata.name = k_pod_2.metadata.name + "_2"
         k_pod_3.metadata.name = k_pod_3.metadata.name + "_3"
 
-        k_container_3_name = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace()
+        k_container_3_name = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname()
         k_destinationrule = DestinationRule(DESTINATION_RULE_TIMEOUT)
         k_destinationrule.data["spec"]["host"] = k_container_3_name
 
@@ -213,9 +213,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_destinationrule, KObjectKind.ISTIO_DESTINATION_RULE)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_name_dot_namespace())
-        service_node_3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace())
+        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname())
+        service_node_3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname())
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(service_node_3)
@@ -265,14 +265,14 @@ class TestIstioExtender(TestCase):
         k_virtualservice = VirtualService.from_dict(VIRTUAL_SERVICE_TIMEOUT)
         k_gateway = Gateway.from_dict(GATEWAY)
 
-        host_name = k_virtualservice.get_name_dot_namespace()  # TODO FQDN?
+        host_name = k_virtualservice.get_fullname()  # TODO FQDN?
         k_gateway.data["spec"]["selectors"] = label
         k_gateway.data["spec"]["servers"][0]["hosts"] = [host_name]
 
         k_virtualservice.data["spec"]["hosts"] = [host_name]
-        k_virtualservice.data["spec"]["gateways"] = [k_gateway.get_name_dot_namespace()]  # TODO FQDN?
+        k_virtualservice.data["spec"]["gateways"] = [k_gateway.get_fullname()]  # TODO FQDN?
         k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"][
-            "host"] = k_service.get_name_dot_namespace()  # TODO FQDN?
+            "host"] = k_service.get_fullname()  # TODO FQDN?
 
         cluster.add_object(k_pod, KObjectKind.POD)
         cluster.add_object(k_virtualservice, KObjectKind.ISTIO_VIRTUAL_SERVICE)
@@ -280,8 +280,8 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_gateway, KObjectKind.ISTIO_GATEWAY)
 
         # TOSCA model
-        svc_node = Service(k_pod.get_containers()[0].name + "." + k_pod.get_name_dot_namespace())
-        mr_node = MessageRouter(k_service.get_name_dot_namespace() + ".svc.cluster.local")
+        svc_node = Service(k_pod.get_containers()[0].name + "." + k_pod.get_fullname())
+        mr_node = MessageRouter(k_service.get_fullname() + ".svc.cluster.local")
         model.add_node(svc_node)
         model.add_node(mr_node)
         model.edge.add_member(mr_node)
@@ -314,7 +314,7 @@ class TestIstioExtender(TestCase):
         k_pod_2.metadata.name = k_pod_2.metadata.name + "_2"
         k_pod_3.metadata.name = k_pod_3.metadata.name + "_3"
 
-        k_container_3_name = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace()
+        k_container_3_name = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname()
         k_destinationrule = DestinationRule(DESTINATION_RULE_CIRCUIT_BREAKER)
         k_destinationrule.data["spec"]["host"] = k_container_3_name
 
@@ -324,9 +324,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_destinationrule, KObjectKind.ISTIO_DESTINATION_RULE)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_name_dot_namespace())
-        service_node_3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace())
+        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname())
+        service_node_3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname())
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(service_node_3)
@@ -370,7 +370,7 @@ class TestIstioExtender(TestCase):
         k_pod_2.metadata.name = k_pod_2.metadata.name + "_2"
 
         k_destinationrule = DestinationRule(DESTINATION_RULE_CIRCUIT_BREAKER)
-        k_destinationrule.data["spec"]["host"] = k_service.get_name_dot_namespace() + ".svc.cluster.local"
+        k_destinationrule.data["spec"]["host"] = k_service.get_fullname() + ".svc.cluster.local"
 
         cluster.add_object(k_service, KObjectKind.SERVICE)
         cluster.add_object(k_pod_1, KObjectKind.POD)
@@ -378,9 +378,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_destinationrule, KObjectKind.ISTIO_DESTINATION_RULE)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_name_dot_namespace())
-        mr_node = MessageRouter(k_service.get_name_dot_namespace() + ".svc.cluster.local")
+        service_node_1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        service_node_2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname())
+        mr_node = MessageRouter(k_service.get_fullname() + ".svc.cluster.local")
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(mr_node)

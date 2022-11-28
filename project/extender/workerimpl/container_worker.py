@@ -40,12 +40,12 @@ class ContainerWorker(KubeWorker):
         pod_spec_list = []
 
         for pod in self.kube_cluster.get_objects_by_kind(KObjectKind.POD):
-            pod_spec_list.append((pod.get_name_dot_namespace(), pod.spec))
+            pod_spec_list.append((pod.get_fullname(), pod.spec))
 
 
         list_from_defining_obj = self.kube_cluster.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.STATEFULSET,
                                                                  KObjectKind.REPLICASET)
         for defining_obj in list_from_defining_obj:
-            pod_spec_list.append((defining_obj.get_name_dot_namespace(), defining_obj.spec.template.spec))
+            pod_spec_list.append((defining_obj.get_fullname(), defining_obj.spec.template.spec))
 
         return pod_spec_list

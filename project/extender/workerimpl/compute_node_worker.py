@@ -34,9 +34,9 @@ class ComputeNodeWorker(KubeWorker):
             self.model.add_node(compute_node)
 
     def _get_all_defined_pods(self):
-        pods = [(p.get_name_dot_namespace(), p.get_containers())
+        pods = [(p.get_fullname(), p.get_containers())
                 for p in self.kube_cluster.get_objects_by_kind(KObjectKind.POD)]
-        pods += [(p.get_name_dot_namespace(), p.get_pod_template_spec().get_containers())
+        pods += [(p.get_fullname(), p.get_pod_template_spec().get_containers())
                  for p in self.kube_cluster.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.REPLICASET,
                                                   KObjectKind.STATEFULSET)]
 

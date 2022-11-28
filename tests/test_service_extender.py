@@ -38,10 +38,10 @@ class TestServiceExtender(TestCase):
         cluster.add_object(k_pod_3, KObjectKind.POD)
 
         # Add Service to Tosca Model
-        svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        svc2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_name_dot_namespace())
-        svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace())
-        mr = Service(k_svc.get_name_dot_namespace() + ".svc.cluster.local")
+        svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        svc2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname())
+        svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname())
+        mr = Service(k_svc.get_fullname() + ".svc.cluster.local")
         model.add_node(svc1)
         model.add_node(svc2)
         model.add_node(svc3)
@@ -95,8 +95,8 @@ class TestServiceExtender(TestCase):
         cluster.add_object(k_pod_3, KObjectKind.POD)
 
         # Add Service to Tosca Model
-        svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace())
+        svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname())
         model.add_node(svc1)
         model.add_node(svc3)
         model.add_interaction(source_node=svc1, target_node=svc3)
@@ -143,9 +143,9 @@ class TestServiceExtender(TestCase):
         cluster.add_object(k_pod_3, KObjectKind.POD)
 
         # Add Service to Tosca Model
-        svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        svc2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_name_dot_namespace())
-        svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace())
+        svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        svc2 = Service(k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname())
+        svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname())
         model.add_node(svc1)
         model.add_node(svc2)
         model.add_node(svc3)
@@ -196,9 +196,9 @@ class TestServiceExtender(TestCase):
         cluster.add_object(k_pod_3, KObjectKind.POD)
 
         # Add Service to Tosca Model
-        svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_name_dot_namespace())
-        svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_name_dot_namespace())
-        mr = MessageRouter(k_svc.get_name_dot_namespace() + ".svc.cluster.local")
+        svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())
+        svc3 = Service(k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname())
+        mr = MessageRouter(k_svc.get_fullname() + ".svc.cluster.local")
         model.add_node(svc1)
         model.add_node(svc3)
         model.add_node(mr)
@@ -245,7 +245,7 @@ class TestServiceExtender(TestCase):
         cluster.add_object(pod, KObjectKind.POD)
 
         # Add Service to Tosca Model
-        svc = Service(pod.get_containers()[0].name + "." + pod.get_name_dot_namespace())
+        svc = Service(pod.get_containers()[0].name + "." + pod.get_fullname())
         model.add_node(svc)
         model.edge.add_member(svc)
 
@@ -288,7 +288,7 @@ class TestServiceExtender(TestCase):
         cluster.add_object(pod, KObjectKind.POD)
 
         # Add Service to Tosca Model
-        svc = Service(pod.get_containers()[0].name + "." + pod.get_name_dot_namespace())
+        svc = Service(pod.get_containers()[0].name + "." + pod.get_fullname())
         model.add_node(svc)
         model.edge.add_member(svc)
 

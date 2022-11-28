@@ -1,13 +1,17 @@
 from abc import abstractmethod
+import uuid
 
 from microfreshener.core.analyser.smell import Smell, NoApiGatewaySmell, WobblyServiceInteractionSmell, \
     EndpointBasedServiceInteractionSmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 from microfreshener.core.model.nodes import Compute
 
+from k8s_template.service_template import generate_service_from_template, generate_port_from_template
 from project.analyser.smell import MultipleServicesInOneContainerSmell
 from project.kmodel.kCluster import KCluster
-from project.kmodel.kPod import KPod
+from project.kmodel.kContainer import KContainer
+from project.kmodel.kObject import KObject
+from project.kmodel.kService import KService
 from project.kmodel.kobject_kind import KObjectKind
 
 
@@ -91,27 +95,6 @@ class UseTimeoutRefactoring(Refactoring):
                     pass  # 2. Tra Service e MessageRouter
                     # Faccio il deploy di un nuovo VirtualService / Destination rule per far sì che le richieste in
                     # ingresso vengano effettuate con il timeout
-
-
-class AddMessageRouterRefactoring(Refactoring):
-
-    def __init__(self, model: MicroToscaModel, cluster: KCluster):
-        super().__init__(model, cluster)
-
-    def apply(self, smell: Smell):
-        if not isinstance(smell, EndpointBasedServiceInteractionSmell):
-            raise RefactoringNotSupportedError
-
-        if isinstance(smell.node, Service):
-            for link in [l for l in smell.links_cause if isinstance(l.target, Service)]:
-                pass
-
-                # Prendo il nodo corrispondente al service l.target
-
-                # Devo fare un (Kube) Service che esponga il Pod corrispondente
-
-                # Lo sviluppatore deve in qualche modo confermare di aver cambiato le chiamate, dall'IP al nome del svc
-                # (il nome lo prendo direttamente dal pod/deploy/etc..)
 
 
 class AddCircuitBreakerRefactoring(Refactoring):

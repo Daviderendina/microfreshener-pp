@@ -38,8 +38,8 @@ class TestIngressExtender(TestCase):
         cluster.add_object(k_ingress, KObjectKind.INGRESS)
 
         # Add Service to Tosca Model
-        svc = Service(k_pod.get_containers()[0].name + "." + k_pod.get_name_dot_namespace())
-        mr = MessageRouter(k_svc.get_name_dot_namespace() + ".svc.cluster.local")
+        svc = Service(k_pod.get_containers()[0].name + "." + k_pod.get_fullname())
+        mr = MessageRouter(k_svc.get_fullname() + ".svc.cluster.local")
         model.add_node(svc)
         model.add_node(mr)
         model.edge.add_member(mr)
@@ -90,8 +90,8 @@ class TestIngressExtender(TestCase):
         cluster.add_object(k_ingress, KObjectKind.INGRESS)
 
         # Add Service to Tosca Model
-        svc = Service(k_pod.get_containers()[0].name + "." + k_pod.get_name_dot_namespace())
-        mr = MessageRouter(k_svc.get_name_dot_namespace() + ".svc.cluster.local")
+        svc = Service(k_pod.get_containers()[0].name + "." + k_pod.get_fullname())
+        mr = MessageRouter(k_svc.get_fullname() + ".svc.cluster.local")
         ic_name = "nginx-ingress-controller-32ede32-fer34"
         ic = MessageRouter(ic_name)
         model.add_node(svc)
@@ -147,8 +147,8 @@ class TestIngressExtender(TestCase):
         cluster.add_object(k_ingress, KObjectKind.INGRESS)
 
         # Add Service to Tosca Model
-        svc = Service(k_pod.get_containers()[0].name + "." + k_pod.get_name_dot_namespace())
-        mr = MessageRouter(k_svc.get_name_dot_namespace() + ".svc.cluster.local")
+        svc = Service(k_pod.get_containers()[0].name + "." + k_pod.get_fullname())
+        mr = MessageRouter(k_svc.get_fullname() + ".svc.cluster.local")
         ic_name = "nginx-ingress-controller-32ede32-fer34"
         ic = MessageRouter(ic_name)
         model.add_node(svc)

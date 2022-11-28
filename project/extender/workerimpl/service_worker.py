@@ -10,6 +10,8 @@ from project.kmodel.kobject_kind import KObjectKind
 
 
 class ServiceWorker(KubeWorker):
+    #TODO ogni volta che inserisco una nuova relazione MR-->SVC oppure aggiungo direttamente un nuovo MR, devo controllare
+    # che tutto quello esposto sotto sia compatibile in termini di porte
 
     _SVC_HOSTNAME = ".svc.cluster.local"
 
@@ -84,18 +86,18 @@ class ServiceWorker(KubeWorker):
         result = {}
 
         for service in kube_cluster.get_objects_by_kind(KObjectKind.SERVICE):
-            name = service.get_name_dot_namespace() + self._SVC_HOSTNAME
+            name = service.get_fullname() + self._SVC_HOSTNAME
             if not name in result.keys():
                 result[name] = []
 
             # POD
             for pod_exposed in kube_cluster.find_pods_exposed_by_service(service):
                 for container in pod_exposed.get_containers():
-                    result[name].append((service.get_name_dot_namespace(), container.name +"."+ pod_exposed.get_name_dot_namespace()))
+                    result[name].append((service.get_fullname(), container.name + "." + pod_exposed.get_fullname()))
 
             # DEPLOYMENT, STATEFULSET, REPLICASET
             for template_defining in kube_cluster.find_pods_defining_object_exposed_by_service(service):
                 for container in template_defining.get_containers():
-                    result[name].append((service.get_name_dot_namespace(), container.name +"."+ template_defining.get_name_dot_namespace()))
+                    result[name].append((service.get_fullname(), container.name + "." + template_defining.get_fullname()))
 
         return result

@@ -26,6 +26,13 @@ class KService(V1Service, KObject):
     def is_reachable_from_outside(self):
         return self.spec.type != "ClusterIP"
 
+    def get_ports(self):
+        if self.spec.ports:
+            return self.spec.ports
+        else:
+            return []
+
+
 class KServiceSpec(V1ServiceSpec, KObject):
 
     @staticmethod

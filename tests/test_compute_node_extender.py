@@ -54,8 +54,8 @@ class TestComputeNodeExtender(TestCase):
         cluster.add_object(svc, KObjectKind.SERVICE)
         cluster.add_object(pod, KObjectKind.POD)
 
-        message_router_node = MessageRouter(name=svc.get_name_dot_namespace()+".svc.local.cluster")
-        service_node = Service(name=pod.get_containers()[0].name + "." + pod.get_name_dot_namespace())
+        message_router_node = MessageRouter(name=svc.get_fullname() + ".svc.local.cluster")
+        service_node = Service(name=pod.get_containers()[0].name + "." + pod.get_fullname())
         model.add_node(message_router_node)
         model.add_node(service_node)
         model.add_interaction(message_router_node, service_node)
@@ -82,9 +82,9 @@ class TestComputeNodeExtender(TestCase):
         cluster.add_object(svc, KObjectKind.SERVICE)
         cluster.add_object(pod, KObjectKind.POD)
 
-        mr_node = MessageRouter(name=svc.get_name_dot_namespace()+".svc")
-        svc1_node = Service(name=pod.get_containers()[0].name + "." + pod.get_name_dot_namespace())
-        svc2_node = Service(name=pod.get_containers()[1].name + "." + pod.get_name_dot_namespace())
+        mr_node = MessageRouter(name=svc.get_fullname() + ".svc")
+        svc1_node = Service(name=pod.get_containers()[0].name + "." + pod.get_fullname())
+        svc2_node = Service(name=pod.get_containers()[1].name + "." + pod.get_fullname())
         model.add_node(mr_node)
         model.add_node(svc1_node)
         model.add_node(svc2_node)
@@ -112,7 +112,7 @@ class TestComputeNodeExtender(TestCase):
         deploy = KDeployment.from_dict(DEPLOYMENT_WITH_ONE_CONTAINER)
         cluster.add_object(deploy, KObjectKind.DEPLOYMENT)
 
-        service_node = Service(name=deploy.get_pod_template_spec().get_containers()[0].name+"."+deploy.get_name_dot_namespace())
+        service_node = Service(name=deploy.get_pod_template_spec().get_containers()[0].name+"."+deploy.get_fullname())
         model.add_node(service_node)
 
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
@@ -136,8 +136,8 @@ class TestComputeNodeExtender(TestCase):
         deploy = KDeployment.from_dict(DEPLOYMENT_WITH_TWO_CONTAINER)
         cluster.add_object(deploy, KObjectKind.DEPLOYMENT)
 
-        svc1_node = Service(name=deploy.get_pod_template_spec().get_containers()[0].name+"."+deploy.get_name_dot_namespace())
-        svc2_node = Service(name=deploy.get_pod_template_spec().get_containers()[1].name+"."+deploy.get_name_dot_namespace())
+        svc1_node = Service(name=deploy.get_pod_template_spec().get_containers()[0].name+"."+deploy.get_fullname())
+        svc2_node = Service(name=deploy.get_pod_template_spec().get_containers()[1].name+"."+deploy.get_fullname())
         model.add_node(svc1_node)
         model.add_node(svc2_node)
 
@@ -162,7 +162,7 @@ class TestComputeNodeExtender(TestCase):
         rs = KReplicaSet.from_dict(REPLICASET_WITH_ONE_CONTAINER)
         cluster.add_object(rs, KObjectKind.REPLICASET)
 
-        service_node = Service(name=rs.get_pod_template_spec().get_containers()[0].name+"."+rs.get_name_dot_namespace())
+        service_node = Service(name=rs.get_pod_template_spec().get_containers()[0].name+"."+rs.get_fullname())
         model.add_node(service_node)
 
         self.assertEqual(len(cluster.cluster_objects.items()), 1)
@@ -196,7 +196,7 @@ class TestComputeNodeExtender(TestCase):
 
         name = template.get_containers()[0].name + "." + statefulset.metadata.name + "." + statefulset.get_namespace() \
             if not template.metadata.name \
-            else template.get_containers()[0].name + "." + template.get_name_dot_namespace()
+            else template.get_containers()[0].name + "." + template.get_fullname()
         model.add_node(Service(name=name))
 
         self.assertEqual(len(cluster.cluster_objects.items()), 1)

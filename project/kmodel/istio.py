@@ -47,7 +47,7 @@ class VirtualService(KObject):
     def get_selectors(self) -> dict[str, str]:
         return self.spec.selector
 
-    def get_name_dot_namespace(self):
+    def get_fullname(self):
         name = self.data.get("metadata", {}).get("name", DEFAULT_NAME)
         return name + "." + self.get_namespace()
 
@@ -75,7 +75,7 @@ class DestinationRule(KObject):
         return self.data.get("spec", {}).get("trafficPolicy", {}).get("connectionPool", {})\
             .get("tcp", {}).get("connectionTimeout", None)
 
-    def get_name_dot_namespace(self):
+    def get_fullname(self):
         name = self.data.get("metadata", {}).get("name", DEFAULT_NAME)
         return name + "." + self.get_namespace()
 
@@ -100,7 +100,7 @@ class Gateway(KObject):
             result += server.get("hosts", [])
         return result
 
-    def get_name_dot_namespace(self):
+    def get_fullname(self):
         name = self.data.get("metadata", {}).get("name", DEFAULT_NAME)
         return name + "." + self.get_namespace()
 
