@@ -96,7 +96,7 @@ class KCluster:
                 return possible[0]
 
     def find_service_which_expose_object(self, object: KObject) -> list[KService]:
-        #TODO mi invento qualcosa di meglio?
+        #TODO mi invento qualcosa di meglio che questo if?
         if isinstance(object, KPod):
             object_labels = object.get_labels()
         else:

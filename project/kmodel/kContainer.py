@@ -29,3 +29,6 @@ class KContainer(V1Container, KObject):
             if port is not None:
                 result.append(port)
         return result
+
+    def get_fullname(self):
+        return self.name

@@ -1,4 +1,7 @@
-import os
+import re
+
+from microfreshener.core.model import Root
+
 
 
 def reorder_dict(dictionary: dict, attributes_order: list):
@@ -17,16 +20,25 @@ def get_dict_key_by_value(dictionary: dict, search_value: str):
     except:
         print(f"[utils.get_dict_key_by_value] - Value <{search_value}> not found in dictionary {dictionary}")
 
-'''
-def find_dict_match(d1: dict, d2: dict):
-    for k, v in d1.items():
-        if d2.get(k) == v:
+
+def check_kobject_node_name_match(kobject, tosca_node: Root, defining_object_fullname=""):
+    # Case: tosca_node.name is <name>.<ns>
+    if tosca_node.name == kobject.get_fullname():
+        return True
+
+    # Case: tosca_node.name is <name>
+    if tosca_node.name == kobject.metadata.name:
+        return True
+
+    # Case: tosca_node.name is <name>.<ns>.<default>.<cluster>.<local>
+    match_regex = f"{kobject.metadata.name}[.]{kobject.get_namespace()}[.]\w+[.]\w+[.]\w+"
+    result = re.match(match_regex, tosca_node.name)
+    if result and result.string == tosca_node.name:
+        return True
+
+    # Case: tosca_node.name is <container>.<name>.<ns>
+    if defining_object_fullname != "":
+        if f"{kobject.get_fullname()}.{defining_object_fullname}":
             return True
+
     return False
-
-
-def create_folder(filename):
-    file_folder = os.path.dirname(filename)
-    if not os.path.exists(file_folder):
-        os.makedirs(file_folder, 0o777)
-'''
