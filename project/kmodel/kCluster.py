@@ -45,17 +45,14 @@ class KCluster:
         return result
 
     def get_container_by_tosca_model_name(self, service_name: str) -> KContainer:
-        for pod in self.get_objects_by_kind(KObjectKind.POD):
-            for container in pod.get_containers():
-                tosca_name = container.name + "." + pod.get_fullname()
-                if tosca_name == service_name:
-                    return container
+        container_list = []
+        for obj in self.get_objects_by_kind(KObjectKind.POD, KObjectKind.DEPLOYMENT, KObjectKind.STATEFULSET, KObjectKind.REPLICASET):
+            container_list += [(obj.get_fullname(), c) for c in obj.get_containers()]
 
-        for template in self.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.STATEFULSET, KObjectKind.REPLICASET):
-            for container in template.get_pod_template_spec().get_containers():
-                tosca_name = container.name + template.get_fullname()
-                if tosca_name == service_name:
-                    return container
+        for object_fullname, container in container_list:
+            tosca_name = container.name + "." + object_fullname
+            if tosca_name == service_name:
+                return container
 
     def find_pods_exposed_by_service(self, service: KService) -> list[KPod]:
         exposed_pods = []
@@ -99,7 +96,12 @@ class KCluster:
                 return possible[0]
 
     def find_service_which_expose_object(self, object: KObject) -> list[KService]:
-        object_labels = object.metadata.labels
+        #TODO mi invento qualcosa di meglio?
+        if isinstance(object, KPod):
+            object_labels = object.get_labels()
+        else:
+            object_labels = object.get_pod_template_spec().get_labels()
+
         exposing_svc = []
 
         for svc in self.get_objects_by_kind(KObjectKind.SERVICE):

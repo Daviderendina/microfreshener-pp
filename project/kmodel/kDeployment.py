@@ -34,6 +34,8 @@ class KDeployment(V1Deployment, KObject):
     def set_containers(self, container_list: list[KContainer]):
         self.get_pod_template_spec().spec.containers = container_list
 
+    def get_labels(self):
+        return self.get_pod_template_spec().get_labels()
 
 
 class KDeploymentSpec(V1DeploymentSpec, KObject):

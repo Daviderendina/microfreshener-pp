@@ -7,6 +7,7 @@ from k8s_template.service_template import generate_port_from_template, generate_
 from project.kmodel.kCluster import KCluster
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
+from project.kmodel.kPod import KPod
 from project.kmodel.kService import KService
 from project.kmodel.kobject_kind import KObjectKind
 from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
@@ -26,8 +27,10 @@ class AddMessageRouterRefactoring(Refactoring):
             raise RefactoringNotSupportedError
 
         if isinstance(smell.node, Service):
-
             smell_container: KContainer = self.cluster.get_container_by_tosca_model_name(service_name=smell.node.name)
+
+            if smell_container is None:
+                return
 
             defining_object_fullname: str = smell.node.name[len(smell_container.name) + 1:]
             defining_object: KObject = self.cluster.get_object_by_name(defining_object_fullname)
@@ -85,7 +88,10 @@ class AddMessageRouterRefactoring(Refactoring):
             ports= container_ports
         )
 
-        defining_object.set_labels(service_selector)
+        if isinstance(defining_object, KPod):
+            defining_object.set_labels(service_selector)
+        else:
+            defining_object.get_pod_template_spec().set_labels(service_selector)
 
         return service
 
