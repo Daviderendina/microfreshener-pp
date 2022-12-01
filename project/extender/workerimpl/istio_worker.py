@@ -8,6 +8,8 @@ from project.kmodel.kService import KService
 from project.kmodel.kobject_kind import KObjectKind
 
 
+#TODO qui devo capire quando vengono usati i FQDN e quando no!!
+
 def _check_gateway_virtualservice_match(gateway: Gateway, virtual_service: VirtualService):
     gateway_check = gateway.get_fullname() in virtual_service.get_gateways()
 

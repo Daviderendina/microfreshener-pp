@@ -44,7 +44,7 @@ class AddMessageRouterRefactoring(Refactoring):
                     if len(port_compatible_services) > 0:
                         port_compatible_services.sort(key=lambda svc:
                                       len(self.cluster.find_pods_exposed_by_service(svc)) +
-                                      len(self.cluster.find_pods_defining_object_exposed_by_service(svc)))
+                                      len(self.cluster.find_defining_obj_exposed_by_service(svc)))
 
                         container_ports = self._generate_ports_from_container(
                             container=smell_container,

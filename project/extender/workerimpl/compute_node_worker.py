@@ -4,6 +4,7 @@ from microfreshener.core.model.nodes import Compute
 from project.extender.kubeworker import KubeWorker
 from project.kmodel.kCluster import KCluster
 from project.kmodel.kobject_kind import KObjectKind
+from project.utils import check_kobject_node_name_match
 
 
 class ComputeNodeWorker(KubeWorker):
@@ -19,15 +20,14 @@ class ComputeNodeWorker(KubeWorker):
 
         pods = self._get_all_defined_pods()
 
-        for pod_name_dot_namespace, containers in pods:
-            compute_node = Compute(pod_name_dot_namespace)
+        for pod_fullname, containers in pods:
+            compute_node = Compute(pod_fullname)
             for container in containers:
-                container_fullname = container.name + "." + pod_name_dot_namespace
-                service_node = next(iter([s for s in model.services if s.name == container_fullname]), None)
+                service_nodes = [s for s in model.services if check_kobject_node_name_match(container, s, defining_obj_fullname=pod_fullname)]
 
-                if service_node is not None:
+                if len(service_nodes) > 0:
                     self._add_compute_node_if_not_present(compute_node)
-                    model.add_deployed_on(source_node=service_node, target_node=compute_node)
+                    model.add_deployed_on(source_node=service_nodes[0], target_node=compute_node)
 
     def _add_compute_node_if_not_present(self, compute_node: Compute):
         if compute_node not in self.model.computes:

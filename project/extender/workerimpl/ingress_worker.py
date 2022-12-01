@@ -4,6 +4,7 @@ from project.extender.kubeworker import KubeWorker
 from project.kmodel.kCluster import KCluster
 from project.kmodel.kService import KService
 from project.kmodel.kobject_kind import KObjectKind
+from project.utils import check_kobject_node_name_match
 
 
 class IngressWorker(KubeWorker):
@@ -23,15 +24,20 @@ class IngressWorker(KubeWorker):
         #TODO devo fare un MR per ogni Ingress definito oppure faccio passare tutto dall'Ingress Controller (es. MicroMiner fa così)
 
         for ingress in kube_cluster.get_objects_by_kind(KObjectKind.INGRESS):
-            for service in ingress.get_exposed_svc_names():
-                node_name = service + "." + ingress.get_namespace() + ".svc.cluster.local"
-                mr_node = next(iter([n for n in model.nodes if n.name == node_name]), None)
-                if mr_node:
-                    kube_service: KService = kube_cluster.get_object_by_name(node_name, KObjectKind.SERVICE)
-                    if kube_service and not kube_service.is_reachable_from_outside():
-                        model.edge.remove_member(mr_node)
+            for k_service_name in ingress.get_exposed_svc_names():
+                k_services = [s for s in kube_cluster.get_objects_by_kind(KObjectKind.SERVICE)
+                             if s.get_fullname() == k_service_name + "." + ingress.get_namespace()]
 
-                    model.add_interaction(source_node=ingress_controller, target_node=mr_node)
+                if len(k_services) > 0:
+                    mr_nodes = [n for n in model.nodes if check_kobject_node_name_match(k_services[0], n)]
+
+                    if len(mr_nodes) > 0:
+                        mr_node = mr_nodes[0]
+                        kube_service: KService = kube_cluster.get_object_by_name(mr_node.name, KObjectKind.SERVICE)
+                        if kube_service and not kube_service.is_reachable_from_outside():
+                            model.edge.remove_member(mr_node)
+
+                        model.add_interaction(source_node=ingress_controller, target_node=mr_node)
 
         if len(ingress_controller.interactions) == 0 and len(ingress_controller.incoming_interactions) == 0:
             model.delete_node(ingress_controller)

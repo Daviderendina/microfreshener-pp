@@ -19,7 +19,6 @@ class TestServiceExtender(TestCase):
     of this graph is switched to MessageRouter and all relations are maintained
     '''
     def test_model_service_is_kubernetes_service(self):
-
         model = MicroToscaModel(name="service-model")
         cluster = KCluster()
 
@@ -80,6 +79,7 @@ class TestServiceExtender(TestCase):
     '''
     def test_message_router_not_found_in_model(self):
         model = MicroToscaModel(name="service-model")
+        model.add_group(Edge("edge"))
         cluster = KCluster()
 
         # Add objects to cluster
@@ -126,14 +126,15 @@ class TestServiceExtender(TestCase):
     '''
     def test_service_not_found(self):
         model = MicroToscaModel(name="service-model")
+        model.add_group(Edge("edge"))
         cluster = KCluster()
+        label = {'app': 'test'}
 
         # Add objects to cluster
         k_svc = KService.from_dict(DEFAULT_SVC)
         k_pod_1 = KPod.from_dict(POD_WITH_ONE_CONTAINER)
         k_pod_2 = KPod.from_dict(POD_WITH_ONE_CONTAINER)
         k_pod_3 = KPod.from_dict(POD_WITH_ONE_CONTAINER)
-        k_pod_3.metadata.labels = {'app': 'test'}
         k_pod_1.metadata.name = k_pod_1.metadata.name + "_1"
         k_pod_2.metadata.name = k_pod_2.metadata.name + "_2"
         k_pod_3.metadata.name = k_pod_3.metadata.name + "_3"
@@ -141,6 +142,9 @@ class TestServiceExtender(TestCase):
         cluster.add_object(k_pod_1, KObjectKind.POD)
         cluster.add_object(k_pod_2, KObjectKind.POD)
         cluster.add_object(k_pod_3, KObjectKind.POD)
+
+        k_pod_3.metadata.labels = label
+        k_svc.spec.selector = label
 
         # Add Service to Tosca Model
         svc1 = Service(k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname())

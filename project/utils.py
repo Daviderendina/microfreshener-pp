@@ -21,24 +21,22 @@ def get_dict_key_by_value(dictionary: dict, search_value: str):
         print(f"[utils.get_dict_key_by_value] - Value <{search_value}> not found in dictionary {dictionary}")
 
 
-def check_kobject_node_name_match(kobject, tosca_node: Root, defining_object_fullname=""):
+def check_kobject_node_name_match(kobject, tosca_node: Root, defining_obj_fullname=""):
     # Case: tosca_node.name is <name>.<ns>
     if tosca_node.name == kobject.get_fullname():
         return True
 
-    # Case: tosca_node.name is <name>
-    if tosca_node.name == kobject.metadata.name:
-        return True
-
     # Case: tosca_node.name is <name>.<ns>.<default>.<cluster>.<local>
-    match_regex = f"{kobject.metadata.name}[.]{kobject.get_namespace()}[.]\w+[.]\w+[.]\w+"
+    match_regex = f"{kobject.get_fullname()}[.]\w+[.]\w+[.]\w+"
     result = re.match(match_regex, tosca_node.name)
     if result and result.string == tosca_node.name:
         return True
 
     # Case: tosca_node.name is <container>.<name>.<ns>
-    if defining_object_fullname != "":
-        if f"{kobject.get_fullname()}.{defining_object_fullname}":
+    if defining_obj_fullname != "":
+        if f"{kobject.get_fullname()}.{defining_obj_fullname}" == tosca_node.name:
             return True
 
     return False
+
+# TODO cambiare il next(iter(..), None) PER TUTTI
