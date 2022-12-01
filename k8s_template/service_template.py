@@ -20,7 +20,6 @@ SERVICE_CLUSTERIP_TEMPLATE = {
         }
     }
 }
-#TODO fare domani un metodo che gli passa i parametri e genera il Service
 
 
 def generate_service_from_template(name: str, namespace: str, ports: list, selector_labels: dict):
