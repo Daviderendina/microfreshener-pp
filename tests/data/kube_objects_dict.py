@@ -34,7 +34,7 @@ POD_WITH_ONE_CONTAINER = {
                     {
                         'name': 'ottanta',
                         'containerPort': 80,
-                        'protocol': 'TCP'
+                        'protocol': 'UDP'
                     }
                 ]
             }

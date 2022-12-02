@@ -23,7 +23,7 @@ class SplitServicesRefactoring(Refactoring):
         compute_object = self.cluster.get_object_by_name(compute_node.name)
 
         if compute_object:
-            self.cluster.remove_object(compute_object, KObjectKind.get_from_class(compute_object.__class__))
+            self.cluster.remove_object(compute_object)
 
             name_count = 1
             for container in compute_object.get_containers().copy():

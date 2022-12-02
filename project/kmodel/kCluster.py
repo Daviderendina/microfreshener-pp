@@ -1,5 +1,4 @@
 import re
-from typing import List
 
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
@@ -111,4 +110,16 @@ class KCluster:
 
         return exposing_svc
 
+    def get_container_defining_object(self, container: KContainer):
+        for pod in self.get_objects_by_kind(KObjectKind.POD):
+            for pod_container in pod.get_containers():
+                if pod_container == container:
+                    return pod
 
+        def_list = self.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.REPLICASET, KObjectKind.STATEFULSET)
+        for defining_obj in def_list:
+            for obj_container in defining_obj.get_containers():
+                if obj_container == container:
+                    return defining_obj
+
+        return None

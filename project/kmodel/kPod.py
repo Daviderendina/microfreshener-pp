@@ -42,6 +42,10 @@ class KPod(V1Pod, KObject):
     def get_labels(self) -> dict[str, str]:
         return self.metadata.labels
 
+    def is_host_network(self) -> bool:
+        return self.spec.host_network
+
+
 
 class KPodSpec(V1PodSpec, KObject):
 

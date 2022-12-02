@@ -1,18 +1,9 @@
 from abc import abstractmethod
-import uuid
 
-from microfreshener.core.analyser.smell import Smell, NoApiGatewaySmell, WobblyServiceInteractionSmell, \
-    EndpointBasedServiceInteractionSmell
+from microfreshener.core.analyser.smell import Smell, WobblyServiceInteractionSmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
-from microfreshener.core.model.nodes import Compute
 
-from k8s_template.service_template import generate_service_from_template, generate_port_from_template
-from project.analyser.smell import MultipleServicesInOneContainerSmell
 from project.kmodel.kCluster import KCluster
-from project.kmodel.kContainer import KContainer
-from project.kmodel.kObject import KObject
-from project.kmodel.kService import KService
-from project.kmodel.kobject_kind import KObjectKind
 
 
 class Refactoring:
@@ -28,18 +19,6 @@ class Refactoring:
 
 class RefactoringNotSupportedError(Exception):
     pass
-
-
-class AddAPIGatewayRefactoring(Refactoring):
-    # https://alesnosek.com/blog/2017/02/14/accessing-kubernetes-pods-from-outside-of-the-cluster/
-    def __init__(self, model: MicroToscaModel, cluster: KCluster):
-        super().__init__(model, cluster)
-
-    def apply(self, smell: Smell):
-        if not isinstance(smell, NoApiGatewaySmell):
-            raise RefactoringNotSupportedError
-
-
 
 
 class UseTimeoutRefactoring(Refactoring):

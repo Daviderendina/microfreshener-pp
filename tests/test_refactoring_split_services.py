@@ -10,7 +10,7 @@ from project.kmodel.kPod import KPod
 
 from data.kube_objects_dict import POD_WITH_TWO_CONTAINER, DEPLOYMENT_WITH_TWO_CONTAINER
 from project.kmodel.kobject_kind import KObjectKind
-from project.solver.refactoring import SplitServicesRefactoring
+from project.solver.split_services_refactoring import SplitServicesRefactoring
 
 
 class TestRefactoringSplitServices(TestCase):

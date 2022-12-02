@@ -40,6 +40,9 @@ class KReplicaSet(V1ReplicaSet, KObject):
     def get_labels(self):
         return self.get_pod_template_spec().get_labels()
 
+    def is_host_network(self) -> bool:
+        return self.get_pod_template_spec().spec.host_network
+
 class KReplicaSetSpec(V1ReplicaSetSpec, KObject):
 
     @staticmethod

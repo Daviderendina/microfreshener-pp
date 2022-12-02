@@ -3,7 +3,6 @@ from microfreshener.core.model.nodes import Service, MessageRouter
 
 from project.extender.kubeworker import KubeWorker
 from project.kmodel.kCluster import KCluster
-from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
 from project.kmodel.kService import KService
 from project.kmodel.kobject_kind import KObjectKind
@@ -37,14 +36,12 @@ class ServiceWorker(KubeWorker):
         # TODO in questo caso non so se è giusto quello che ho fatto, non ho capito bene se:
         # 1) Devo fare così come ho fatto
         # 2) Devo aggiungere un altro nodo che rappresenta quel servizio, tenendo così i due servizi "paralleli"
-        for service_node in [i.target for i in mr_node.interactions if
-                             isinstance(i, InteractsWith)]:
-            for int in [i for i in service_node.incoming_interactions if isinstance(i.source, Service)]:
-                self.model.add_interaction(source_node=int.source, target_node=mr_node)
-                self.model.delete_relationship(int)
+        for service_node in [i.target for i in mr_node.interactions if isinstance(i, InteractsWith)]:
+            for interaction in [i for i in service_node.incoming_interactions if isinstance(i.source, Service)]:
+                self.model.add_interaction(source_node=interaction.source, target_node=mr_node)
+                self.model.delete_relationship(interaction)
 
     def _handle_mr_node_not_found(self, k_service: KService, defining_obj: KObject):
-        #TODO OK REFACTRORING
         exposed_containers = defining_obj.get_containers()
 
         if len(exposed_containers) == 0:
@@ -55,7 +52,6 @@ class ServiceWorker(KubeWorker):
 
         for container in exposed_containers:
             service_node = next(iter([s for s in self.model.services if check_kobject_node_name_match(container, s, defining_obj_fullname=defining_obj.get_fullname())]), None)
-
             if service_node is not None:
 
                 if k_service.is_reachable_from_outside() and service_node in self.model.edge:
@@ -63,7 +59,7 @@ class ServiceWorker(KubeWorker):
                     self.model.edge.remove_member(service_node)
 
                 if len(service_node.incoming_interactions) > 0:
-                    self._relink_relations( #TODO forse questo metodo c'è già!!
+                    self._relink_relations(
                         new_target=mr_node,
                         relations=[r for r in service_node.incoming_interactions if isinstance(r, InteractsWith)],
                     )
@@ -80,8 +76,6 @@ class ServiceWorker(KubeWorker):
 
         self._relink_relations(new_target=message_router_node, relations=list(incoming_interactions))
         self._relink_relations(new_source=message_router_node, relations=list(interactions))
-
-
 
     def _relink_relations(self, relations: list, new_source=None, new_target=None):
         for r in relations:
