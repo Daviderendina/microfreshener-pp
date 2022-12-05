@@ -35,7 +35,7 @@ class AddMessageRouterRefactoring(Refactoring):
             defining_object: KObject = self.cluster.get_object_by_name(defining_object_fullname)
 
             if defining_object is not None:
-                exposing_service = self.cluster.find_service_which_expose_object(defining_object)
+                exposing_service = self.cluster.find_services_which_expose_object(defining_object)
 
                 if len(exposing_service) > 0:
                     port_compatible_services = [s for s in exposing_service if check_ports_match(s, smell_container)]

@@ -38,8 +38,7 @@ class KDeployment(V1Deployment, KObject):
         return self.get_pod_template_spec().get_labels()
 
     def is_host_network(self) -> bool:
-        return self.get_pod_template_spec().spec.host_network
-
+        return True if self.get_pod_template_spec().spec.host_network else False
 
 class KDeploymentSpec(V1DeploymentSpec, KObject):
 

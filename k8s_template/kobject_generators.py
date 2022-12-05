@@ -33,6 +33,39 @@ def generate_ports_for_container(defining_obj: KObject, container: KContainer):
     return container_ports
 
 
+def generate_ports_for_container_nodeport(defining_obj: KObject, container: KContainer, is_host_network: bool):
+    # Extract ports from container
+    service_ports = []
+
+    container_ports = container.ports if is_host_network else [p for p in container.ports if p.get("hostPort")]
+    for port in container_ports:
+        default_port_name = f"{container.name}.{defining_obj.get_fullname()}-port-{port['containerPort']}-MF"
+
+        new_port = {
+            'name': port.get("name", default_port_name),
+            'port': port.get("containerPort")
+        }
+
+        if is_host_network:
+            new_port['node_port'] = port.get("containerPort")
+        else:
+            node_port = port.get("hostPort", None)
+            if node_port:
+                new_port['node_port'] = node_port
+
+        protocol = port.get("protocol", None)
+        if protocol:
+            new_port['protocol'] = protocol
+
+        target_port = port.get("targetPort", None)
+        if target_port:
+            new_port['target_port'] = target_port
+
+        service_ports.append(new_port)
+
+    return service_ports
+
+
 def generate_svc_clusterIP_for_container(defining_obj: KObject, container: KContainer) -> KService:
     # Extract ports from container
     container_ports = generate_ports_for_container(defining_obj, container)
@@ -58,32 +91,8 @@ def generate_svc_clusterIP_for_container(defining_obj: KObject, container: KCont
 
 
 def generate_svc_NodePort_for_container(defining_obj: KObject, container: KContainer, is_host_network: bool) -> KService:
-    # Extract ports from container
-    service_ports = []
-    for port in container.ports:
-        default_port_name = f"{defining_obj.get_fullname()}-port-{port['containerPort']}-MF"
-
-        new_port = {
-            'name': port.get("name", default_port_name),
-            'port': port.get("containerPort")
-        }
-
-        if is_host_network:
-            new_port['node_port'] = port.get("containerPort")
-        else:
-            node_port = port.get("nodePort", None)
-            if node_port:
-                new_port['node_port'] = node_port
-
-        protocol = port.get("protocol", None)
-        if protocol:
-            new_port['protocol'] = protocol
-
-        target_port = port.get("targetPort", None)
-        if target_port:
-            new_port['target_port'] = target_port
-
-        service_ports.append(new_port)
+    # Generate ports
+    service_ports = generate_ports_for_container_nodeport(defining_obj, container, is_host_network)
 
     # Generate label
     service_selector = generate_random_label(defining_obj.get_fullname())

@@ -43,7 +43,7 @@ class KPod(V1Pod, KObject):
         return self.metadata.labels
 
     def is_host_network(self) -> bool:
-        return self.spec.host_network
+        return True if self.spec.host_network else False
 
 
 
