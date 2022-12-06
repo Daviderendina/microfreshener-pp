@@ -42,7 +42,6 @@ def check_kobject_node_name_match(kobject, tosca_node: Root, defining_obj_fullna
 
 
 def check_ports_match(k_service, k_container):
-    # TODO fare un metodo nelle utils e lo uso per tutto
     service_ports = []
     for port in k_service.get_ports():
         port.get("get", "-1")

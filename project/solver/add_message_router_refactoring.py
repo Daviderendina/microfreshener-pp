@@ -7,8 +7,6 @@ from k8s_template.kobject_generators import generate_ports_for_container, genera
 from project.kmodel.kCluster import KCluster
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
-from project.kmodel.kPod import KPod
-from project.kmodel.kService import KService
 from project.kmodel.kobject_kind import KObjectKind
 from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
 from project.utils import check_ports_match
@@ -20,7 +18,6 @@ class AddMessageRouterRefactoring(Refactoring):
         super().__init__(model, cluster)
 
     def apply(self, smell: Smell):
-        # TODO fare il tutto funzionante anche per Deployment, etc..
 
         if not isinstance(smell, EndpointBasedServiceInteractionSmell):
             raise RefactoringNotSupportedError

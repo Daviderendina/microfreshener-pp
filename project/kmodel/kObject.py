@@ -12,7 +12,6 @@ def parse_list(destination_class, dictionary_list):
 
 
 class KObject:
-    # TODO usare il costruttore qui?
     export_filename = "no_name_set.yaml"
     export_attribute_order = []
 

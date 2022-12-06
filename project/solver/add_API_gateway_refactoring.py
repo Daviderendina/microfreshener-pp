@@ -40,6 +40,22 @@ class AddAPIGatewayRefactoring(Refactoring):
                 )
                 self.cluster.add_object(node_port_service, KObjectKind.SERVICE)
 
+            if def_object.is_host_network():
+                # def_object.set_host_network(False) TODO qui c'è un problema: non posso toglierlo senza prima essere
+                # sicuro che non ci siano altri smell sugli altri container definiti dal pod. Togliendolo fregandomene di
+                # tutto rischio di fare un casino, perché poi non mi becca più lo smell
+
+                # La soluzione più comoda mi sembra quella di creare una classe PendingOperations che viene chiamata dopo
+                # tutta l'analisi e prima della scrittura del cluster su disco.
+                pass
+
+            else:
+                for port in container.ports:
+                    if port.get("hostPort"):
+                        del port["hostPort"]
+
+        return self.cluster
+
     def _get_container_and_def_object(self, service_node_name: str):
         container = self.cluster.get_container_by_tosca_model_name(service_node_name)
         if container:
@@ -64,8 +80,8 @@ class AddAPIGatewayRefactoring(Refactoring):
 
     def _check_ports(self, svc: KService, ports_to_check: list[int]):
         for svcport in svc.get_ports():
-            port = svcport.get('node_port', svcport.get('port', None))
-            if port and port in ports_to_check:
+            exposed_port = svcport.get('node_port', svcport.get('port', None))
+            if exposed_port and exposed_port in ports_to_check:
                 return False
 
         return True

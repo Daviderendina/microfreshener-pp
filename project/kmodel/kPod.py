@@ -45,6 +45,8 @@ class KPod(V1Pod, KObject):
     def is_host_network(self) -> bool:
         return True if self.spec.host_network else False
 
+    def set_host_network(self, host_network: bool):
+        self.spec.host_network = host_network
 
 
 class KPodSpec(V1PodSpec, KObject):

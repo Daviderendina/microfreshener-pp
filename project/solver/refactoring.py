@@ -9,7 +9,7 @@ from project.kmodel.kCluster import KCluster
 class Refactoring:
 
     def __init__(self, model: MicroToscaModel, cluster: KCluster):
-        self.model = model
+        self.model = model #TODO si può togliere il model, non serve a nulla
         self.cluster = cluster
 
     @abstractmethod

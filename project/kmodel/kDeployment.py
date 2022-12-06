@@ -40,6 +40,9 @@ class KDeployment(V1Deployment, KObject):
     def is_host_network(self) -> bool:
         return True if self.get_pod_template_spec().spec.host_network else False
 
+    def set_host_network(self, host_network: bool):
+        self.get_pod_template_spec().spec.host_network = host_network
+
 class KDeploymentSpec(V1DeploymentSpec, KObject):
 
     @staticmethod

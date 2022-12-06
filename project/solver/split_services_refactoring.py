@@ -38,5 +38,3 @@ class SplitServicesRefactoring(Refactoring):
 
 
         #TODO devo fare in questo caso anche il refactoring del MicroToscaModel!! Questo deve ovviamente essere fatto prima di arrivare qui
-
-        #TODO devo ovviamente esportare anche i nuovi files
