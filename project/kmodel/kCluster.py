@@ -1,5 +1,7 @@
 import re
 
+from typing import List
+
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
 from project.kmodel.kPod import KPod
@@ -11,7 +13,7 @@ class KCluster:
     DEFAULT_NAMESPACE = "default"
 
     def __init__(self):
-        self.cluster_objects: dict[KObjectKind: list[KObject]] = dict()
+        self.cluster_objects: dict[KObjectKind: List[KObject]] = dict()
 
     def add_object(self, obj: KObject, kind: KObjectKind):
         if kind not in self.cluster_objects.keys():
@@ -37,7 +39,7 @@ class KCluster:
         sumlist = [v for k, v in objects]
         print(f" Objects: {sum(sumlist)} {dict(objects)}")
 
-    def get_objects_by_kind(self, *args) -> list[KObject]:
+    def get_objects_by_kind(self, *args) -> List[KObject]:
         result = []
         for arg in args:
             result += self.cluster_objects.get(arg, [])
@@ -53,7 +55,7 @@ class KCluster:
             if tosca_name == service_name:
                 return container
 
-    def find_pods_exposed_by_service(self, service: KService) -> list[KPod]:
+    def find_pods_exposed_by_service(self, service: KService) -> List[KPod]:
         exposed_pods = []
         for pod in self.get_objects_by_kind(KObjectKind.POD):
             if pod.get_labels():
@@ -63,7 +65,7 @@ class KCluster:
                     exposed_pods.append(pod)
         return exposed_pods
 
-    def find_defining_obj_exposed_by_service(self, service: KService) -> list[KObject]:
+    def find_defining_obj_exposed_by_service(self, service: KService) -> List[KObject]:
         exposed_pods = []
         for defining_obj in self.get_objects_by_kind(KObjectKind.DEPLOYMENT, KObjectKind.REPLICASET, KObjectKind.STATEFULSET):
             service_selectors = [k + ":" + v for k, v in service.get_selectors().items()]
@@ -94,7 +96,7 @@ class KCluster:
             if len(possible) == 1:
                 return possible[0]
 
-    def find_services_which_expose_object(self, object: KObject) -> list[KService]:
+    def find_services_which_expose_object(self, object: KObject) -> List[KService]:
         #TODO mi invento qualcosa di meglio che questo if?
         if isinstance(object, KPod):
             object_labels = object.get_labels()

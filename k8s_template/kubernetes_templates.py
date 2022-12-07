@@ -58,9 +58,9 @@ ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE = {
                         "destination": {
                             # "host": ?  -  same as name in hosts
                         },
-                        # "timeout": ?  -  format: 0s, 1.5s, etc..
                     }
-                ]
+                ],
+                # "timeout": ?  -  format: 0s, 1.5s, etc..
             }
         ]
     }

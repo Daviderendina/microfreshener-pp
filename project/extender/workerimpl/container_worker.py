@@ -1,4 +1,5 @@
 from microfreshener.core.model import MicroToscaModel, Service
+from typing import List
 
 from project.extender.kubeworker import KubeWorker
 from project.kmodel.kCluster import KCluster
@@ -21,7 +22,7 @@ class ContainerWorker(KubeWorker):
         self._check_for_edge_services()
 
     def _check_for_edge_services(self):
-        pod_spec_list: list[(str, KPodSpec)] = self._get_all_pod_spec()
+        pod_spec_list: List[(str, KPodSpec)] = self._get_all_pod_spec()
 
         for defining_obj_fullname, spec in pod_spec_list:
             for container in spec.containers:
@@ -37,7 +38,7 @@ class ContainerWorker(KubeWorker):
                             if port.get("host_port", None):
                                 self.model.edge.add_member(service_node)
 
-    def _get_all_pod_spec(self) -> list[(str, KPodSpec)]:
+    def _get_all_pod_spec(self):# -> list[(str, KPodSpec)]:
         pod_spec_list = []
 
         for pod in self.kube_cluster.get_objects_by_kind(KObjectKind.POD):

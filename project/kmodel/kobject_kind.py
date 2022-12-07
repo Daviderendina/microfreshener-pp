@@ -1,5 +1,7 @@
 from enum import Enum
 
+from typing import Dict
+
 from project.kmodel.kDeployment import KDeployment
 from project.kmodel.kIngress import KIngress
 from project.kmodel.kPod import KPod
@@ -25,7 +27,7 @@ class KObjectKind(Enum):
 
     @staticmethod
     def get_from_class(class_type: type):
-        type_kind_mapping: dict[class_type, KObjectKind] = {
+        type_kind_mapping: Dict[class_type, KObjectKind] = {
             KPod: KObjectKind.POD,
             KDeployment: KObjectKind.DEPLOYMENT,
             KIngress: KObjectKind.INGRESS,

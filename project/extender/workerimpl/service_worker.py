@@ -1,3 +1,4 @@
+
 from microfreshener.core.model import MicroToscaModel, InteractsWith
 from microfreshener.core.model.nodes import Service, MessageRouter
 
@@ -84,7 +85,7 @@ class ServiceWorker(KubeWorker):
                 target_node=new_target if new_target else r.target)
             self.model.delete_relationship(r)
 
-    def _get_svc_with_object_exposed(self) -> list[(KService, KObject)]:
+    def _get_svc_with_object_exposed(self):# -> list[(KService, KObject)]:
         result = []
         for k_service in self.kube_cluster.get_objects_by_kind(KObjectKind.SERVICE):
             for pod_exposed in self.kube_cluster.find_pods_exposed_by_service(k_service):

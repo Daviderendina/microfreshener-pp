@@ -1,6 +1,7 @@
 from kubernetes.client import V1IngressSpec, V1IngressBackend, V1HTTPIngressPath, V1HTTPIngressRuleValue, \
     V1IngressRule, V1IngressServiceBackend
 from kubernetes.client.models import V1Ingress
+from typing import List
 
 from project.kmodel.kObject import KObject, parse_list
 from project.kmodel.kMetadata import KMetadata
@@ -25,8 +26,8 @@ class KIngress(V1Ingress, KObject):
 
         return ingress
 
-    def get_exposed_svc_names(self) -> list[str]:
-        result: list[str] = list()
+    def get_exposed_svc_names(self) -> List[str]:
+        result: List[str] = list()
 
         rules = self.spec.rules
         for rule in rules:

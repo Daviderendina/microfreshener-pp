@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 from project.kmodel.kObject import KObject
 
 DEFAULT_NAMESPACE = "default"
@@ -13,21 +15,21 @@ class VirtualService(KObject):
     def from_dict(dictionary):
         return VirtualService(data=dictionary)
 
-    def get_timeouts(self) -> list[(str, str, str)]:
-        result: list[(str, str, str)] = []
+    def get_timeouts(self):# -> List[(str, str, str)]:
+        result: List[(str, str, str)] = []
 
         for host in self.data.get('spec', {}).get('hosts', []):
             for http_route in self.data.get('spec', {}).get('http', []):
                 for route in http_route.get("route", []):
-                    timeout = route.get('timeout', None)
+                    timeout = http_route.get('timeout', None)
                     if timeout is not None:
                         destination = route.get('destination', {}).get('host', None)
                         if destination is not None:
                             result.append((host, destination, timeout))
         return result
 
-    def get_destinations(self) -> list[str]:
-        result: list[str] = []
+    def get_destinations(self):# -> List[str]:
+        result: List[str] = []
         for http_route in self.data.get('spec', {}).get('http', []):
             for destination_route in http_route.get('route', []):
                 destination = destination_route.get('destination', {}).get('host', None)
@@ -35,17 +37,17 @@ class VirtualService(KObject):
                     result.append(destination)
         return result
 
-    def get_destinations_with_namespace(self) -> list[str]:
+    def get_destinations_with_namespace(self):# -> list[str]:
         d = self.get_destinations()
         return list(map(lambda x: x + "." + self.get_namespace(), d))
 
-    def get_gateways(self) -> list[str]:
+    def get_gateways(self):# -> list[str]:
         return self.data.get("spec", {}).get("gateways", [])
 
     def get_hosts(self):
         return self.data.get("spec", {}).get("hosts", [])
 
-    def get_selectors(self) -> dict[str, str]:
+    def get_selectors(self) -> Dict[str, str]:
         return self.spec.selector
 
     def get_fullname(self):

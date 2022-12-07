@@ -1,3 +1,5 @@
+from typing import List
+
 from microfreshener.core.model import MicroToscaModel, MessageRouter, InteractsWith
 
 from project.extender.kubeworker import KubeWorker
@@ -49,7 +51,7 @@ class IstioWorker(KubeWorker):
     def _search_for_timeouts_with_virtual_service(self):
         for vservice in self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_VIRTUAL_SERVICE):
             #TODO anche qui, do per scontato che nei VServices route e destination siamo definiti come FQDN
-            timeouts: list[(list, str)] = vservice.get_timeouts()
+            timeouts: List[(list, str)] = vservice.get_timeouts()
             for (route, destination, timeout) in timeouts:
                 if route == destination:
                     node = _find_node_by_name(self.model, route)
@@ -72,7 +74,7 @@ class IstioWorker(KubeWorker):
                     r.set_timeout(True)
 
     def _search_for_circuit_breaker(self):
-        rules: list[DestinationRule] = self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_DESTINATION_RULE)
+        rules: List[DestinationRule] = self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_DESTINATION_RULE)
         for rule in rules:
             if rule.is_circuit_breaker():
                 # TODO anche qui suppongo che siano stati usati i FQDN

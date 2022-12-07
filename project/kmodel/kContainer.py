@@ -1,4 +1,5 @@
 from kubernetes.client.models import V1Container
+from typing import List
 
 from project.kmodel.kObject import KObject
 
@@ -22,7 +23,7 @@ class KContainer(V1Container, KObject):
 
         return container
 
-    def get_container_ports(self) -> list[int]:
+    def get_container_ports(self) -> List[int]:
         result = list()
         for container_port in self.ports:
             port = container_port.get("containerPort", None)

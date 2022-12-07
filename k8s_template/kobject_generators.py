@@ -128,6 +128,6 @@ def generate_timeout_virtualsvc_for_svc(service: KService, timeout: float):
     vservice_template["metadata"]["namespace"] = service.get_namespace()
     vservice_template["spec"]["hosts"] = [service.get_fullname()]
     vservice_template["spec"]["http"][0]["route"][0]["destination"]["host"] = service.get_fullname()
-    vservice_template["spec"]["http"][0]["route"][0]["timeout"] = f"{str(timeout)}s"
+    vservice_template["spec"]["http"][0]["timeout"] = f"{str(timeout)}s"
 
     return VirtualService.from_dict(vservice_template)

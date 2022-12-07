@@ -17,7 +17,7 @@ def get_filenames_from_directory(path) -> list:
 class KImporter(ABC):
 
     def __init__(self):
-        self.non_parsed: list[(str, str)] = list()
+        self.non_parsed: List[(str, str)] = list()
 
     @abstractmethod
     def Import(self, path: str) -> KCluster:

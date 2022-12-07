@@ -1,5 +1,6 @@
 from kubernetes.client import V1ReplicaSetSpec
 from kubernetes.client.models import V1ReplicaSet
+from typing import List
 
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
@@ -34,7 +35,7 @@ class KReplicaSet(V1ReplicaSet, KObject):
     def get_containers(self):
         return self.get_pod_template_spec().get_containers()
 
-    def set_containers(self, container_list: list[KContainer]):
+    def set_containers(self, container_list: List[KContainer]):
         self.get_pod_template_spec().spec.containers = container_list
 
     def get_labels(self):
@@ -45,6 +46,7 @@ class KReplicaSet(V1ReplicaSet, KObject):
 
     def set_host_network(self, host_network: bool):
         self.get_pod_template_spec().spec.host_network = host_network
+
 
 class KReplicaSetSpec(V1ReplicaSetSpec, KObject):
 

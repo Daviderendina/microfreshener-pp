@@ -1,3 +1,5 @@
+from typing import List
+
 from microfreshener.core.analyser.smell import Smell, NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Service
 
@@ -63,7 +65,7 @@ class AddAPIGatewayRefactoring(Refactoring):
 
         return container, def_object
 
-    def _search_for_existing_svc(self, defining_obj: KObject, ports_to_open: list[int]):
+    def _search_for_existing_svc(self, defining_obj: KObject, ports_to_open: List[int]):
         port_numbers = [p.get('node_port', p.get('port')) for p in ports_to_open]
         services = [s for s in self.cluster.find_services_which_expose_object(defining_obj)
                     if self._check_ports(s, port_numbers)]
@@ -78,7 +80,7 @@ class AddAPIGatewayRefactoring(Refactoring):
 
         return expose_svc
 
-    def _check_ports(self, svc: KService, ports_to_check: list[int]):
+    def _check_ports(self, svc: KService, ports_to_check: List[int]):
         for svcport in svc.get_ports():
             exposed_port = svcport.get('node_port', svcport.get('port', None))
             if exposed_port and exposed_port in ports_to_check:

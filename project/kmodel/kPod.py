@@ -1,5 +1,6 @@
 from kubernetes.client import V1PodSpec, V1PodTemplateSpec
 from kubernetes.client.models import V1Pod
+from typing import List, Dict
 
 from project.kmodel.kObject import KObject
 from project.kmodel.kMetadata import KMetadata
@@ -33,13 +34,13 @@ class KPod(V1Pod, KObject):
 
         return pod
 
-    def get_containers(self) -> list[KContainer]:
+    def get_containers(self) -> List[KContainer]:
         return self.spec.containers
 
-    def set_containers(self, container_list: list[KContainer]):
+    def set_containers(self, container_list: List[KContainer]):
         self.spec.containers = container_list
 
-    def get_labels(self) -> dict[str, str]:
+    def get_labels(self) -> Dict[str, str]:
         return self.metadata.labels
 
     def is_host_network(self) -> bool:
@@ -89,13 +90,13 @@ class KPodTemplateSpec(V1PodTemplateSpec, KObject):
 
         return spec
 
-    def get_labels(self) -> dict[str, str]:
+    def get_labels(self) -> Dict[str, str]:
         return self.metadata.labels
 
-    def get_containers(self) -> list[KContainer]:
+    def get_containers(self) -> List[KContainer]:
         return self.spec.containers
 
-    def set_containers(self, container_list: list[KContainer]):
+    def set_containers(self, container_list: List[KContainer]):
         self.spec.containers = container_list
 
 

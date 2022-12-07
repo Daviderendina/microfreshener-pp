@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
 from microfreshener.core.model.microtosca import MicroToscaModel
+from typing import List
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.workerimpl.compute_node_worker import ComputeNodeWorker
@@ -18,11 +19,11 @@ class Extender:
 
 class KubeExtender(Extender):
 
-    def __init__(self, worker_list: list[KubeWorker] = None):
+    def __init__(self, worker_list: List[KubeWorker] = None):
         if worker_list is None:
             self.set_all_workers()
         else:
-            self.worker_list: list[KubeWorker] = worker_list
+            self.worker_list: List[KubeWorker] = worker_list
         self._check_workers_order()
 
     def _check_workers_order(self):

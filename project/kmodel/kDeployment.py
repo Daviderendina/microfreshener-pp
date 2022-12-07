@@ -1,5 +1,6 @@
 from kubernetes.client import V1DeploymentSpec
 from kubernetes.client.models import V1Deployment
+from typing import List
 
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
@@ -31,7 +32,7 @@ class KDeployment(V1Deployment, KObject):
     def get_containers(self):
         return self.get_pod_template_spec().get_containers()
 
-    def set_containers(self, container_list: list[KContainer]):
+    def set_containers(self, container_list: List[KContainer]):
         self.get_pod_template_spec().spec.containers = container_list
 
     def get_labels(self):
@@ -43,6 +44,7 @@ class KDeployment(V1Deployment, KObject):
     def set_host_network(self, host_network: bool):
         self.get_pod_template_spec().spec.host_network = host_network
 
+
 class KDeploymentSpec(V1DeploymentSpec, KObject):
 
     @staticmethod
@@ -50,11 +52,11 @@ class KDeploymentSpec(V1DeploymentSpec, KObject):
         if dictionary is None:
             return None
 
-        selector_attribute=KDeploymentSpec.attribute_map["selector"]
-        template_attribute=KDeploymentSpec.attribute_map["template"]
-        replicas_attribute=KDeploymentSpec.attribute_map["replicas"]
+        selector_attribute = KDeploymentSpec.attribute_map["selector"]
+        template_attribute = KDeploymentSpec.attribute_map["template"]
+        replicas_attribute = KDeploymentSpec.attribute_map["replicas"]
 
-        #TODO occhio ai template che forse è una lista
+        # TODO occhio ai template che forse è una lista
 
         spec = KDeploymentSpec(
             selector=dictionary.get(selector_attribute, ""),

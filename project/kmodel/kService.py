@@ -1,5 +1,6 @@
 from kubernetes.client import V1ServiceSpec, V1ServiceBackendPort
 from kubernetes.client.models import V1Service
+from typing import Dict
 
 from project.kmodel.kObject import KObject
 from project.kmodel.kMetadata import KMetadata
@@ -17,7 +18,7 @@ class KService(V1Service, KObject):
 
         return svc
 
-    def get_selectors(self) -> dict[str, str]:
+    def get_selectors(self) -> Dict[str, str]:
         return self.spec.selector
 
     '''
