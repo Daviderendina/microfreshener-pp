@@ -3,6 +3,7 @@ from project.kmodel.kObject import KObject
 DEFAULT_NAMESPACE = "default"
 DEFAULT_NAME = "<DEFAULT_NAME>"
 
+
 class VirtualService(KObject):
 
     def __init__(self, data: dict):
@@ -14,14 +15,14 @@ class VirtualService(KObject):
 
     def get_timeouts(self) -> list[(str, str, str)]:
         result: list[(str, str, str)] = []
+
         for host in self.data.get('spec', {}).get('hosts', []):
             for http_route in self.data.get('spec', {}).get('http', []):
-                timeout = http_route.get('timeout', None)
-                if timeout is not None:
-                    for destination_route in http_route.get('route', []):
-                        destination = destination_route.get('destination', {}).get('host', None)
+                for route in http_route.get("route", []):
+                    timeout = route.get('timeout', None)
+                    if timeout is not None:
+                        destination = route.get('destination', {}).get('host', None)
                         if destination is not None:
-
                             result.append((host, destination, timeout))
         return result
 

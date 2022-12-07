@@ -1,13 +1,16 @@
 import uuid
 
-from k8s_template.service_template import SERVICE_CLUSTERIP_TEMPLATE, SERVICE_NODEPORT_TEMPLATE
+from k8s_template.kubernetes_templates import SERVICE_CLUSTERIP_TEMPLATE, SERVICE_NODEPORT_TEMPLATE, \
+    ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE
+from project.kmodel.istio import VirtualService
 from project.kmodel.kContainer import KContainer
 from project.kmodel.kObject import KObject
 from project.kmodel.kPod import KPod
 from project.kmodel.kService import KService
 
 
-microfreshener_name_suffix = "MF"
+MF_NAME_SUFFIX = "MF"
+MF_VIRTUALSERVICE_TIMEOUT_NAME = "VSTIMEOUT"
 
 
 def generate_ports_for_container(defining_obj: KObject, container: KContainer):
@@ -75,7 +78,7 @@ def generate_svc_clusterIP_for_container(defining_obj: KObject, container: KCont
 
     # Generate service
     service_dict = SERVICE_CLUSTERIP_TEMPLATE.copy()
-    service_dict["metadata"]["name"] = f"{defining_obj.metadata.name}-{microfreshener_name_suffix}"
+    service_dict["metadata"]["name"] = f"{defining_obj.metadata.name}-{MF_NAME_SUFFIX}"
     service_dict["metadata"]["namespace"] = defining_obj.get_namespace()
     service_dict["spec"]["ports"] = container_ports
     service_dict["spec"]["selector"] = service_selector
@@ -99,7 +102,7 @@ def generate_svc_NodePort_for_container(defining_obj: KObject, container: KConta
 
     # Generate service
     service_dict = SERVICE_NODEPORT_TEMPLATE.copy()
-    service_dict["metadata"]["name"] = f"{defining_obj.metadata.name}-{microfreshener_name_suffix}"
+    service_dict["metadata"]["name"] = f"{defining_obj.metadata.name}-{MF_NAME_SUFFIX}"
     service_dict["metadata"]["namespace"] = defining_obj.get_namespace()
     service_dict["spec"]["ports"] = service_ports
     service_dict["spec"]["selector"] = service_selector
@@ -115,5 +118,16 @@ def generate_svc_NodePort_for_container(defining_obj: KObject, container: KConta
 
 
 def generate_random_label(label_key: str):
-    name_suffix = f"-svc-{microfreshener_name_suffix}"
+    name_suffix = f"-svc-{MF_NAME_SUFFIX}"
     return {f"{label_key}{name_suffix}": uuid.uuid4()}
+
+
+def generate_timeout_virtualsvc_for_svc(service: KService, timeout: float):
+    vservice_template = ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE.copy()
+    vservice_template["metadata"]["name"] = f"{service.get_fullname()}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}"
+    vservice_template["metadata"]["namespace"] = service.get_namespace()
+    vservice_template["spec"]["hosts"] = [service.get_fullname()]
+    vservice_template["spec"]["http"][0]["route"][0]["destination"]["host"] = service.get_fullname()
+    vservice_template["spec"]["http"][0]["route"][0]["timeout"] = f"{str(timeout)}s"
+
+    return VirtualService.from_dict(vservice_template)

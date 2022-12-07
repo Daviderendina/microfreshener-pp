@@ -7,7 +7,7 @@ from project.kmodel.kCluster import KCluster
 from project.kmodel.kService import KService
 from project.kmodel.kobject_kind import KObjectKind
 
-
+#TODO SISTEMARE LA COSA DEI NOMI
 #TODO qui devo capire quando vengono usati i FQDN e quando no!!
 
 def _check_gateway_virtualservice_match(gateway: Gateway, virtual_service: VirtualService):

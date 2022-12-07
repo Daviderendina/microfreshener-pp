@@ -3,7 +3,7 @@ from unittest import TestCase
 from microfreshener.core.analyser.smell import EndpointBasedServiceInteractionSmell
 from microfreshener.core.model import Service, MicroToscaModel, MessageRouter
 
-from k8s_template.kobject_generators import microfreshener_name_suffix
+from k8s_template.kobject_generators import MF_NAME_SUFFIX
 from project.kmodel.kCluster import KCluster
 from project.kmodel.kDeployment import KDeployment
 from project.kmodel.kPod import KPod
@@ -75,7 +75,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         k_service = cluster.get_objects_by_kind(KObjectKind.SERVICE)[0]
 
         # Check name
-        service_name = f"{k_pod_3.metadata.name}-{microfreshener_name_suffix}"
+        service_name = f"{k_pod_3.metadata.name}-{MF_NAME_SUFFIX}"
         service_ns = k_pod_3.get_namespace()
         self.assertEqual(k_service.get_fullname(), f"{service_name}.{service_ns}")
 
@@ -153,7 +153,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         k_service = cluster.get_objects_by_kind(KObjectKind.SERVICE)[0]
 
         # Check name
-        service_name = f"{k_deploy.metadata.name}-{microfreshener_name_suffix}"
+        service_name = f"{k_deploy.metadata.name}-{MF_NAME_SUFFIX}"
         service_ns = k_deploy.get_namespace()
         self.assertEqual(k_service.get_fullname(), f"{service_name}.{service_ns}")
 

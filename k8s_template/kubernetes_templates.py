@@ -41,3 +41,27 @@ SERVICE_NODEPORT_TEMPLATE = {
         }
     }
 }
+
+ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE = {
+    "apiVersion": "networking.istio.io/v1alpha3",
+    "kind": "VirtualService",
+    "metadata": {
+        # "name": ?
+        # "namespace": ?
+    },
+    "spec": {
+        # "hosts": [?],  -  name of the service to which add timeout
+        "http": [
+            {
+                "route": [
+                    {
+                        "destination": {
+                            # "host": ?  -  same as name in hosts
+                        },
+                        # "timeout": ?  -  format: 0s, 1.5s, etc..
+                    }
+                ]
+            }
+        ]
+    }
+}

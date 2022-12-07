@@ -21,29 +21,6 @@ class RefactoringNotSupportedError(Exception):
     pass
 
 
-class UseTimeoutRefactoring(Refactoring):
-
-    def __init__(self, model: MicroToscaModel, cluster: KCluster):
-        super().__init__(model, cluster)
-
-    def apply(self, smell: Smell):
-        if not isinstance(smell, WobblyServiceInteractionSmell):
-            raise RefactoringNotSupportedError()
-
-        if isinstance(smell.node, Service):
-            for link in smell.links_cause:
-
-                if isinstance(link.target, Service):
-                    pass # Tra Service e Service
-                    # Con Istio non posso mettere direttamente il timeout tra due pod, devo mettere almeno un svc davanti al
-                    # target per impostare poi il timeout per quel servizio
-
-                if isinstance(link.target, MessageRouter):
-                    pass  # 2. Tra Service e MessageRouter
-                    # Faccio il deploy di un nuovo VirtualService / Destination rule per far sì che le richieste in
-                    # ingresso vengano effettuate con il timeout
-
-
 class AddCircuitBreakerRefactoring(Refactoring):
 
     def __init__(self, model: MicroToscaModel, cluster: KCluster):
