@@ -5,7 +5,7 @@ from datetime import datetime
 
 from .exporter import Exporter
 from ..constants import ImportExportConstants
-from ..kmodel.kCluster import KCluster
+from project.kmodel.v2 import Cluster
 
 
 def create_folder(filename):
@@ -36,7 +36,7 @@ class YamlExporter(Exporter):
         self.default_output_folder = ImportExportConstants.export_directory + "/" \
                                      + datetime.now().strftime("%Y%m%d_%H%M%S") + "/"
 
-    def export(self, cluster: KCluster):
+    def export(self, cluster: Cluster):
 
         for kType in cluster.cluster_objects.keys():
             for kObject in cluster.cluster_objects.get(kType, []):

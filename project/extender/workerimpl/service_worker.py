@@ -3,10 +3,8 @@ from microfreshener.core.model import MicroToscaModel, InteractsWith
 from microfreshener.core.model.nodes import Service, MessageRouter
 
 from project.extender.kubeworker import KubeWorker
-from project.kmodel.kCluster import KCluster
-from project.kmodel.kObject import KObject
-from project.kmodel.kService import KService
-from project.kmodel.kobject_kind import KObjectKind
+from project.kmodel.kube_cluster import KubeCluster
+from project.kmodel.kube_workload import KubeWorkload
 from project.utils import check_kobject_node_name_match
 
 
@@ -17,11 +15,11 @@ class ServiceWorker(KubeWorker):
     def __init__(self):
         super().__init__()
         self.model = None
-        self.kube_cluster = None
+        self.cluster = None
 
-    def refine(self, model: MicroToscaModel, kube_cluster: KCluster) -> MicroToscaModel:
+    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster) -> MicroToscaModel:
         self.model = model
-        self.kube_cluster = kube_cluster
+        self.cluster = kube_cluster
 
         for k_service, defining_obj in self._get_svc_with_object_exposed():
             mr_node = next(iter([mr for mr in model.nodes if check_kobject_node_name_match(k_service, mr)]), None)
@@ -42,8 +40,8 @@ class ServiceWorker(KubeWorker):
                 self.model.add_interaction(source_node=interaction.source, target_node=mr_node)
                 self.model.delete_relationship(interaction)
 
-    def _handle_mr_node_not_found(self, k_service: KService, defining_obj: KObject):
-        exposed_containers = defining_obj.get_containers()
+    def _handle_mr_node_not_found(self, k_service: Service, workload_obj: KubeWorkload):
+        exposed_containers = workload_obj.get_containers()
 
         if len(exposed_containers) == 0:
             return
@@ -52,7 +50,7 @@ class ServiceWorker(KubeWorker):
         self.model.add_node(mr_node)
 
         for container in exposed_containers:
-            service_node = next(iter([s for s in self.model.services if check_kobject_node_name_match(container, s, defining_obj_fullname=defining_obj.get_fullname())]), None)
+            service_node = next(iter([s for s in self.model.services if check_kobject_node_name_match(container, s, defining_obj_fullname=workload_obj.get_fullname())]), None)
             if service_node is not None:
 
                 if k_service.is_reachable_from_outside() and service_node in self.model.edge:
@@ -67,7 +65,7 @@ class ServiceWorker(KubeWorker):
 
                 self.model.add_interaction(source_node=mr_node, target_node=service_node)
 
-    def _handle_found_not_message_router(self, k_service: KService, message_router_node: MessageRouter):
+    def _handle_found_not_message_router(self, k_service: Service, message_router_node: MessageRouter):
         incoming_interactions = message_router_node.incoming_interactions.copy()
         interactions = message_router_node.interactions.copy()
 
@@ -85,13 +83,10 @@ class ServiceWorker(KubeWorker):
                 target_node=new_target if new_target else r.target)
             self.model.delete_relationship(r)
 
-    def _get_svc_with_object_exposed(self):# -> list[(KService, KObject)]:
+    def _get_svc_with_object_exposed(self):
         result = []
-        for k_service in self.kube_cluster.get_objects_by_kind(KObjectKind.SERVICE):
-            for pod_exposed in self.kube_cluster.find_pods_exposed_by_service(k_service):
-                result.append((k_service, pod_exposed))
-
-            for defining_obj in self.kube_cluster.find_defining_obj_exposed_by_service(k_service):
-                result.append((k_service, defining_obj))
+        for k_service in self.cluster.services:
+            for workload in self.cluster.find_workload_exposed_by_svc(k_service):
+                result.append((k_service, workload))
 
         return result

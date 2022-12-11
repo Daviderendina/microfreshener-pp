@@ -7,13 +7,13 @@ from project.extender.kubeworker import KubeWorker
 from project.extender.workerimpl.compute_node_worker import ComputeNodeWorker
 from project.extender.workerimpl.database_worker import DatabaseWorker
 from project.extender.workerimpl.istio_worker import IstioWorker
-from project.kmodel.kCluster import KCluster
+from project.kmodel.kube_cluster import KubeCluster
 
 
 class Extender:
 
     @abstractmethod
-    def extend(self, model: MicroToscaModel, kube_cluster: KCluster) -> MicroToscaModel:
+    def extend(self, model: MicroToscaModel, kube_cluster: KubeCluster) -> MicroToscaModel:
         pass
 
 
@@ -37,7 +37,7 @@ class KubeExtender(Extender):
     def add_worker(self, worker: KubeWorker):
         self.worker_list.append(worker)
 
-    def extend(self, model: MicroToscaModel, kube_cluster: KCluster) -> MicroToscaModel:
+    def extend(self, model: MicroToscaModel, kube_cluster: KubeCluster) -> MicroToscaModel:
         extended_model = model
         for worker in self.worker_list:
             extended_model = worker.refine(model=model, kube_cluster=kube_cluster)

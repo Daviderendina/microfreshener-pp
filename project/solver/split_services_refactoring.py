@@ -3,14 +3,13 @@ from microfreshener.core.model import MicroToscaModel
 from microfreshener.core.model.nodes import Compute
 
 from project.analyser.smell import MultipleServicesInOneContainerSmell
-from project.kmodel.kCluster import KCluster
-from project.kmodel.kobject_kind import KObjectKind
+from project.kmodel.kube_cluster import KubeCluster
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
 class SplitServicesRefactoring(Refactoring):
 
-    def __init__(self, model: MicroToscaModel, cluster: KCluster):
+    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
         super().__init__(model, cluster)
 
     def apply(self, smell: Smell):
@@ -29,9 +28,9 @@ class SplitServicesRefactoring(Refactoring):
             for container in compute_object.get_containers().copy():
                 object_copy = copy.deepcopy(compute_object)
                 object_copy.set_containers([container])
-                object_copy.metadata.name += f"_{name_count}"
+                object_copy.data["metadata"]["name"] += f"_{name_count}"
 
-                self.cluster.add_object(object_copy, KObjectKind.get_from_class(object_copy.__class__))
+                self.cluster.add_object(object_copy)
 
                 name_count += 1
             pass

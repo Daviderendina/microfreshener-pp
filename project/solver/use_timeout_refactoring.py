@@ -2,9 +2,7 @@ from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell, Sm
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from k8s_template.kobject_generators import generate_timeout_virtualsvc_for_svc
-from project.kmodel.kCluster import KCluster
-from project.kmodel.kService import KService
-from project.kmodel.kobject_kind import KObjectKind
+from project.kmodel.kube_cluster import KubeCluster
 from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
 
 
@@ -12,7 +10,7 @@ class UseTimeoutRefactoring(Refactoring):
 
     DEFAULT_TIMEOUT_SEC = 2
 
-    def __init__(self, model: MicroToscaModel, cluster: KCluster):
+    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
         super().__init__(model, cluster)
 
     def apply(self, smell: Smell):
@@ -29,10 +27,10 @@ class UseTimeoutRefactoring(Refactoring):
                     # COSÌ DA AGGIUNGERE TUTTI I SVC MANCANTI!! QUESTO CASO IN TEORIA COSÌ NON ESISTE (O QUASI) #TODO
 
                 if isinstance(link.target, MessageRouter):
-                    k_service: KService = self.cluster.get_object_by_name(link.target.name)
+                    k_service = self.cluster.get_object_by_name(link.target.name)
                     virtual_service = generate_timeout_virtualsvc_for_svc(k_service, self.DEFAULT_TIMEOUT_SEC)
 
-                    self.cluster.add_object(virtual_service, KObjectKind.ISTIO_VIRTUAL_SERVICE)
+                    self.cluster.add_object(virtual_service)
 
                     #TODO in verità in questo modo viene aggiunto il timeout per tutte le connessioni in ingresso: questo va bene?
 

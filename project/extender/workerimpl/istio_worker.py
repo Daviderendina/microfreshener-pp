@@ -4,15 +4,15 @@ from microfreshener.core.model import MicroToscaModel, MessageRouter, InteractsW
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.workerimpl.service_worker import ServiceWorker
-from project.kmodel.istio import Gateway, VirtualService, DestinationRule
-from project.kmodel.kCluster import KCluster
-from project.kmodel.kService import KService
-from project.kmodel.kobject_kind import KObjectKind
+from project.kmodel.kube_cluster import KubeCluster
+from project.kmodel.kube_istio import KubeIstioGateway, KubeVirtualService
+from project.kmodel.kube_networking import KubeService
+
 
 #TODO SISTEMARE LA COSA DEI NOMI
 #TODO qui devo capire quando vengono usati i FQDN e quando no!!
 
-def _check_gateway_virtualservice_match(gateway: Gateway, virtual_service: VirtualService):
+def _check_gateway_virtualservice_match(gateway: KubeIstioGateway, virtual_service: KubeVirtualService):
     gateway_check = gateway.get_fullname() in virtual_service.get_gateways()
 
     gateway_hosts = gateway.get_all_host_exposed()
@@ -33,12 +33,12 @@ class IstioWorker(KubeWorker):
     def __init__(self):
         super().__init__()
         self.model = None
-        self.kube_cluster = None
+        self.cluster: KubeCluster = None
         self.executed_only_after_workers.append(ServiceWorker)
 
-    def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
+    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster):
         self.model = model
-        self.kube_cluster = kube_cluster
+        self.cluster = kube_cluster
 
         self._search_for_gateways()
         self._search_for_circuit_breaker()
@@ -49,7 +49,7 @@ class IstioWorker(KubeWorker):
         self._search_for_timeouts_with_destination_rule()
 
     def _search_for_timeouts_with_virtual_service(self):
-        for vservice in self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_VIRTUAL_SERVICE):
+        for vservice in self.cluster.virtual_services:
             #TODO anche qui, do per scontato che nei VServices route e destination siamo definiti come FQDN
             timeouts: List[(list, str)] = vservice.get_timeouts()
             for (route, destination, timeout) in timeouts:
@@ -67,15 +67,14 @@ class IstioWorker(KubeWorker):
                             r.set_timeout(True)
 
     def _search_for_timeouts_with_destination_rule(self):
-        for rule in self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_DESTINATION_RULE):
+        for rule in self.cluster.destination_rules:
             if rule.get_timeout() is not None:
                 mr_node = _find_node_by_name(model=self.model, name=rule.get_host())
                 for r in list(mr_node.incoming_interactions):
                     r.set_timeout(True)
 
     def _search_for_circuit_breaker(self):
-        rules: List[DestinationRule] = self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_DESTINATION_RULE)
-        for rule in rules:
+        for rule in self.cluster.destination_rules:
             if rule.is_circuit_breaker():
                 # TODO anche qui suppongo che siano stati usati i FQDN
                 node = next(iter([n for n in self.model.nodes if n.name == rule.get_host()]), None)
@@ -86,12 +85,12 @@ class IstioWorker(KubeWorker):
     def _search_for_gateways(self):
         gateway_node = self._find_or_create_gateway()
 
-        for gateway in self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_GATEWAY):
+        for gateway in self.cluster.istio_gateways:
 
-            for virtual_service in self.kube_cluster.get_objects_by_kind(KObjectKind.ISTIO_VIRTUAL_SERVICE):
+            for virtual_service in self.cluster.virtual_services:
                 if _check_gateway_virtualservice_match(gateway, virtual_service):
 
-                    for service in self.kube_cluster.get_objects_by_kind(KObjectKind.SERVICE):
+                    for service in self.cluster.services:
                         if service.get_fullname() in virtual_service.get_destinations():
 
                             is_one_pod_exposed = self._has_pod_exposed(gateway=gateway, service=service)
@@ -114,9 +113,10 @@ class IstioWorker(KubeWorker):
             self.model.add_node(gateway_node)
         return gateway_node
 
-    def _has_pod_exposed(self, service: KService, gateway: Gateway):
-        for pod in self.kube_cluster.find_pods_exposed_by_service(service):
-            pod_labels = pod.get_labels()
-            if len([l for l in pod_labels if l in gateway.get_selectors()]):
+    def _has_pod_exposed(self, service: KubeService, gateway: KubeIstioGateway):
+        for workload in self.cluster.find_workload_exposed_by_svc(service):
+            labels = workload.get_labels()
+            if len([l for l in labels if l in gateway.get_selectors()]) > 0:
                 return True
         return False
+

@@ -2,10 +2,9 @@ import yaml
 from yaml.loader import SafeLoader
 from microfreshener.core.logging import MyLogger
 
-from project.kmodel.kCluster import KCluster, KObjectKind
-from project.kmodel.kObject import KObject
-from project.kObjectFactory import KObjectFactory
+from project.kmodel.kObjectFactory import KObjectFactory
 from .kimporter import KImporter, get_filenames_from_directory
+from project.kmodel.v2 import Cluster
 
 
 def is_yaml(filename):
@@ -26,9 +25,9 @@ class YamlKImporter(KImporter):
 
     def __init__(self):
         super().__init__()
-        self.cluster = KCluster()
+        self.cluster = Cluster()
 
-    def Import(self, path: str) -> KCluster:
+    def Import(self, path: str) -> Cluster:
         filename_list = get_filenames_from_directory(path=path)
         MyLogger().get_logger().debug(f"Found {len(filename_list)} files in folder {path}: {filename_list}")
 
@@ -37,21 +36,13 @@ class YamlKImporter(KImporter):
                 # Build objects
                 data = read_data_from_file(path + "/" + file)
                 for deploy_element in data:
-                    kObject: KObject = KObjectFactory.build_object(object_dict=deploy_element, filename=file)
+                    kObject = KObjectFactory.build_object(object_dict=deploy_element, filename=file)
 
                     if kObject is None:
                         self.non_parsed.append((file, deploy_element))
                     else:
-                        self.add_object_to_cluster(kObject)
+                        self.cluster.add_object(object)
             else:
                 self.non_parsed.append((file, None))
 
         return self.cluster
-
-    def add_object_to_cluster(self, object: KObject):
-        kind: KObjectKind = KObjectKind.get_from_class(object.__class__)
-        if kind is None:
-            MyLogger().get_logger().debug(f"Cannot add object to cluster: {object.__class__} type not found "
-                                          f"(KObjectKind.get_from_class)")
-        else:
-            self.cluster.add_object(object, kind)

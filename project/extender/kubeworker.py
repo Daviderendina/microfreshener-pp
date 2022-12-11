@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from microfreshener.core.model import MicroToscaModel
 
-from project.kmodel.kCluster import KCluster
+from project.kmodel.kube_cluster import KubeCluster
 
 
 class KubeWorker:
@@ -11,5 +11,5 @@ class KubeWorker:
         self.executed_only_after_workers = []
 
     @abstractmethod
-    def refine(self, model: MicroToscaModel, kube_cluster: KCluster) -> MicroToscaModel:
+    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster) -> MicroToscaModel:
         pass

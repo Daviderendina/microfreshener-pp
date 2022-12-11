@@ -1,9 +1,8 @@
 from microfreshener.core.model import MicroToscaModel, MessageRouter
 
 from project.extender.kubeworker import KubeWorker
-from project.kmodel.kCluster import KCluster
-from project.kmodel.kService import KService
-from project.kmodel.kobject_kind import KObjectKind
+from project.kmodel.kube_cluster import KubeCluster
+from project.kmodel.kube_networking import KubeService
 from project.utils import check_kobject_node_name_match
 
 
@@ -14,26 +13,26 @@ class IngressWorker(KubeWorker):
     def __init__(self):
         super().__init__()
         self.model = None
-        self.kube_cluster = None
+        self.cluster = None
 
-    def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
+    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster):
         self.model = model
-        self.kube_cluster = kube_cluster
+        self.cluster = kube_cluster
 
         ingress_controller = self._find_or_create_ingress_controller()
         #TODO devo fare un MR per ogni Ingress definito oppure faccio passare tutto dall'Ingress Controller (es. MicroMiner fa così)
 
-        for ingress in kube_cluster.get_objects_by_kind(KObjectKind.INGRESS):
+        for ingress in self.cluster.ingress:
             for k_service_name in ingress.get_exposed_svc_names():
-                k_services = [s for s in kube_cluster.get_objects_by_kind(KObjectKind.SERVICE)
-                             if s.get_fullname() == k_service_name + "." + ingress.get_namespace()]
+                k_services = [s for s in self.cluster.services
+                              if s.get_fullname() == k_service_name + "." + ingress.get_namespace()]
 
                 if len(k_services) > 0:
                     mr_nodes = [n for n in model.nodes if check_kobject_node_name_match(k_services[0], n)]
 
                     if len(mr_nodes) > 0:
                         mr_node = mr_nodes[0]
-                        kube_service: KService = kube_cluster.get_object_by_name(mr_node.name, KObjectKind.SERVICE)
+                        kube_service: KubeService = kube_cluster.get_object_by_name(mr_node.name)
                         if kube_service and not kube_service.is_reachable_from_outside():
                             model.edge.remove_member(mr_node)
 

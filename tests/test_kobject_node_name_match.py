@@ -1,8 +1,9 @@
+import copy
 from unittest import TestCase
 
 from microfreshener.core.model import Service
 
-from project.kmodel.kPod import KPod
+from project.kmodel.kube_workload import KubePod
 from project.utils import check_kobject_node_name_match
 from data.kube_objects_dict import POD_WITH_ONE_CONTAINER
 
@@ -15,9 +16,9 @@ class TestKObjectNodeNameMatch(TestCase):
         pod_ns = "namespace"
 
         # Create pod
-        pod = KPod.from_dict(POD_WITH_ONE_CONTAINER)
-        pod.metadata.name = pod_name
-        pod.metadata.namespace = pod_ns
+        pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+        pod.data["metadata"]["name"] = pod_name
+        pod.data["metadata"]["namespace"] = pod_ns
 
         # Create node
         node = Service(name=pod_name+"."+pod_ns)
@@ -31,9 +32,9 @@ class TestKObjectNodeNameMatch(TestCase):
         pod_ns = "namespace"
 
         # Create pod
-        pod = KPod.from_dict(POD_WITH_ONE_CONTAINER)
-        pod.metadata.name = pod_name
-        pod.metadata.namespace = pod_ns
+        pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+        pod.data["metadata"]["name"] = pod_name
+        pod.data["metadata"]["namespace"] = pod_ns
 
         # Create node
         node = Service(name=pod_name+"."+pod_ns+".svc.cluster.local")
@@ -47,9 +48,9 @@ class TestKObjectNodeNameMatch(TestCase):
         pod_ns = "namespace"
 
         # Create pod
-        pod = KPod.from_dict(POD_WITH_ONE_CONTAINER)
-        pod.metadata.name = pod_name
-        pod.metadata.namespace = pod_ns
+        pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+        pod.data["metadata"]["name"] = pod_name
+        pod.data["metadata"]["namespace"] = pod_ns
 
         # Create node
         node = Service(name=pod_name)
@@ -63,12 +64,12 @@ class TestKObjectNodeNameMatch(TestCase):
         pod_ns = "namespace"
 
         # Create pod
-        pod = KPod.from_dict(POD_WITH_ONE_CONTAINER)
-        pod.metadata.name = pod_name
-        pod.metadata.namespace = pod_ns
+        pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+        pod.data["metadata"]["name"] = pod_name
+        pod.data["metadata"]["namespace"] = pod_ns
 
         # Create node
-        node = Service(name=f"{pod.get_containers()[0].name}.{pod_name}.{pod_ns}")
+        node = Service(name=f"{pod.get_containers()[0].get_name()}.{pod_name}.{pod_ns}")
 
         # Check function
         self.assertFalse(check_kobject_node_name_match(pod.get_containers()[0], node))

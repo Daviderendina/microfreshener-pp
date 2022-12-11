@@ -1,21 +1,18 @@
 from typing import List, Dict
 
-from project.kmodel.kObject import KObject
-
-DEFAULT_NAMESPACE = "default"
-DEFAULT_NAME = "<DEFAULT_NAME>"
+from project.kmodel.kube_object import KubeObject
 
 
-class VirtualService(KObject):
+class KubeIstio(KubeObject):
+    pass
+
+
+class KubeVirtualService(KubeIstio):
 
     def __init__(self, data: dict):
-        self.data: dict = data
+        super().__init__(data)
 
-    @staticmethod
-    def from_dict(dictionary):
-        return VirtualService(data=dictionary)
-
-    def get_timeouts(self):# -> List[(str, str, str)]:
+    def get_timeouts(self):
         result: List[(str, str, str)] = []
 
         for host in self.data.get('spec', {}).get('hosts', []):
@@ -28,7 +25,7 @@ class VirtualService(KObject):
                             result.append((host, destination, timeout))
         return result
 
-    def get_destinations(self):# -> List[str]:
+    def get_destinations(self):
         result: List[str] = []
         for http_route in self.data.get('spec', {}).get('http', []):
             for destination_route in http_route.get('route', []):
@@ -37,35 +34,24 @@ class VirtualService(KObject):
                     result.append(destination)
         return result
 
-    def get_destinations_with_namespace(self):# -> list[str]:
+    def get_destinations_with_namespace(self):
         d = self.get_destinations()
         return list(map(lambda x: x + "." + self.get_namespace(), d))
 
-    def get_gateways(self):# -> list[str]:
+    def get_gateways(self):
         return self.data.get("spec", {}).get("gateways", [])
 
     def get_hosts(self):
         return self.data.get("spec", {}).get("hosts", [])
 
     def get_selectors(self) -> Dict[str, str]:
-        return self.spec.selector
-
-    def get_fullname(self):
-        name = self.data.get("metadata", {}).get("name", DEFAULT_NAME)
-        return name + "." + self.get_namespace()
-
-    def get_namespace(self):
-        return self.data.get("metadata", {}).get("namespace", DEFAULT_NAMESPACE)
+        return self.data.get("spec", {}).get("selector", None)
 
 
-class DestinationRule(KObject):
+class KubeDestinationRule(KubeIstio):
 
     def __init__(self, data: dict):
-        self.data: dict = data
-
-    @staticmethod
-    def from_dict(dictionary: dict):
-        return DestinationRule(data=dictionary)
+        super().__init__(data)
 
     def is_circuit_breaker(self) -> bool:
         return self.data.get("spec", {}).get("trafficPolicy", {}).get("connectionPool", None) is not None \
@@ -78,23 +64,10 @@ class DestinationRule(KObject):
         return self.data.get("spec", {}).get("trafficPolicy", {}).get("connectionPool", {})\
             .get("tcp", {}).get("connectionTimeout", None)
 
-    def get_fullname(self):
-        name = self.data.get("metadata", {}).get("name", DEFAULT_NAME)
-        return name + "." + self.get_namespace()
 
-    def get_namespace(self):
-        return self.data.get("metadata", {}).get("namespace", DEFAULT_NAMESPACE)
-
-class Gateway(KObject):
+class KubeIstioGateway(KubeIstio):
     def __init__(self, data: dict):
-        self.data: dict = data
-
-    @staticmethod
-    def from_dict(dictionary: dict):
-        return Gateway(data=dictionary)
-
-    def get_name(self):
-        return self.data.get("metadata", {}).get("name", "")
+        super().__init__(data)
 
     def get_all_host_exposed(self):
         result = []
@@ -102,13 +75,6 @@ class Gateway(KObject):
         for server in servers:
             result += server.get("hosts", [])
         return result
-
-    def get_fullname(self):
-        name = self.data.get("metadata", {}).get("name", DEFAULT_NAME)
-        return name + "." + self.get_namespace()
-
-    def get_namespace(self):
-        return self.data.get("metadata", {}).get("namespace", DEFAULT_NAMESPACE)
 
     def get_selectors(self) -> list:
         return self.data.get("spec", {}).get("selector", [])

@@ -38,7 +38,7 @@ def check_kobject_node_name_match(kobject, tosca_node: Root, defining_obj_fullna
 
     return False
 
-# TODO cambiare il next(iter(..), None) PER TUTTI
+#TODO cambiare il next(iter(..), None) PER TUTTI
 
 
 def check_ports_match(k_service, k_container):
@@ -46,7 +46,7 @@ def check_ports_match(k_service, k_container):
     for port in k_service.get_ports():
         port.get("get", "-1")
 
-    for port in k_container.ports:
+    for port in k_container.get_ports():
         if port["containerPort"] in service_ports:
             return False
     return True

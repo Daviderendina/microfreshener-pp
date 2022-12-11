@@ -3,12 +3,12 @@ from abc import abstractmethod
 from microfreshener.core.analyser.smell import Smell, WobblyServiceInteractionSmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
-from project.kmodel.kCluster import KCluster
+from project.kmodel.kube_cluster import KubeCluster
 
 
 class Refactoring:
 
-    def __init__(self, model: MicroToscaModel, cluster: KCluster):
+    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
         self.model = model #TODO si può togliere il model, non serve a nulla
         self.cluster = cluster
 
@@ -23,7 +23,7 @@ class RefactoringNotSupportedError(Exception):
 
 class AddCircuitBreakerRefactoring(Refactoring):
 
-    def __init__(self, model: MicroToscaModel, cluster: KCluster):
+    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
         super().__init__(model, cluster)
 
     def apply(self, smell: Smell):

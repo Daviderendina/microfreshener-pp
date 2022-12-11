@@ -1,8 +1,8 @@
 from microfreshener.core.model import MicroToscaModel, Service, Datastore
 
 from project.extender.kubeworker import KubeWorker
-from project.kmodel.kCluster import KCluster
-from project.kmodel.kContainer import KContainer
+from project.kmodel.kube_cluster import KubeCluster
+from project.kmodel.kube_container import KubeContainer
 
 
 class DatabaseWorker(KubeWorker):
@@ -11,17 +11,17 @@ class DatabaseWorker(KubeWorker):
 
     def __init__(self):
         super().__init__()
-        self.kube_cluster = None
+        self.cluster = None
         self.model = None
 
-    def refine(self, model: MicroToscaModel, kube_cluster: KCluster):
+    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster):
         self.model = model
-        self.kube_cluster = kube_cluster
+        self.cluster = kube_cluster
 
         for service_node in [s for s in model.services if len(s.interactions) == 0]:
-            container = kube_cluster.get_container_by_tosca_model_name(service_node.name)
+            container = kube_cluster.get_object_by_name(service_node.name)
 
-            if container is not None and self._is_database(container):
+            if container and isinstance(container, KubeContainer) and self._is_database(container):
                 datastore_node = self._create_datastore_node("TEMPORARY_DATASTORE_NAME")
                 self._update_datastore_incoming_interactions(service_node, datastore_node)
 
@@ -44,8 +44,8 @@ class DatabaseWorker(KubeWorker):
         self.model.add_node(datastore_node)
         return datastore_node
 
-    def _is_database(self, container: KContainer):
-        ports_check = len([v for v in container.get_container_ports() if v in self.DATABASE_PORTS]) > 0
-        name_check = len([n for n in self.DATABASE_NAMES if n.upper() in container.name.upper()]) > 0
+    def _is_database(self, container: KubeContainer):
+        ports_check = len([v for v in container.get_container_ports_numbers() if v in self.DATABASE_PORTS]) > 0
+        name_check = len([n for n in self.DATABASE_NAMES if n.upper() in container.get_name().upper()]) > 0
 
         return ports_check or name_check

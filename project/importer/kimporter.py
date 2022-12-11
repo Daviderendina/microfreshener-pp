@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import os
 
-from project.kmodel.kCluster import KCluster
+from project.kmodel.kube_cluster import KubeCluster
 
 
 def get_filenames_from_directory(path) -> list:
@@ -17,8 +17,8 @@ def get_filenames_from_directory(path) -> list:
 class KImporter(ABC):
 
     def __init__(self):
-        self.non_parsed: List[(str, str)] = list()
+        self.non_parsed = list()
 
     @abstractmethod
-    def Import(self, path: str) -> KCluster:
+    def Import(self, path: str) -> KubeCluster:
         pass
