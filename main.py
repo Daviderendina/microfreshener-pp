@@ -1,7 +1,8 @@
 from project.extender.extender import KubeExtender
 from project.importer.yamlkimporter import YamlKImporter
-from project.kmodel.kCluster import KCluster
 from microfreshener.core.model.microtosca import MicroToscaModel
+
+from project.kmodel.kube_cluster import KubeCluster
 
 #TODO
 '''
@@ -15,7 +16,7 @@ def main():
     # Importo le classi K8s
     import_directory = "./data/yaml_files/test"
     importer: YamlKImporter = YamlKImporter()
-    cluster: KCluster = importer.Import(import_directory)
+    cluster: KubeCluster = importer.Import(import_directory)
 
     # Effettuo le modifiche al grafo
     extender: KubeExtender = KubeExtender()

@@ -15,7 +15,7 @@ from project.solver.add_circuit_breaker_refactoring import AddCircuitBreakerRefa
 class TestRefactoringAddCircuitBreaker(TestCase):
 
     def _set_circuit_breaker_config(self):
-        from kube_config import CIRCUIT_BREAKER_CONFIG
+        from config.kube_config import CIRCUIT_BREAKER_CONFIG
         CIRCUIT_BREAKER_CONFIG.MAX_CONNECTIONS = 1
         CIRCUIT_BREAKER_CONFIG.MAX_CONNECTIONS = 1
         CIRCUIT_BREAKER_CONFIG.HTTP_1_MAX_PENDING_REQUESTS = 1

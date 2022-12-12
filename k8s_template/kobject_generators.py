@@ -8,7 +8,7 @@ from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_object import KubeObject
 from project.kmodel.kube_workload import KubePod, KubeWorkload
-from kube_config import CIRCUIT_BREAKER_CONFIG as CB
+from config.kube_config import CIRCUIT_BREAKER_CONFIG as CB
 
 MF_NAME_SUFFIX = "MF"
 MF_VIRTUALSERVICE_TIMEOUT_NAME = "VSTIMEOUT"

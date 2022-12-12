@@ -1,9 +1,0 @@
-Documentazione generica (quello che interessa a me!!):
-    - https://istio.io/latest/docs/tasks/traffic-management/
-
-# VIRTUAL SERVICE  -  https://istio.io/latest/docs/reference/config/networking/virtual-service/#VirtualService
-    - Può esporre un service all'esterno del cluster (non ho capito bene se con l'aiuto del gateway oppure no)
-    - Si possono impostare timeout (però per tutte le connessioni verso un servizio, non solo per una tratta - poco male)
-
-# DESTINATION RULE  -
-    - Si può impostare un Circuit Breaker
