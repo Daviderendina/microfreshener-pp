@@ -18,8 +18,9 @@ class KubeWorkload(KubeObject):
     def __init__(self, data: dict):
         super().__init__(data)
 
+    @property
     @abstractmethod
-    def get_containers(self) -> List[KubeContainer]:
+    def containers(self) -> List[KubeContainer]:
         pass
 
     @abstractmethod
@@ -46,7 +47,7 @@ class KubeWorkload(KubeObject):
     def get_container_ports(self):
         result = list()
         print("TODO: VEDERE COME FUNZIA")
-        for container_port in self.get_containers():
+        for container_port in self.containers:
             port = container_port.get("containerPort", None)
             if port is not None:
                 result.append(port)
@@ -59,7 +60,8 @@ class KubePod(KubeWorkload):
     def __init__(self, data: dict):
         super().__init__(data)
 
-    def get_containers(self):
+    @property
+    def containers(self):
         return cast_container_list(self.data.get("spec", {}).get("containers", []))
 
     def set_containers(self, container_list):
@@ -86,7 +88,8 @@ class KubePodDefiner(KubeWorkload):
     def get_pod_template(self):
         return self.data.get("spec", {}).get("template", {})
 
-    def get_containers(self):
+    @property
+    def containers(self):
         return cast_container_list(self.get_pod_spec().get("containers", []))
 
     def set_containers(self, container_list):

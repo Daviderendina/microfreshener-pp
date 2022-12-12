@@ -13,10 +13,10 @@ from project.kmodel.kube_networking import KubeService
 #TODO qui devo capire quando vengono usati i FQDN e quando no!!
 
 def _check_gateway_virtualservice_match(gateway: KubeIstioGateway, virtual_service: KubeVirtualService):
-    gateway_check = gateway.fullname in virtual_service.get_gateways()
+    gateway_check = gateway.fullname in virtual_service.gateways
 
-    gateway_hosts = gateway.get_all_host_exposed()
-    virtual_service_hosts = virtual_service.get_hosts()
+    gateway_hosts = gateway.hosts_exposed
+    virtual_service_hosts = virtual_service.hosts
     host_check = len([h for h in gateway_hosts if h in virtual_service_hosts])
 
     return host_check and gateway_check
@@ -51,7 +51,7 @@ class IstioWorker(KubeWorker):
     def _search_for_timeouts_with_virtual_service(self):
         for vservice in self.cluster.virtual_services:
             #TODO anche qui, do per scontato che nei VServices route e destination siamo definiti come FQDN
-            timeouts: List[(list, str)] = vservice.get_timeouts()
+            timeouts: List[(list, str)] = vservice.timeouts
             for (route, destination, timeout) in timeouts:
                 if route == destination:
                     node = _find_node_by_name(self.model, route)
@@ -68,16 +68,16 @@ class IstioWorker(KubeWorker):
 
     def _search_for_timeouts_with_destination_rule(self):
         for rule in self.cluster.destination_rules:
-            if rule.get_timeout() is not None:
-                mr_node = _find_node_by_name(model=self.model, name=rule.get_host())
+            if rule.timeout is not None:
+                mr_node = _find_node_by_name(model=self.model, name=rule.host)
                 for r in list(mr_node.incoming_interactions):
                     r.set_timeout(True)
 
     def _search_for_circuit_breaker(self):
         for rule in self.cluster.destination_rules:
-            if rule.is_circuit_breaker():
+            if rule.is_circuit_breaker:
                 # TODO anche qui suppongo che siano stati usati i FQDN
-                node = next(iter([n for n in self.model.nodes if n.name == rule.get_host()]), None)
+                node = next(iter([n for n in self.model.nodes if n.name == rule.host]), None)
                 if node is not None:
                     for r in node.incoming_interactions:
                         r.set_circuit_breaker(True)
@@ -91,7 +91,7 @@ class IstioWorker(KubeWorker):
                 if _check_gateway_virtualservice_match(gateway, virtual_service):
 
                     for service in self.cluster.services:
-                        if service.fullname in virtual_service.get_destinations():
+                        if service.fullname in virtual_service.destinations:
 
                             is_one_pod_exposed = self._has_pod_exposed(gateway=gateway, service=service)
                             if is_one_pod_exposed:
@@ -116,7 +116,7 @@ class IstioWorker(KubeWorker):
     def _has_pod_exposed(self, service: KubeService, gateway: KubeIstioGateway):
         for workload in self.cluster.find_workload_exposed_by_svc(service):
             labels = workload.get_labels()
-            if len([l for l in labels if l in gateway.get_selectors()]) > 0:
+            if len([l for l in labels if l in gateway.selectors]) > 0:
                 return True
         return False
 

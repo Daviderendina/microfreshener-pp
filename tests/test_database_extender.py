@@ -21,13 +21,13 @@ class TestDatabaseExtender(TestCase):
         pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
 
         # Change pod port
-        container_to_change: KubeContainer = pod.get_containers()[0]
+        container_to_change: KubeContainer = pod.containers[0]
         for port in container_to_change.ports:
             port["containerPort"] = 3306
 
         cluster.add_object(pod)
 
-        database_node = Service(pod.get_containers()[0].name + "." + pod.fullname)
+        database_node = Service(pod.containers[0].name + "." + pod.fullname)
         model.add_node(database_node)
         svc_uses_db1 = Service("svcUses1")
         svc_uses_db2 = Service("svcUses2")
@@ -63,14 +63,14 @@ class TestDatabaseExtender(TestCase):
         pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
 
         # Change pod port
-        container_to_change: KubeContainer = pod.get_containers()[0]
+        container_to_change: KubeContainer = pod.containers[0]
         container_to_change.data["name"] = "mysql-database"
         for port in container_to_change.ports:
             port["containerPort"] = 0
 
         cluster.add_object(pod)
 
-        database_node = Service(pod.get_containers()[0].name + "." + pod.fullname)
+        database_node = Service(pod.containers[0].name + "." + pod.fullname)
         model.add_node(database_node)
         svc_uses_db1 = Service("svcUses1")
         svc_uses_db2 = Service("svcUses2")
@@ -106,14 +106,14 @@ class TestDatabaseExtender(TestCase):
         pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
 
         # Change pod port
-        container_to_change: KubeContainer = pod.get_containers()[0]
+        container_to_change: KubeContainer = pod.containers[0]
         container_to_change.data["name"] = "container"
         for port in container_to_change.ports:
             port["containerPort"] = 80
 
         cluster.add_object(pod)
 
-        model.add_node(Service(pod.get_containers()[0].name + "." + pod.fullname))
+        model.add_node(Service(pod.containers[0].name + "." + pod.fullname))
 
         extender: KubeExtender = KubeExtender(worker_list=[DatabaseWorker()])
         extender.extend(model, cluster)

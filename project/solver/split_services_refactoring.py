@@ -25,7 +25,7 @@ class SplitServicesRefactoring(Refactoring):
             self.cluster.remove_object(compute_object)
 
             name_count = 1
-            for container in compute_object.get_containers().copy():
+            for container in compute_object.containers.copy():
                 object_copy = copy.deepcopy(compute_object)
                 object_copy.set_containers([container])
                 object_copy.data["metadata"]["name"] += f"_{name_count}"

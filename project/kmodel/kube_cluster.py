@@ -21,7 +21,7 @@ class KubeCluster:
 
     @property
     def containers(self):
-        return [(w.fullname, w.get_containers()) for w in self.workloads]
+        return [(w.fullname, w.containers) for w in self.workloads]
 
     @property
     def ingress(self):
@@ -50,7 +50,7 @@ class KubeCluster:
     def find_workload_exposed_by_svc(self, service: KubeService) -> List[KubeWorkload]:
         exposed_obj = []
         for workload in self.workloads:
-            service_selectors = [f"{k}:{v}" for k, v in service.get_selectors().items()]
+            service_selectors = [f"{k}:{v}" for k, v in service.selectors.items()]
             pod_labels = [f"{k}:{v}" for k, v in workload.get_labels().items()]
             if len([value for value in pod_labels if value in service_selectors]) > 0:
                 exposed_obj.append(workload)
@@ -61,7 +61,7 @@ class KubeCluster:
         object_labels = kube_object.get_labels()
 
         for svc in self.services:
-            matching_labels = [l for l in object_labels.items() if l in svc.get_selectors().items()]
+            matching_labels = [l for l in object_labels.items() if l in svc.selectors.items()]
             if len(matching_labels) > 0:
                 exposing_svc.append(svc)
 
@@ -69,7 +69,7 @@ class KubeCluster:
 
     def find_workload_defining_container(self, container_fullname: str):
         for workload in self.workloads:
-            for container in workload.get_containers():
+            for container in workload.containers:
                 search_container_fullname = f"{container.name}.{workload.fullname}"
                 if container_fullname == search_container_fullname:
                     return workload
@@ -95,7 +95,7 @@ class KubeCluster:
 
             # Case: name is a container name
             if isinstance(obj, KubeWorkload):
-                for container in obj.get_containers():
+                for container in obj.containers:
                     container_fullname = f"{container.name}.{obj.fullname}"
                     if container_fullname == object_name:
                         return container

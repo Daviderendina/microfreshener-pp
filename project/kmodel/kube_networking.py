@@ -10,19 +10,19 @@ class KubeService(KubeNetworking):
     def __init__(self, data: dict):
         super().__init__(data)
 
-    def get_selectors(self):
+    @property
+    def selectors(self):
         return self.data.get("spec", {}).get("selector", {})
-
-    '''
-    Return true if the service is accessible from outside the network
-    '''
-
-    def is_reachable_from_outside(self):
-        return self.data.get("spec", {}).get("type", "ClusterIP") != "ClusterIP"
 
     @property
     def ports(self):
         return self.data.get("spec", {}).get("ports", [])
+
+    '''
+    Return true if the service is accessible from outside the network
+    '''
+    def is_reachable_from_outside(self):
+        return self.data.get("spec", {}).get("type", "ClusterIP") != "ClusterIP"
 
 
 class KubeIngress(KubeNetworking):

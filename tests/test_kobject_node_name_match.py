@@ -69,10 +69,10 @@ class TestKObjectNodeNameMatch(TestCase):
         pod.data["metadata"]["namespace"] = pod_ns
 
         # Create node
-        node = Service(name=f"{pod.get_containers()[0].name}.{pod_name}.{pod_ns}")
+        node = Service(name=f"{pod.containers[0].name}.{pod_name}.{pod_ns}")
 
         # Check function
-        self.assertFalse(check_kobject_node_name_match(pod.get_containers()[0], node))
-        self.assertTrue(check_kobject_node_name_match(pod.get_containers()[0], node, defining_obj_fullname=pod.fullname))
+        self.assertFalse(check_kobject_node_name_match(pod.containers[0], node))
+        self.assertTrue(check_kobject_node_name_match(pod.containers[0], node, defining_obj_fullname=pod.fullname))
 
 

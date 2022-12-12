@@ -21,9 +21,9 @@ class TestRefactoringSplitServices(TestCase):
         k_pod = KubePod(copy.deepcopy(POD_WITH_TWO_CONTAINER))
         cluster.add_object(k_pod)
 
-        node_svc_name_1 = k_pod.get_containers()[0].name + "." + k_pod.fullname
+        node_svc_name_1 = k_pod.containers[0].name + "." + k_pod.fullname
         node_svc_1 = Service(node_svc_name_1)
-        node_svc_name_2 = k_pod.get_containers()[1].name + "." + k_pod.fullname
+        node_svc_name_2 = k_pod.containers[1].name + "." + k_pod.fullname
         node_svc_2 = Service(node_svc_name_2)
         model.add_node(node_svc_1)
         model.add_node(node_svc_2)
@@ -53,12 +53,12 @@ class TestRefactoringSplitServices(TestCase):
 
         pods = [p for p in cluster.workloads if isinstance(p, KubePod)]
         for pod in pods:
-            self.assertEqual(len(pod.get_containers()), 1)
+            self.assertEqual(len(pod.containers), 1)
 
         self.assertTrue(pods[0].fullname.endswith("_1.default"))
         self.assertTrue(pods[1].fullname.endswith("_2.default"))
-        self.assertEqual(pods[0].get_containers()[0].name, k_pod.get_containers()[0].name)
-        self.assertEqual(pods[1].get_containers()[0].name, k_pod.get_containers()[1].name)
+        self.assertEqual(pods[0].containers[0].name, k_pod.containers[0].name)
+        self.assertEqual(pods[1].containers[0].name, k_pod.containers[1].name)
 
     def test_deploy_with_two_containers(self):
         model = MicroToscaModel("model")
@@ -67,8 +67,8 @@ class TestRefactoringSplitServices(TestCase):
         k_deploy = KubeDeployment(DEPLOYMENT_WITH_TWO_CONTAINER)
         cluster.add_object(k_deploy)
 
-        node_svc_name_1 = k_deploy.get_containers()[0].name + "." + k_deploy.fullname
-        node_svc_name_2 = k_deploy.get_containers()[1].name + "." + k_deploy.fullname
+        node_svc_name_1 = k_deploy.containers[0].name + "." + k_deploy.fullname
+        node_svc_name_2 = k_deploy.containers[1].name + "." + k_deploy.fullname
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
         model.add_node(node_svc_1)
@@ -99,9 +99,9 @@ class TestRefactoringSplitServices(TestCase):
         deployments = [d for d in cluster.workloads if isinstance(d, KubeDeployment)]
 
         for deploy in deployments:
-            self.assertEqual(len(deploy.get_containers()), 1)
+            self.assertEqual(len(deploy.containers), 1)
 
         self.assertTrue(deployments[0].fullname.endswith("_1.default"))
         self.assertTrue(deployments[1].fullname.endswith("_2.default"))
-        self.assertEqual(deployments[0].get_containers()[0].name, k_deploy.get_containers()[0].name)
-        self.assertEqual(deployments[1].get_containers()[0].name, k_deploy.get_containers()[1].name)
+        self.assertEqual(deployments[0].containers[0].name, k_deploy.containers[0].name)
+        self.assertEqual(deployments[1].containers[0].name, k_deploy.containers[1].name)

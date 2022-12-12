@@ -26,7 +26,7 @@ class TestRefactoringUseTimeout(TestCase):
         cluster.add_object(k_service)
 
         # Create model
-        svc = Service(k_pod.get_containers()[0].name + k_pod.fullname)
+        svc = Service(k_pod.containers[0].name + k_pod.fullname)
         mr = MessageRouter(k_service.fullname)
 
         model.add_node(svc)
@@ -54,6 +54,6 @@ class TestRefactoringUseTimeout(TestCase):
         virtual_svc = cluster.virtual_services[0]
 
         self.assertEqual(virtual_svc.fullname, f"{k_service.fullname}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}.{k_service.namespace}")
-        self.assertListEqual(virtual_svc.get_hosts(), [k_service.fullname])
-        self.assertEqual(virtual_svc.get_destinations()[0], k_service.fullname)
-        self.assertEqual(virtual_svc.get_timeouts()[0][2], f"{UseTimeoutRefactoring.DEFAULT_TIMEOUT_SEC}s")
+        self.assertListEqual(virtual_svc.hosts, [k_service.fullname])
+        self.assertEqual(virtual_svc.destinations[0], k_service.fullname)
+        self.assertEqual(virtual_svc.timeouts[0][2], f"{UseTimeoutRefactoring.DEFAULT_TIMEOUT_SEC}s")

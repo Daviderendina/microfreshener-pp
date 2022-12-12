@@ -34,10 +34,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_pod_3)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.fullname
-        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.fullname
-        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.fullname
-        node_svc_name_4 = k_pod_3.get_containers()[0].name + "." + k_pod_3.fullname
+        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.fullname
+        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.fullname
+        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.fullname
+        node_svc_name_4 = k_pod_3.containers[0].name + "." + k_pod_3.fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -79,7 +79,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(k_service.fullname, f"{service_name}.{service_ns}")
 
         # Check labels
-        matching_labels = [l for l in k_service.get_selectors() if l in k_pod_3.get_labels()]
+        matching_labels = [l for l in k_service.selectors if l in k_pod_3.get_labels()]
         self.assertEqual(len(matching_labels), 1)
 
         # Check ports
@@ -90,7 +90,7 @@ class TestRefactoringAddMessageRouter(TestCase):
             matching_port = sp.get('target_port', None) if sp.get('target_port', None) else sp.get('port', None)
             service_ports.append(f"{sp.get('protocol', 'PROTOCOL')}  {matching_port}")
 
-        for container in k_pod_3.get_containers():
+        for container in k_pod_3.containers:
             for port in container.ports:
                 port_str = f"{port.get('protocol', 'PROTOCOL')}  {port.get('containerPort','PORT')}"
                 self.assertTrue(port_str in service_ports)
@@ -112,10 +112,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_deploy)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.fullname
-        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.fullname
-        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.fullname
-        node_svc_name_4 = k_deploy.get_containers()[0].name + "." + k_deploy.fullname
+        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.fullname
+        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.fullname
+        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.fullname
+        node_svc_name_4 = k_deploy.containers[0].name + "." + k_deploy.fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -157,7 +157,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(k_service.fullname, f"{service_name}.{service_ns}")
 
         # Check labels
-        matching_labels = [l for l in k_service.get_selectors() if l in k_deploy.get_labels()]
+        matching_labels = [l for l in k_service.selectors if l in k_deploy.get_labels()]
         self.assertEqual(len(matching_labels), 1)
 
         # Check ports
@@ -168,7 +168,7 @@ class TestRefactoringAddMessageRouter(TestCase):
             matching_port = sp.get('target_port', None) if sp.get('target_port', None) else sp.get('port', None)
             service_ports.append(f"{sp.get('protocol', 'PROTOCOL')} {matching_port}")
 
-        for container in k_deploy.get_containers():
+        for container in k_deploy.containers:
             for port in container.ports:
                 port_str = f"{port.get('protocol', 'PROTOCOL')} {port.get('containerPort', 'PORT')}"
                 self.assertTrue(port_str in service_ports)
@@ -198,10 +198,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_service)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.fullname
-        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.fullname
-        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.fullname
-        node_svc_name_4 = k_pod_3.get_containers()[0].name + "." + k_pod_3.fullname
+        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.fullname
+        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.fullname
+        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.fullname
+        node_svc_name_4 = k_pod_3.containers[0].name + "." + k_pod_3.fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -244,12 +244,12 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(k_service, k_service_retrieved)
 
         # Check ports
-        pod_ports_number = sum([len(c.ports) for c in k_pod_3.get_containers()])
+        pod_ports_number = sum([len(c.ports) for c in k_pod_3.containers])
         self.assertEqual(len(k_service.ports), port_number + pod_ports_number)
         port_found = False
 
         port_list = []
-        for c in k_pod_3.get_containers():
+        for c in k_pod_3.containers:
             for port in c.ports:
                 port_list.append(port["containerPort"])
 
@@ -282,10 +282,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_service)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.fullname
-        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.fullname
-        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.fullname
-        node_svc_name_4 = k_deploy.get_containers()[0].name + "." + k_deploy.fullname
+        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.fullname
+        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.fullname
+        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.fullname
+        node_svc_name_4 = k_deploy.containers[0].name + "." + k_deploy.fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -328,12 +328,12 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(k_service, k_service_retrieved)
 
         # Check ports
-        pod_ports_number = sum([len(c.ports) for c in k_deploy.get_containers()])
+        pod_ports_number = sum([len(c.ports) for c in k_deploy.containers])
         self.assertEqual(len(k_service.ports), port_number + pod_ports_number)
         port_found = False
 
         port_list = []
-        for c in k_deploy.get_containers():
+        for c in k_deploy.containers:
             for port in c.ports:
                 port_list.append(port["containerPort"])
 

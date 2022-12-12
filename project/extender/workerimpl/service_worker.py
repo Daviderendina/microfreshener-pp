@@ -41,7 +41,7 @@ class ServiceWorker(KubeWorker):
                 self.model.delete_relationship(interaction)
 
     def _handle_mr_node_not_found(self, k_service: Service, workload_obj: KubeWorkload):
-        exposed_containers = workload_obj.get_containers()
+        exposed_containers = workload_obj.containers
 
         if len(exposed_containers) == 0:
             return

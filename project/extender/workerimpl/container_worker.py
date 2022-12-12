@@ -20,7 +20,7 @@ class ContainerWorker(KubeWorker):
 
     def _check_for_edge_services(self):
         for workload in self.cluster.workloads:
-            for container in workload.get_containers():
+            for container in workload.containers:
                 service_nodes = [s for s in self.model.services if
                                  check_kobject_node_name_match(container, s, workload.fullname)]
 
