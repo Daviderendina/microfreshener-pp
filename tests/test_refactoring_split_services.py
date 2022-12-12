@@ -21,14 +21,14 @@ class TestRefactoringSplitServices(TestCase):
         k_pod = KubePod(copy.deepcopy(POD_WITH_TWO_CONTAINER))
         cluster.add_object(k_pod)
 
-        node_svc_name_1 = k_pod.get_containers()[0].name + "." + k_pod.get_fullname()
+        node_svc_name_1 = k_pod.get_containers()[0].name + "." + k_pod.fullname
         node_svc_1 = Service(node_svc_name_1)
-        node_svc_name_2 = k_pod.get_containers()[1].name + "." + k_pod.get_fullname()
+        node_svc_name_2 = k_pod.get_containers()[1].name + "." + k_pod.fullname
         node_svc_2 = Service(node_svc_name_2)
         model.add_node(node_svc_1)
         model.add_node(node_svc_2)
 
-        node_compute = Compute(k_pod.get_fullname())
+        node_compute = Compute(k_pod.fullname)
         model.add_node(node_compute)
 
         r1 = model.add_deployed_on(source_node=node_svc_1, target_node=node_compute)
@@ -55,8 +55,8 @@ class TestRefactoringSplitServices(TestCase):
         for pod in pods:
             self.assertEqual(len(pod.get_containers()), 1)
 
-        self.assertTrue(pods[0].get_fullname().endswith("_1.default"))
-        self.assertTrue(pods[1].get_fullname().endswith("_2.default"))
+        self.assertTrue(pods[0].fullname.endswith("_1.default"))
+        self.assertTrue(pods[1].fullname.endswith("_2.default"))
         self.assertEqual(pods[0].get_containers()[0].name, k_pod.get_containers()[0].name)
         self.assertEqual(pods[1].get_containers()[0].name, k_pod.get_containers()[1].name)
 
@@ -67,14 +67,14 @@ class TestRefactoringSplitServices(TestCase):
         k_deploy = KubeDeployment(DEPLOYMENT_WITH_TWO_CONTAINER)
         cluster.add_object(k_deploy)
 
-        node_svc_name_1 = k_deploy.get_containers()[0].name + "." + k_deploy.get_fullname()
-        node_svc_name_2 = k_deploy.get_containers()[1].name + "." + k_deploy.get_fullname()
+        node_svc_name_1 = k_deploy.get_containers()[0].name + "." + k_deploy.fullname
+        node_svc_name_2 = k_deploy.get_containers()[1].name + "." + k_deploy.fullname
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
         model.add_node(node_svc_1)
         model.add_node(node_svc_2)
 
-        node_compute = Compute(k_deploy.get_fullname())
+        node_compute = Compute(k_deploy.fullname)
         model.add_node(node_compute)
 
         r1 = model.add_deployed_on(source_node=node_svc_1, target_node=node_compute)
@@ -101,7 +101,7 @@ class TestRefactoringSplitServices(TestCase):
         for deploy in deployments:
             self.assertEqual(len(deploy.get_containers()), 1)
 
-        self.assertTrue(deployments[0].get_fullname().endswith("_1.default"))
-        self.assertTrue(deployments[1].get_fullname().endswith("_2.default"))
+        self.assertTrue(deployments[0].fullname.endswith("_1.default"))
+        self.assertTrue(deployments[1].fullname.endswith("_2.default"))
         self.assertEqual(deployments[0].get_containers()[0].name, k_deploy.get_containers()[0].name)
         self.assertEqual(deployments[1].get_containers()[0].name, k_deploy.get_containers()[1].name)

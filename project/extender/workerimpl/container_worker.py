@@ -22,7 +22,7 @@ class ContainerWorker(KubeWorker):
         for workload in self.cluster.workloads:
             for container in workload.get_containers():
                 service_nodes = [s for s in self.model.services if
-                                 check_kobject_node_name_match(container, s, workload.get_fullname())]
+                                 check_kobject_node_name_match(container, s, workload.fullname)]
 
                 if len(service_nodes) > 0:
                     service_node = service_nodes[0]

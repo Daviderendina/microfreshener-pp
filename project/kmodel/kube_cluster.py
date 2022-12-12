@@ -21,7 +21,7 @@ class KubeCluster:
 
     @property
     def containers(self):
-        return [(w.get_fullname(), w.get_containers()) for w in self.workloads]
+        return [(w.fullname, w.get_containers()) for w in self.workloads]
 
     @property
     def ingress(self):
@@ -70,7 +70,7 @@ class KubeCluster:
     def find_workload_defining_container(self, container_fullname: str):
         for workload in self.workloads:
             for container in workload.get_containers():
-                search_container_fullname = f"{container.name}.{workload.get_fullname()}"
+                search_container_fullname = f"{container.name}.{workload.fullname}"
                 if container_fullname == search_container_fullname:
                     return workload
 
@@ -78,12 +78,12 @@ class KubeCluster:
         for obj in self.cluster_objects:
 
             # Case: name is FQDN
-            result = re.match(obj.get_fullname() + r"[.][a-zA-Z]*[.]cluster[.]local", object_name)
+            result = re.match(obj.fullname + r"[.][a-zA-Z]*[.]cluster[.]local", object_name)
             if result and result.string == object_name:
                 return obj
 
             # Case: name is <name>.<namespace>
-            if obj.get_fullname() == object_name:
+            if obj.fullname == object_name:
                 return obj
 
             # Case: name is only <name>
@@ -96,6 +96,6 @@ class KubeCluster:
             # Case: name is a container name
             if isinstance(obj, KubeWorkload):
                 for container in obj.get_containers():
-                    container_fullname = f"{container.name}.{obj.get_fullname()}"
+                    container_fullname = f"{container.name}.{obj.fullname}"
                     if container_fullname == object_name:
                         return container

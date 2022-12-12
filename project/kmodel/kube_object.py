@@ -13,7 +13,8 @@ class KubeObject:
     def namespace(self):
         return self.data.get("metadata", {}).get("namespace", self.DEFAULT_NAMESPACE)
 
-    def get_fullname(self):
+    @property
+    def fullname(self):
         return f"{self.name}.{self.namespace}"
 
     def set_labels(self, labels: dict):

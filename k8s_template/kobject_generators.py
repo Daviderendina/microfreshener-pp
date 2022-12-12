@@ -16,7 +16,7 @@ MF_VIRTUALSERVICE_TIMEOUT_NAME = "VSTIMEOUT"
 def generate_ports_for_container(defining_obj: KubeObject, container: KubeContainer):
     container_ports = []
     for port in container.get_ports():
-        default_port_name = f"{defining_obj.get_fullname()}-port-{port['containerPort']}-MF"
+        default_port_name = f"{defining_obj.fullname}-port-{port['containerPort']}-MF"
 
         new_port = {
             'name': port.get("name", default_port_name),
@@ -42,7 +42,7 @@ def generate_ports_for_container_nodeport(defining_obj: KubeObject, container: K
 
     container_ports = container.get_ports() if is_host_network else [p for p in container.get_ports() if p.get("hostPort")]
     for port in container_ports:
-        default_port_name = f"{container.name}.{defining_obj.get_fullname()}-port-{port['containerPort']}-MF"
+        default_port_name = f"{container.name}.{defining_obj.fullname}-port-{port['containerPort']}-MF"
 
         new_port = {
             'name': port.get("name", default_port_name),
@@ -74,7 +74,7 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
     container_ports = generate_ports_for_container(defining_obj, container)
 
     # Generate label
-    service_selector = generate_random_label(defining_obj.get_fullname())
+    service_selector = generate_random_label(defining_obj.fullname)
 
     # Generate service
     service_dict = SERVICE_CLUSTERIP_TEMPLATE.copy()
@@ -98,7 +98,7 @@ def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: K
     service_ports = generate_ports_for_container_nodeport(defining_obj, container, is_host_network)
 
     # Generate label
-    service_selector = generate_random_label(defining_obj.get_fullname())
+    service_selector = generate_random_label(defining_obj.fullname)
 
     # Generate service
     service_dict = copy.deepcopy(SERVICE_NODEPORT_TEMPLATE)
@@ -124,10 +124,10 @@ def generate_random_label(label_key: str):
 
 def generate_timeout_virtualsvc_for_svc(service: KubeService, timeout: float):
     vservice_template = ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE.copy()
-    vservice_template["metadata"]["name"] = f"{service.get_fullname()}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}"
+    vservice_template["metadata"]["name"] = f"{service.fullname}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}"
     vservice_template["metadata"]["namespace"] = service.namespace
-    vservice_template["spec"]["hosts"] = [service.get_fullname()]
-    vservice_template["spec"]["http"][0]["route"][0]["destination"]["host"] = service.get_fullname()
+    vservice_template["spec"]["hosts"] = [service.fullname]
+    vservice_template["spec"]["http"][0]["route"][0]["destination"]["host"] = service.fullname
     vservice_template["spec"]["http"][0]["timeout"] = f"{str(timeout)}s"
 
     return KubeVirtualService(vservice_template)

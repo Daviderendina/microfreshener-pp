@@ -46,11 +46,11 @@ class ServiceWorker(KubeWorker):
         if len(exposed_containers) == 0:
             return
 
-        mr_node = MessageRouter(k_service.get_fullname())
+        mr_node = MessageRouter(k_service.fullname)
         self.model.add_node(mr_node)
 
         for container in exposed_containers:
-            service_node = next(iter([s for s in self.model.services if check_kobject_node_name_match(container, s, defining_obj_fullname=workload_obj.get_fullname())]), None)
+            service_node = next(iter([s for s in self.model.services if check_kobject_node_name_match(container, s, defining_obj_fullname=workload_obj.fullname)]), None)
             if service_node is not None:
 
                 if k_service.is_reachable_from_outside() and service_node in self.model.edge:
@@ -70,7 +70,7 @@ class ServiceWorker(KubeWorker):
         interactions = message_router_node.interactions.copy()
 
         self.model.delete_node(message_router_node)
-        message_router_node = MessageRouter(k_service.get_fullname())
+        message_router_node = MessageRouter(k_service.fullname)
         self.model.add_node(message_router_node)
 
         self._relink_relations(new_target=message_router_node, relations=list(incoming_interactions))

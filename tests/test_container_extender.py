@@ -23,7 +23,7 @@ class TestContainerExtender(TestCase):
 
         cluster.add_object(pod)
 
-        svc_node = Service(pod.get_containers()[0].name + "." + pod.get_fullname())
+        svc_node = Service(pod.get_containers()[0].name + "." + pod.fullname)
         model.add_node(svc_node)
 
         self.assertTrue(len([n for n in model.nodes]), 1)
@@ -47,7 +47,7 @@ class TestContainerExtender(TestCase):
 
         cluster.add_object(pod)
 
-        svc_node = Service(pod.get_containers()[0].name + "." + pod.get_fullname())
+        svc_node = Service(pod.get_containers()[0].name + "." + pod.fullname)
         model.add_node(svc_node)
 
         self.assertTrue(len([n for n in model.nodes]), 1)
@@ -71,7 +71,7 @@ class TestContainerExtender(TestCase):
 
         cluster.add_object(pod)
 
-        svc_node = Service(pod.get_containers()[0].name + "." + pod.get_fullname())
+        svc_node = Service(pod.get_containers()[0].name + "." + pod.fullname)
         model.add_node(svc_node)
 
         self.assertTrue(len([n for n in model.nodes]), 1)

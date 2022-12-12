@@ -27,7 +27,7 @@ class TestDatabaseExtender(TestCase):
 
         cluster.add_object(pod)
 
-        database_node = Service(pod.get_containers()[0].name + "." + pod.get_fullname())
+        database_node = Service(pod.get_containers()[0].name + "." + pod.fullname)
         model.add_node(database_node)
         svc_uses_db1 = Service("svcUses1")
         svc_uses_db2 = Service("svcUses2")
@@ -70,7 +70,7 @@ class TestDatabaseExtender(TestCase):
 
         cluster.add_object(pod)
 
-        database_node = Service(pod.get_containers()[0].name + "." + pod.get_fullname())
+        database_node = Service(pod.get_containers()[0].name + "." + pod.fullname)
         model.add_node(database_node)
         svc_uses_db1 = Service("svcUses1")
         svc_uses_db2 = Service("svcUses2")
@@ -113,7 +113,7 @@ class TestDatabaseExtender(TestCase):
 
         cluster.add_object(pod)
 
-        model.add_node(Service(pod.get_containers()[0].name + "." + pod.get_fullname()))
+        model.add_node(Service(pod.get_containers()[0].name + "." + pod.fullname))
 
         extender: KubeExtender = KubeExtender(worker_list=[DatabaseWorker()])
         extender.extend(model, cluster)

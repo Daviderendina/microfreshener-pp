@@ -13,7 +13,7 @@ from project.kmodel.kube_networking import KubeService
 #TODO qui devo capire quando vengono usati i FQDN e quando no!!
 
 def _check_gateway_virtualservice_match(gateway: KubeIstioGateway, virtual_service: KubeVirtualService):
-    gateway_check = gateway.get_fullname() in virtual_service.get_gateways()
+    gateway_check = gateway.fullname in virtual_service.get_gateways()
 
     gateway_hosts = gateway.get_all_host_exposed()
     virtual_service_hosts = virtual_service.get_hosts()
@@ -91,11 +91,11 @@ class IstioWorker(KubeWorker):
                 if _check_gateway_virtualservice_match(gateway, virtual_service):
 
                     for service in self.cluster.services:
-                        if service.get_fullname() in virtual_service.get_destinations():
+                        if service.fullname in virtual_service.get_destinations():
 
                             is_one_pod_exposed = self._has_pod_exposed(gateway=gateway, service=service)
                             if is_one_pod_exposed:
-                                service_node = _find_node_by_name(self.model, service.get_fullname()
+                                service_node = _find_node_by_name(self.model, service.fullname
                                                                   + ".svc.cluster.local")
 
                                 if service_node is not None:

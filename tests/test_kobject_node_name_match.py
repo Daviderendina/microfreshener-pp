@@ -73,6 +73,6 @@ class TestKObjectNodeNameMatch(TestCase):
 
         # Check function
         self.assertFalse(check_kobject_node_name_match(pod.get_containers()[0], node))
-        self.assertTrue(check_kobject_node_name_match(pod.get_containers()[0], node, defining_obj_fullname=pod.get_fullname()))
+        self.assertTrue(check_kobject_node_name_match(pod.get_containers()[0], node, defining_obj_fullname=pod.fullname))
 
 

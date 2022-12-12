@@ -22,18 +22,18 @@ def get_dict_key_by_value(dictionary: dict, search_value: str):
 
 def check_kobject_node_name_match(kobject, tosca_node: Root, defining_obj_fullname=""):
     # Case: tosca_node.name is <name>.<ns>
-    if tosca_node.name == kobject.get_fullname():
+    if tosca_node.name == kobject.fullname:
         return True
 
     # Case: tosca_node.name is <name>.<ns>.<default>.<cluster>.<local>
-    match_regex = f"{kobject.get_fullname()}[.]\w+[.]\w+[.]\w+"
+    match_regex = f"{kobject.fullname}[.]\w+[.]\w+[.]\w+"
     result = re.match(match_regex, tosca_node.name)
     if result and result.string == tosca_node.name:
         return True
 
     # Case: tosca_node.name is <container>.<name>.<ns>
     if defining_obj_fullname != "":
-        if f"{kobject.get_fullname()}.{defining_obj_fullname}" == tosca_node.name:
+        if f"{kobject.fullname}.{defining_obj_fullname}" == tosca_node.name:
             return True
 
     return False

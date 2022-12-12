@@ -34,10 +34,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_pod_3)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname()
-        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname()
-        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.get_fullname()
-        node_svc_name_4 = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname()
+        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.fullname
+        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.fullname
+        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.fullname
+        node_svc_name_4 = k_pod_3.get_containers()[0].name + "." + k_pod_3.fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -76,7 +76,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         # Check name
         service_name = f"{k_pod_3.name}-{MF_NAME_SUFFIX}"
         service_ns = k_pod_3.namespace
-        self.assertEqual(k_service.get_fullname(), f"{service_name}.{service_ns}")
+        self.assertEqual(k_service.fullname, f"{service_name}.{service_ns}")
 
         # Check labels
         matching_labels = [l for l in k_service.get_selectors() if l in k_pod_3.get_labels()]
@@ -112,10 +112,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_deploy)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname()
-        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname()
-        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.get_fullname()
-        node_svc_name_4 = k_deploy.get_containers()[0].name + "." + k_deploy.get_fullname()
+        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.fullname
+        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.fullname
+        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.fullname
+        node_svc_name_4 = k_deploy.get_containers()[0].name + "." + k_deploy.fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -154,7 +154,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         # Check name
         service_name = f"{k_deploy.name}-{MF_NAME_SUFFIX}"
         service_ns = k_deploy.namespace
-        self.assertEqual(k_service.get_fullname(), f"{service_name}.{service_ns}")
+        self.assertEqual(k_service.fullname, f"{service_name}.{service_ns}")
 
         # Check labels
         matching_labels = [l for l in k_service.get_selectors() if l in k_deploy.get_labels()]
@@ -198,16 +198,16 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_service)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname()
-        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname()
-        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.get_fullname()
-        node_svc_name_4 = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname()
+        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.fullname
+        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.fullname
+        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.fullname
+        node_svc_name_4 = k_pod_3.get_containers()[0].name + "." + k_pod_3.fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
         node_svc_3 = Service(node_svc_name_3)
         node_svc_4 = Service(node_svc_name_4)
-        node_mr = MessageRouter(k_service.get_fullname())
+        node_mr = MessageRouter(k_service.fullname)
 
         model.add_node(node_svc_1)
         model.add_node(node_svc_2)
@@ -282,16 +282,16 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_service)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname()
-        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname()
-        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.get_fullname()
-        node_svc_name_4 = k_deploy.get_containers()[0].name + "." + k_deploy.get_fullname()
+        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.fullname
+        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.fullname
+        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.fullname
+        node_svc_name_4 = k_deploy.get_containers()[0].name + "." + k_deploy.fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
         node_svc_3 = Service(node_svc_name_3)
         node_svc_4 = Service(node_svc_name_4)
-        node_mr = MessageRouter(k_service.get_fullname())
+        node_mr = MessageRouter(k_service.fullname)
 
         model.add_node(node_svc_1)
         model.add_node(node_svc_2)
