@@ -34,10 +34,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_pod_3)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].get_name() + "." + k_pod_1.get_fullname()
-        node_svc_name_2 = k_pod_2.get_containers()[0].get_name() + "." + k_pod_2.get_fullname()
-        node_svc_name_3 = k_pod_2.get_containers()[1].get_name() + "." + k_pod_2.get_fullname()
-        node_svc_name_4 = k_pod_3.get_containers()[0].get_name() + "." + k_pod_3.get_fullname()
+        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname()
+        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname()
+        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.get_fullname()
+        node_svc_name_4 = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname()
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -74,7 +74,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         k_service = cluster.services[0]
 
         # Check name
-        service_name = f"{k_pod_3.get_name()}-{MF_NAME_SUFFIX}"
+        service_name = f"{k_pod_3.name}-{MF_NAME_SUFFIX}"
         service_ns = k_pod_3.get_namespace()
         self.assertEqual(k_service.get_fullname(), f"{service_name}.{service_ns}")
 
@@ -112,10 +112,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_deploy)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].get_name() + "." + k_pod_1.get_fullname()
-        node_svc_name_2 = k_pod_2.get_containers()[0].get_name() + "." + k_pod_2.get_fullname()
-        node_svc_name_3 = k_pod_2.get_containers()[1].get_name() + "." + k_pod_2.get_fullname()
-        node_svc_name_4 = k_deploy.get_containers()[0].get_name() + "." + k_deploy.get_fullname()
+        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname()
+        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname()
+        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.get_fullname()
+        node_svc_name_4 = k_deploy.get_containers()[0].name + "." + k_deploy.get_fullname()
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -152,7 +152,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         k_service = cluster.services[0]
 
         # Check name
-        service_name = f"{k_deploy.get_name()}-{MF_NAME_SUFFIX}"
+        service_name = f"{k_deploy.name}-{MF_NAME_SUFFIX}"
         service_ns = k_deploy.get_namespace()
         self.assertEqual(k_service.get_fullname(), f"{service_name}.{service_ns}")
 
@@ -198,10 +198,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_service)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].get_name() + "." + k_pod_1.get_fullname()
-        node_svc_name_2 = k_pod_2.get_containers()[0].get_name() + "." + k_pod_2.get_fullname()
-        node_svc_name_3 = k_pod_2.get_containers()[1].get_name() + "." + k_pod_2.get_fullname()
-        node_svc_name_4 = k_pod_3.get_containers()[0].get_name() + "." + k_pod_3.get_fullname()
+        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname()
+        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname()
+        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.get_fullname()
+        node_svc_name_4 = k_pod_3.get_containers()[0].name + "." + k_pod_3.get_fullname()
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -282,10 +282,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_service)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.get_containers()[0].get_name() + "." + k_pod_1.get_fullname()
-        node_svc_name_2 = k_pod_2.get_containers()[0].get_name() + "." + k_pod_2.get_fullname()
-        node_svc_name_3 = k_pod_2.get_containers()[1].get_name() + "." + k_pod_2.get_fullname()
-        node_svc_name_4 = k_deploy.get_containers()[0].get_name() + "." + k_deploy.get_fullname()
+        node_svc_name_1 = k_pod_1.get_containers()[0].name + "." + k_pod_1.get_fullname()
+        node_svc_name_2 = k_pod_2.get_containers()[0].name + "." + k_pod_2.get_fullname()
+        node_svc_name_3 = k_pod_2.get_containers()[1].name + "." + k_pod_2.get_fullname()
+        node_svc_name_4 = k_deploy.get_containers()[0].name + "." + k_deploy.get_fullname()
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)

@@ -17,8 +17,5 @@ class KubeContainer(KubeObject):
         result = [p.get("containerPort", None) for p in self.get_ports()]
         return [p for p in result if p is not None]
 
-    def get_name(self):
-        return self.data.get("name", "")
-
     def get_fullname(self):
-        return self.get_name()
+        return self.name

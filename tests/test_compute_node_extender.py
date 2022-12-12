@@ -32,7 +32,7 @@ class TestComputeNodeExtender(TestCase):
         svc: KubeService = KubeService(copy.deepcopy(DEFAULT_SVC))
         cluster.add_object(svc)
 
-        model.add_node(Service(name=svc.get_name()))
+        model.add_node(Service(name=svc.name))
 
         self.assertEqual(len(cluster.cluster_objects), 1)
         self.assertEqual(len(list(model.nodes)), 1)
@@ -53,7 +53,7 @@ class TestComputeNodeExtender(TestCase):
         cluster.add_object(pod)
 
         message_router_node = MessageRouter(name=svc.get_fullname() + ".svc.local.cluster")
-        service_node = Service(name=pod.get_containers()[0].get_name() + "." + pod.get_fullname())
+        service_node = Service(name=pod.get_containers()[0].name + "." + pod.get_fullname())
         model.add_node(message_router_node)
         model.add_node(service_node)
         model.add_interaction(message_router_node, service_node)
@@ -81,8 +81,8 @@ class TestComputeNodeExtender(TestCase):
         cluster.add_object(pod)
 
         mr_node = MessageRouter(name=svc.get_fullname() + ".svc")
-        svc1_node = Service(name=pod.get_containers()[0].get_name() + "." + pod.get_fullname())
-        svc2_node = Service(name=pod.get_containers()[1].get_name() + "." + pod.get_fullname())
+        svc1_node = Service(name=pod.get_containers()[0].name + "." + pod.get_fullname())
+        svc2_node = Service(name=pod.get_containers()[1].name + "." + pod.get_fullname())
         model.add_node(mr_node)
         model.add_node(svc1_node)
         model.add_node(svc2_node)
@@ -110,7 +110,7 @@ class TestComputeNodeExtender(TestCase):
         deploy = KubeDeployment(DEPLOYMENT_WITH_ONE_CONTAINER)
         cluster.add_object(deploy)
 
-        service_node = Service(name=deploy.get_containers()[0].get_name()+"."+deploy.get_fullname())
+        service_node = Service(name=deploy.get_containers()[0].name+"."+deploy.get_fullname())
         model.add_node(service_node)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
@@ -134,8 +134,8 @@ class TestComputeNodeExtender(TestCase):
         deploy = KubeDeployment(DEPLOYMENT_WITH_TWO_CONTAINER)
         cluster.add_object(deploy)
 
-        svc1_node = Service(name=deploy.get_containers()[0].get_name()+"."+deploy.get_fullname())
-        svc2_node = Service(name=deploy.get_containers()[1].get_name()+"."+deploy.get_fullname())
+        svc1_node = Service(name=deploy.get_containers()[0].name+"."+deploy.get_fullname())
+        svc2_node = Service(name=deploy.get_containers()[1].name+"."+deploy.get_fullname())
         model.add_node(svc1_node)
         model.add_node(svc2_node)
 
@@ -160,7 +160,7 @@ class TestComputeNodeExtender(TestCase):
         rs = KubeReplicaSet(REPLICASET_WITH_ONE_CONTAINER)
         cluster.add_object(rs)
 
-        service_node = Service(name=rs.get_containers()[0].get_name()+"."+rs.get_fullname())
+        service_node = Service(name=rs.get_containers()[0].name+"."+rs.get_fullname())
         model.add_node(service_node)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
@@ -188,13 +188,13 @@ class TestComputeNodeExtender(TestCase):
         #TODO non funziona se il nome viene dato in automatico da K8s. Ad esempio utilizzando il campo generateName
         # oppure non mettendo il nome in un template, viene dato dopo il nome un codice del tipo "-ABCDD1234". Per
         # testare questa cosa, utilizzare la seguente istruzione per il nome:
-        #name = template.get_containers()[0].get_name() + "." + statefulset.metadata.name + "-ABCDD1234." + statefulset.get_namespace() \
+        #name = template.get_containers()[0].name + "." + statefulset.metadata.name + "-ABCDD1234." + statefulset.get_namespace() \
         #    if not template.metadata.name \
-        #    else template.get_containers()[0].get_name() + "." + template.get_name_dot_namespace()
+        #    else template.get_containers()[0].name + "." + template.get_name_dot_namespace()
 
-        name = statefulset.get_containers()[0].get_name() + "." + statefulset.get_name() + "." + statefulset.get_namespace() \
+        name = statefulset.get_containers()[0].name + "." + statefulset.name + "." + statefulset.get_namespace() \
             if not template.get("name", None) \
-            else statefulset.get_containers()[0].get_name() + "." + template.get_fullname()
+            else statefulset.get_containers()[0].name + "." + template.get_fullname()
         model.add_node(Service(name=name))
 
         self.assertEqual(len(cluster.cluster_objects), 1)

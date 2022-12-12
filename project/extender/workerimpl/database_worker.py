@@ -46,6 +46,6 @@ class DatabaseWorker(KubeWorker):
 
     def _is_database(self, container: KubeContainer):
         ports_check = len([v for v in container.get_container_ports_numbers() if v in self.DATABASE_PORTS]) > 0
-        name_check = len([n for n in self.DATABASE_NAMES if n.upper() in container.get_name().upper()]) > 0
+        name_check = len([n for n in self.DATABASE_NAMES if n.upper() in container.name.upper()]) > 0
 
         return ports_check or name_check

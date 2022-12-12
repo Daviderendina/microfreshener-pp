@@ -1,10 +1,12 @@
-import microfreshener.core.logging
-
 from project.extender.extender import KubeExtender
 from project.importer.yamlkimporter import YamlKImporter
 from project.kmodel.kCluster import KCluster
 from microfreshener.core.model.microtosca import MicroToscaModel
 
+#TODO
+'''
+Tra i vari controlli effettuati ad es. per Gateway etc., manca quello sulle wildcard
+'''
 
 def main():
     # Importo il grafo MicroTosca

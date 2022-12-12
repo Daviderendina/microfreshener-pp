@@ -42,7 +42,7 @@ def generate_ports_for_container_nodeport(defining_obj: KubeObject, container: K
 
     container_ports = container.get_ports() if is_host_network else [p for p in container.get_ports() if p.get("hostPort")]
     for port in container_ports:
-        default_port_name = f"{container.get_name()}.{defining_obj.get_fullname()}-port-{port['containerPort']}-MF"
+        default_port_name = f"{container.name}.{defining_obj.get_fullname()}-port-{port['containerPort']}-MF"
 
         new_port = {
             'name': port.get("name", default_port_name),
@@ -78,7 +78,7 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
 
     # Generate service
     service_dict = SERVICE_CLUSTERIP_TEMPLATE.copy()
-    service_dict["metadata"]["name"] = f"{defining_obj.get_name()}-{MF_NAME_SUFFIX}"
+    service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_NAME_SUFFIX}"
     service_dict["metadata"]["namespace"] = defining_obj.get_namespace()
     service_dict["spec"]["ports"] = container_ports
     service_dict["spec"]["selector"] = service_selector
@@ -102,7 +102,7 @@ def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: K
 
     # Generate service
     service_dict = copy.deepcopy(SERVICE_NODEPORT_TEMPLATE)
-    service_dict["metadata"]["name"] = f"{defining_obj.get_name()}-{MF_NAME_SUFFIX}"
+    service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_NAME_SUFFIX}"
     service_dict["metadata"]["namespace"] = defining_obj.get_namespace()
     service_dict["spec"]["ports"] = service_ports
     service_dict["spec"]["selector"] = service_selector

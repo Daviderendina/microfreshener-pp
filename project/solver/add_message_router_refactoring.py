@@ -26,7 +26,7 @@ class AddMessageRouterRefactoring(Refactoring):
             if smell_container is None:
                 return
 
-            container_workload_fullname: str = smell.node.name[len(smell_container.get_name()) + 1:]
+            container_workload_fullname: str = smell.node.name[len(smell_container.name) + 1:]
             container_workload_object = self.cluster.get_object_by_name(container_workload_fullname)
 
             if container_workload_object is not None:

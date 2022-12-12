@@ -30,13 +30,13 @@ class TestIngressExtender(TestCase):
         k_pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
         k_pod.data["metadata"]["labels"] = {'app': 'test'}
         k_ingress = KubeIngress(DEFAULT_SVC_INGRESS)
-        k_ingress.data["spec"]["rules"][0]["http"]["paths"][0]["backend"]["service"]["name"] = k_svc.get_name()
+        k_ingress.data["spec"]["rules"][0]["http"]["paths"][0]["backend"]["service"]["name"] = k_svc.name
         cluster.add_object(k_svc)
         cluster.add_object(k_pod)
         cluster.add_object(k_ingress)
 
         # Add Service to Tosca Model
-        svc = Service(k_pod.get_containers()[0].get_name() + "." + k_pod.get_fullname())
+        svc = Service(k_pod.get_containers()[0].name + "." + k_pod.get_fullname())
         mr = MessageRouter(k_svc.get_fullname() + ".svc.cluster.local")
         model.add_node(svc)
         model.add_node(mr)
@@ -82,13 +82,13 @@ class TestIngressExtender(TestCase):
         k_pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
         k_pod.data["metadata"]["labels"] = {'app': 'test'}
         k_ingress = KubeIngress(DEFAULT_SVC_INGRESS)
-        k_ingress.data["spec"]["rules"][0]["http"]["paths"][0]["backend"]["service"]["name"] = k_svc.get_name()
+        k_ingress.data["spec"]["rules"][0]["http"]["paths"][0]["backend"]["service"]["name"] = k_svc.name
         cluster.add_object(k_svc)
         cluster.add_object(k_pod)
         cluster.add_object(k_ingress)
 
         # Add Service to Tosca Model
-        svc = Service(k_pod.get_containers()[0].get_name() + "." + k_pod.get_fullname())
+        svc = Service(k_pod.get_containers()[0].name + "." + k_pod.get_fullname())
         mr = MessageRouter(k_svc.get_fullname() + ".svc.cluster.local")
         ic_name = "nginx-ingress-controller-32ede32-fer34"
         ic = MessageRouter(ic_name)
@@ -138,13 +138,13 @@ class TestIngressExtender(TestCase):
         k_pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
         k_pod.data["metadata"]["labels"] = {'app': 'test'}
         k_ingress = KubeIngress(DEFAULT_SVC_INGRESS)
-        k_ingress.data["spec"]["rules"][0]["http"]["paths"][0]["backend"]["service"]["name"] = k_svc.get_name()
+        k_ingress.data["spec"]["rules"][0]["http"]["paths"][0]["backend"]["service"]["name"] = k_svc.name
         cluster.add_object(k_svc)
         cluster.add_object(k_pod)
         cluster.add_object(k_ingress)
 
         # Add Service to Tosca Model
-        svc = Service(k_pod.get_containers()[0].get_name() + "." + k_pod.get_fullname())
+        svc = Service(k_pod.get_containers()[0].name + "." + k_pod.get_fullname())
         mr = MessageRouter(k_svc.get_fullname() + ".svc.cluster.local")
         ic_name = "nginx-ingress-controller-32ede32-fer34"
         ic = MessageRouter(ic_name)

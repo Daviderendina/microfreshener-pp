@@ -26,7 +26,7 @@ class TestRefactoringUseTimeout(TestCase):
         cluster.add_object(k_service)
 
         # Create model
-        svc = Service(k_pod.get_containers()[0].get_name() + k_pod.get_fullname())
+        svc = Service(k_pod.get_containers()[0].name + k_pod.get_fullname())
         mr = MessageRouter(k_service.get_fullname())
 
         model.add_node(svc)

@@ -70,7 +70,7 @@ class KubeCluster:
     def find_workload_defining_container(self, container_fullname: str):
         for workload in self.workloads:
             for container in workload.get_containers():
-                search_container_fullname = f"{container.get_name()}.{workload.get_fullname()}"
+                search_container_fullname = f"{container.name}.{workload.get_fullname()}"
                 if container_fullname == search_container_fullname:
                     return workload
 
@@ -88,7 +88,7 @@ class KubeCluster:
 
             # Case: name is only <name>
             possible = []
-            if obj.get_name() == object_name:
+            if obj.name == object_name:
                 possible.append(obj)
             if len(possible) == 1:
                 return possible[0]
@@ -96,6 +96,6 @@ class KubeCluster:
             # Case: name is a container name
             if isinstance(obj, KubeWorkload):
                 for container in obj.get_containers():
-                    container_fullname = f"{container.get_name()}.{obj.get_fullname()}"
+                    container_fullname = f"{container.name}.{obj.get_fullname()}"
                     if container_fullname == object_name:
                         return container
