@@ -184,7 +184,7 @@ class TestComputeNodeExtender(TestCase):
         statefulset = KubeStatefulSet(STATEFULSET_WITH_ONE_CONTAINER)
         cluster.add_object(statefulset)
 
-        template = statefulset.get_pod_spec()
+        template = statefulset.pod_spec
         #TODO non funziona se il nome viene dato in automatico da K8s. Ad esempio utilizzando il campo generateName
         # oppure non mettendo il nome in un template, viene dato dopo il nome un codice del tipo "-ABCDD1234". Per
         # testare questa cosa, utilizzare la seguente istruzione per il nome:

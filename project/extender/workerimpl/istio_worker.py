@@ -115,7 +115,7 @@ class IstioWorker(KubeWorker):
 
     def _has_pod_exposed(self, service: KubeService, gateway: KubeIstioGateway):
         for workload in self.cluster.find_workload_exposed_by_svc(service):
-            labels = workload.get_labels()
+            labels = workload.labels
             if len([l for l in labels if l in gateway.selectors]) > 0:
                 return True
         return False

@@ -51,14 +51,14 @@ class KubeCluster:
         exposed_obj = []
         for workload in self.workloads:
             service_selectors = [f"{k}:{v}" for k, v in service.selectors.items()]
-            pod_labels = [f"{k}:{v}" for k, v in workload.get_labels().items()]
+            pod_labels = [f"{k}:{v}" for k, v in workload.labels.items()]
             if len([value for value in pod_labels if value in service_selectors]) > 0:
                 exposed_obj.append(workload)
         return exposed_obj
 
     def find_svc_exposing_workload(self, kube_object: KubeWorkload):
         exposing_svc = []
-        object_labels = kube_object.get_labels()
+        object_labels = kube_object.labels
 
         for svc in self.services:
             matching_labels = [l for l in object_labels.items() if l in svc.selectors.items()]

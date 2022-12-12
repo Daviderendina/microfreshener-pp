@@ -24,7 +24,7 @@ class AddAPIGatewayRefactoring(Refactoring):
             container, def_object = self._get_container_and_def_object(smell.node.name)
 
             ports_to_expose = generate_ports_for_container_nodeport(
-                def_object, container, def_object.is_host_network()
+                def_object, container, def_object.host_network
             )
             expose_svc = self._search_for_existing_svc(def_object, ports_to_expose)
             if expose_svc:
@@ -35,11 +35,11 @@ class AddAPIGatewayRefactoring(Refactoring):
                 node_port_service = generate_svc_NodePort_for_container(
                     defining_obj=def_object,
                     container=container,
-                    is_host_network=def_object.is_host_network()
+                    is_host_network=def_object.host_network
                 )
                 self.cluster.add_object(node_port_service)
 
-            if def_object.is_host_network():
+            if def_object.host_network:
                 # def_object.set_host_network(False) TODO qui c'è un problema: non posso toglierlo senza prima essere
                 # sicuro che non ci siano altri smell sugli altri container definiti dal pod. Togliendolo fregandomene di
                 # tutto rischio di fare un casino, perché poi non mi becca più lo smell

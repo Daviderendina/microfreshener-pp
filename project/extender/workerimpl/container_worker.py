@@ -26,7 +26,7 @@ class ContainerWorker(KubeWorker):
 
                 if len(service_nodes) > 0:
                     service_node = service_nodes[0]
-                    if workload.is_host_network():
+                    if workload.host_network:
                         self.model.edge.add_member(service_node)
                     else:
                         for port in container.ports:

@@ -27,20 +27,23 @@ class KubeWorkload(KubeObject):
     def set_containers(self, container_list: []):
         pass
 
+    @property
     @abstractmethod
-    def get_labels(self):
+    def labels(self):
         pass
 
+    @property
     @abstractmethod
-    def is_host_network(self) -> bool:
+    def host_network(self) -> bool:
         pass
 
     @abstractmethod
     def set_host_network(self, host_network: bool):
         pass
 
+    @property
     @abstractmethod
-    def get_pod_spec(self):
+    def pod_spec(self):
         pass
 
     '''
@@ -67,16 +70,19 @@ class KubePod(KubeWorkload):
     def set_containers(self, container_list):
         self.data["spec"]["containers"] = container_to_dict(container_list)
 
-    def get_labels(self):
+    @property
+    def labels(self):
         return self.data.get("metadata", {}).get("labels", {})
 
-    def is_host_network(self) -> bool:
+    @property
+    def host_network(self) -> bool:
         return self.data.get("spec", {}).get("hostNetwork", False)
 
     def set_host_network(self, host_network: bool):
         self.data["spec"]["hostNetwork"] = host_network
 
-    def get_pod_spec(self):
+    @property
+    def pod_spec(self):
         return self.data["spec"]
 
 
@@ -85,32 +91,36 @@ class KubePodDefiner(KubeWorkload):
     def __init__(self, data: dict):
         super().__init__(data)
 
-    def get_pod_template(self):
+    @property
+    def pod_template(self):
         return self.data.get("spec", {}).get("template", {})
 
     @property
     def containers(self):
-        return cast_container_list(self.get_pod_spec().get("containers", []))
+        return cast_container_list(self.pod_spec.get("containers", []))
 
     def set_containers(self, container_list):
         self.data["spec"]["template"]["spec"]["containers"] = container_to_dict(container_list)
 
-    def get_labels(self):
-        return self.get_pod_template().get("metadata", {}).get("labels", {})
+    @property
+    def labels(self):
+        return self.pod_template.get("metadata", {}).get("labels", {})
 
-    def is_host_network(self) -> bool:
-        return self.get_pod_spec().get("hostNetwork", False)
+    @property
+    def host_network(self) -> bool:
+        return self.pod_spec.get("hostNetwork", False)
 
     def set_host_network(self, host_network: bool):
         self.data["spec"]["template"]["spec"]["hostNetwork"] = host_network
 
-    def get_pod_spec(self):
-        return self.get_pod_template().get("spec", {})
+    @property
+    def pod_spec(self):
+        return self.pod_template.get("spec", {})
 
     def add_pod_labels(self, labels: dict):
-        actual_labels: dict = self.get_pod_template()["metadata"].get("labels", {})
+        actual_labels: dict = self.pod_template["metadata"].get("labels", {})
         actual_labels.update(labels)
-        self.get_pod_template()["metadata"]["labels"] = actual_labels
+        self.pod_template["metadata"]["labels"] = actual_labels
 
 
 class KubeDeployment(KubePodDefiner):

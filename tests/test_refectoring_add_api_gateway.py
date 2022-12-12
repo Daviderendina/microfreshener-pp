@@ -145,7 +145,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         # Cluster
         k_deploy = KubeDeployment(DEPLOYMENT_WITH_ONE_CONTAINER)
-        k_deploy.get_pod_spec()["hostNetwork"] = True
+        k_deploy.pod_spec["hostNetwork"] = True
         cluster.add_object(k_deploy)
 
         # Model
@@ -170,7 +170,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertEqual(len([n for n in model.nodes]), 1)
         self.assertEqual(len(model.edge.members), 1)
 
-        #TODO self.assertFalse(k_deploy.get_pod_spec().data["spec"]["hostNetwork"])
+        #TODO self.assertFalse(k_deploy.pod_spec.data["spec"]["hostNetwork"])
 
         k_services: list = cluster.services
         self.assertEquals(len(k_services), 1)

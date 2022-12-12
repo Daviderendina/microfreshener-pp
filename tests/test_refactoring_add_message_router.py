@@ -79,7 +79,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(k_service.fullname, f"{service_name}.{service_ns}")
 
         # Check labels
-        matching_labels = [l for l in k_service.selectors if l in k_pod_3.get_labels()]
+        matching_labels = [l for l in k_service.selectors if l in k_pod_3.labels]
         self.assertEqual(len(matching_labels), 1)
 
         # Check ports
@@ -157,7 +157,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(k_service.fullname, f"{service_name}.{service_ns}")
 
         # Check labels
-        matching_labels = [l for l in k_service.selectors if l in k_deploy.get_labels()]
+        matching_labels = [l for l in k_service.selectors if l in k_deploy.labels]
         self.assertEqual(len(matching_labels), 1)
 
         # Check ports
@@ -272,7 +272,7 @@ class TestRefactoringAddMessageRouter(TestCase):
 
         k_pod_1.data["metadata"]["name"] = "pod_1"
         k_pod_2.data["metadata"]["name"] = "pod_2"
-        k_deploy.get_pod_template()["metadata"]["labels"] = labels
+        k_deploy.pod_template["metadata"]["labels"] = labels
         k_service.data["spec"]["selector"] = labels
         k_service.data["spec"]["ports"] = [{'name': 'svc-port', 'port': 8081, 'protocol': 'TCP', 'targetPort': 8080}]
 
