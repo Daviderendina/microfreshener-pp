@@ -21,26 +21,6 @@ class RefactoringNotSupportedError(Exception):
     pass
 
 
-class AddCircuitBreakerRefactoring(Refactoring):
-
-    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
-        super().__init__(model, cluster)
-
-    def apply(self, smell: Smell):
-        if not isinstance(smell, WobblyServiceInteractionSmell):
-            raise RefactoringNotSupportedError
-
-        if isinstance(smell.node, Service):
-            for link in smell.links_cause:
-
-                if isinstance(link.target, Service):
-                    # In questo caso con Istio non saprei come fare senza mettere un servizio davanti. #TODO dovrei provare Istio
-                    pass
-
-                if isinstance(link.target, MessageRouter):
-                    pass
-
-                    # Devo fare il deploy di una nuova destinationRule per quel servizio (devo usare il campo host)
 
 # DA VEDERE
 

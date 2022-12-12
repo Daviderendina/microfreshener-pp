@@ -2,16 +2,17 @@ import copy
 import uuid
 
 from k8s_template.kubernetes_templates import SERVICE_CLUSTERIP_TEMPLATE, SERVICE_NODEPORT_TEMPLATE, \
-    ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE
+    ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE, ISTIO_CIRCUIT_BREAKER_DR_TEMPLATE
 from project.kmodel.kube_container import KubeContainer
-from project.kmodel.kube_istio import KubeVirtualService
+from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_object import KubeObject
 from project.kmodel.kube_workload import KubePod, KubeWorkload
+from kube_config import CIRCUIT_BREAKER_CONFIG as CB
 
 MF_NAME_SUFFIX = "MF"
 MF_VIRTUALSERVICE_TIMEOUT_NAME = "VSTIMEOUT"
-
+MF_CIRCUITBREAKER_NAME = "CIRCUITBREAKER"
 
 def generate_ports_for_container(defining_obj: KubeObject, container: KubeContainer):
     container_ports = []
@@ -77,7 +78,7 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
     service_selector = generate_random_label(defining_obj.fullname)
 
     # Generate service
-    service_dict = SERVICE_CLUSTERIP_TEMPLATE.copy()
+    service_dict = copy.deepcopy(SERVICE_CLUSTERIP_TEMPLATE)
     service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_NAME_SUFFIX}"
     service_dict["metadata"]["namespace"] = defining_obj.namespace
     service_dict["spec"]["ports"] = container_ports
@@ -123,7 +124,7 @@ def generate_random_label(label_key: str):
 
 
 def generate_timeout_virtualsvc_for_svc(service: KubeService, timeout: float):
-    vservice_template = ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE.copy()
+    vservice_template = copy.deepcopy(ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE)
     vservice_template["metadata"]["name"] = f"{service.fullname}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}"
     vservice_template["metadata"]["namespace"] = service.namespace
     vservice_template["spec"]["hosts"] = [service.fullname]
@@ -131,3 +132,28 @@ def generate_timeout_virtualsvc_for_svc(service: KubeService, timeout: float):
     vservice_template["spec"]["http"][0]["timeout"] = f"{str(timeout)}s"
 
     return KubeVirtualService(vservice_template)
+
+
+def generate_circuit_breaker_for_svc(service: KubeService):
+    template = copy.deepcopy(ISTIO_CIRCUIT_BREAKER_DR_TEMPLATE)
+
+    template["metadata"]["name"] = f"{service.fullname}-{MF_CIRCUITBREAKER_NAME}-{MF_NAME_SUFFIX}"
+    template["spec"]["host"] = service.fullname
+
+    if CB.MAX_CONNECTIONS:
+        template["spec"]["trafficPolicy"]["connectionPool"]["tcp"]["maxConnections"] = CB.MAX_CONNECTIONS
+    if CB.HTTP_1_MAX_PENDING_REQUESTS:
+        template["spec"]["trafficPolicy"]["connectionPool"]["http"]["http1MaxPendingRequests"] = CB.HTTP_1_MAX_PENDING_REQUESTS
+    if CB.MAX_REQUESTS_PER_CONNECTION:
+        template["spec"]["trafficPolicy"]["connectionPool"]["http"]["maxRequestsPerConnection"] = CB.MAX_REQUESTS_PER_CONNECTION
+    if CB.CONSECUTIVE_5XX_ERRORS:
+        template["spec"]["trafficPolicy"]["outlierDetection"]["consecutive5xxErrors"] = CB.CONSECUTIVE_5XX_ERRORS
+    if CB.INTERVAL:
+        template["spec"]["trafficPolicy"]["outlierDetection"]["interval"] = CB.INTERVAL
+    if CB.BASE_EJECTION_TIME:
+        template["spec"]["trafficPolicy"]["outlierDetection"]["baseEjectionTime"] = CB.BASE_EJECTION_TIME
+    if CB.MAX_EJECTION_PERCENT:
+        template["spec"]["trafficPolicy"]["outlierDetection"]["maxEjectionPercent"] = CB.MAX_EJECTION_PERCENT
+
+    destination_rule_cb = KubeDestinationRule(template)
+    return destination_rule_cb

@@ -65,3 +65,31 @@ ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE = {
         ]
     }
 }
+
+ISTIO_CIRCUIT_BREAKER_DR_TEMPLATE = {
+    "apiVersion": "networking.istio.io/v1alpha3",
+    "kind": "DestinationRule",
+    "metadata": {
+        # "name": ?
+    },
+    "spec": {
+        # "host": ? (service name)
+        "trafficPolicy": {
+            "connectionPool": {
+                "tcp": {
+                    # "maxConnections" : ? (int)
+                },
+                "http": {
+                    # "http1MaxPendingRequests": ?, (int)
+                    # "maxRequestsPerConnection": ? (int)
+                }
+            },
+            "outlierDetection": {
+                # "consecutive5xxErrors": ? (int),
+                # "interval": ? (format: "1s)",
+                # "baseEjectionTime": ? (format: 3m),
+                # "maxEjectionPercent": ? (int)
+            }
+        }
+    }
+}
