@@ -4,7 +4,7 @@ from unittest import TestCase
 from microfreshener.core.model import Service
 
 from project.kmodel.kube_workload import KubePod
-from project.utils import check_kobject_node_name_match
+from project.utils.utils import check_kobject_node_name_match
 from data.kube_objects_dict import POD_WITH_ONE_CONTAINER
 
 

@@ -26,5 +26,4 @@ def main():
 
     # Mostro il grafo in output
 
-
 main()

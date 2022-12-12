@@ -1,0 +1,10 @@
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: external-svc
+subsets: 
+  - addresses:
+        - ip: 139.59.205.180
+    ports:
+      - port: 80
+        name: prova

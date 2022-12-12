@@ -1,5 +1,3 @@
-import uuid
-
 from microfreshener.core.analyser.smell import Smell, EndpointBasedServiceInteractionSmell
 from microfreshener.core.model import MicroToscaModel, Service
 
@@ -7,7 +5,7 @@ from k8s_template.kobject_generators import generate_ports_for_container, genera
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
-from project.utils import check_ports_match
+from project.utils.utils import check_ports_match
 
 
 class AddMessageRouterRefactoring(Refactoring):

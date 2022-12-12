@@ -2,7 +2,7 @@ from microfreshener.core.model import MicroToscaModel
 
 from project.extender.kubeworker import KubeWorker
 from project.kmodel.kube_cluster import KubeCluster
-from project.utils import check_kobject_node_name_match
+from project.utils.utils import check_kobject_node_name_match
 
 
 class ContainerWorker(KubeWorker):

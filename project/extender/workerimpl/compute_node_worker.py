@@ -3,7 +3,7 @@ from microfreshener.core.model.nodes import Compute
 
 from project.extender.kubeworker import KubeWorker
 from project.kmodel.kube_cluster import KubeCluster
-from project.utils import check_kobject_node_name_match
+from project.utils.utils import check_kobject_node_name_match
 
 
 class ComputeNodeWorker(KubeWorker):

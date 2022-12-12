@@ -1,15 +1,17 @@
 import re
 from typing import List
 
+from project.exporter.export_object import ExportObject
 from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
 from project.kmodel.kube_networking import KubeService, KubeIngress
+from project.kmodel.kube_object import KubeObject
 from project.kmodel.kube_workload import KubeWorkload
 
 
 class KubeCluster:
 
     def __init__(self):
-        self.cluster_objects = list()
+        self.cluster_objects: list[KubeObject] = list()
 
     @property
     def workloads(self):

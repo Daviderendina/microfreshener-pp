@@ -1,10 +1,13 @@
+from typing import Tuple, List
+
 import yaml
 from yaml.loader import SafeLoader
 from microfreshener.core.logging import MyLogger
 
-from project.kmodel.kObjectFactory import KObjectFactory
+from project.kmodel.kube_object_factory import KubeObjectFactory
 from .kimporter import KImporter, get_filenames_from_directory
-from project.kmodel.v2 import Cluster
+from ..exporter.export_object import ExportObject
+from ..kmodel.kube_cluster import KubeCluster
 
 
 def is_yaml(filename):
@@ -25,24 +28,29 @@ class YamlKImporter(KImporter):
 
     def __init__(self):
         super().__init__()
-        self.cluster = Cluster()
+        self.cluster = KubeCluster()
+        self.export_objects: list[ExportObject] = []
 
-    def Import(self, path: str) -> Cluster:
+    def Import(self, path: str) -> tuple[KubeCluster, list[ExportObject]]:
         filename_list = get_filenames_from_directory(path=path)
         MyLogger().get_logger().debug(f"Found {len(filename_list)} files in folder {path}: {filename_list}")
 
         for file in filename_list:
+            file_fullpath = f"{path}/{file}"
+
             if is_yaml(file):
+
                 # Build objects
-                data = read_data_from_file(path + "/" + file)
-                for deploy_element in data:
-                    kObject = KObjectFactory.build_object(object_dict=deploy_element, filename=file)
+                data = read_data_from_file(file_fullpath)
+                for deploy_data in data:
+                    kObject = KubeObjectFactory.build_object(object_dict=deploy_data, filename=file)
 
-                    if kObject is None:
-                        self.non_parsed.append((file, deploy_element))
+                    if kObject is not None:
+                        self.cluster.add_object(kObject)
+                        self.export_objects.append(ExportObject(kObject, file))
                     else:
-                        self.cluster.add_object(object)
+                        self.export_objects.append(ExportObject(deploy_data, file))
             else:
-                self.non_parsed.append((file, None))
+                self.export_objects.append(ExportObject(None, file))
 
-        return self.cluster
+        return self.cluster, self.export_objects

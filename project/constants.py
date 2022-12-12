@@ -2,4 +2,4 @@ import os
 
 
 class ImportExportConstants:
-    export_directory = os.getcwd() + "/output"
+    export_directory = "./out" #os.getcwd() +

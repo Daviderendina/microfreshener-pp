@@ -3,7 +3,7 @@ from microfreshener.core.model import MicroToscaModel, MessageRouter
 from project.extender.kubeworker import KubeWorker
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
-from project.utils import check_kobject_node_name_match
+from project.utils.utils import check_kobject_node_name_match
 
 
 class IngressWorker(KubeWorker):
