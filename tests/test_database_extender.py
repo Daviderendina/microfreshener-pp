@@ -22,7 +22,7 @@ class TestDatabaseExtender(TestCase):
 
         # Change pod port
         container_to_change: KubeContainer = pod.get_containers()[0]
-        for port in container_to_change.get_ports():
+        for port in container_to_change.ports:
             port["containerPort"] = 3306
 
         cluster.add_object(pod)
@@ -65,7 +65,7 @@ class TestDatabaseExtender(TestCase):
         # Change pod port
         container_to_change: KubeContainer = pod.get_containers()[0]
         container_to_change.data["name"] = "mysql-database"
-        for port in container_to_change.get_ports():
+        for port in container_to_change.ports:
             port["containerPort"] = 0
 
         cluster.add_object(pod)
@@ -108,7 +108,7 @@ class TestDatabaseExtender(TestCase):
         # Change pod port
         container_to_change: KubeContainer = pod.get_containers()[0]
         container_to_change.data["name"] = "container"
-        for port in container_to_change.get_ports():
+        for port in container_to_change.ports:
             port["containerPort"] = 80
 
         cluster.add_object(pod)

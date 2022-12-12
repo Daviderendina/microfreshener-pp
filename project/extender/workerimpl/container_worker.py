@@ -29,7 +29,7 @@ class ContainerWorker(KubeWorker):
                     if workload.is_host_network():
                         self.model.edge.add_member(service_node)
                     else:
-                        for port in container.get_ports():
+                        for port in container.ports:
                             if port.get("host_port", None):
                                 self.model.edge.add_member(service_node)
 

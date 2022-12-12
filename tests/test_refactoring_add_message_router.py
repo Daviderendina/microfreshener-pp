@@ -85,13 +85,13 @@ class TestRefactoringAddMessageRouter(TestCase):
         # Check ports
         # STRING_FORMAT: <NAME>_<PROTOCOL>_<PORT>_<TARGET_PORT>
         service_ports = []
-        for sp in k_service.get_ports():
+        for sp in k_service.ports:
             self.assertTrue({sp['name']})
             matching_port = sp.get('target_port', None) if sp.get('target_port', None) else sp.get('port', None)
             service_ports.append(f"{sp.get('protocol', 'PROTOCOL')}  {matching_port}")
 
         for container in k_pod_3.get_containers():
-            for port in container.get_ports():
+            for port in container.ports:
                 port_str = f"{port.get('protocol', 'PROTOCOL')}  {port.get('containerPort','PORT')}"
                 self.assertTrue(port_str in service_ports)
 
@@ -163,13 +163,13 @@ class TestRefactoringAddMessageRouter(TestCase):
         # Check ports
         # STRING_FORMAT: <NAME>_<PROTOCOL>_<PORT>_<TARGET_PORT>
         service_ports = []
-        for sp in k_service.get_ports():
+        for sp in k_service.ports:
             self.assertTrue({sp['name']})
             matching_port = sp.get('target_port', None) if sp.get('target_port', None) else sp.get('port', None)
             service_ports.append(f"{sp.get('protocol', 'PROTOCOL')} {matching_port}")
 
         for container in k_deploy.get_containers():
-            for port in container.get_ports():
+            for port in container.ports:
                 port_str = f"{port.get('protocol', 'PROTOCOL')} {port.get('containerPort', 'PORT')}"
                 self.assertTrue(port_str in service_ports)
 
@@ -223,7 +223,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         smell = EndpointBasedServiceInteractionSmell(node=node_svc_4)
         smell.addLinkCause(r1)
 
-        port_number = len(k_service.get_ports())
+        port_number = len(k_service.ports)
 
         # Assert that everything had been created properly
         self.assertEqual(len(cluster.cluster_objects), 4)
@@ -244,16 +244,16 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(k_service, k_service_retrieved)
 
         # Check ports
-        pod_ports_number = sum([len(c.get_ports()) for c in k_pod_3.get_containers()])
-        self.assertEqual(len(k_service.get_ports()), port_number + pod_ports_number)
+        pod_ports_number = sum([len(c.ports) for c in k_pod_3.get_containers()])
+        self.assertEqual(len(k_service.ports), port_number + pod_ports_number)
         port_found = False
 
         port_list = []
         for c in k_pod_3.get_containers():
-            for port in c.get_ports():
+            for port in c.ports:
                 port_list.append(port["containerPort"])
 
-        for port in k_service.get_ports():
+        for port in k_service.ports:
             if port.get("targetPort", port.get("port", 0)) in port_list:
                 port_found = True
         self.assertTrue(port_found)
@@ -307,7 +307,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         smell = EndpointBasedServiceInteractionSmell(node=node_svc_4)
         smell.addLinkCause(r1)
 
-        port_number = len(k_service.get_ports())
+        port_number = len(k_service.ports)
 
         # Assert that everything had been created properly
         self.assertEqual(len(cluster.cluster_objects), 4)
@@ -328,16 +328,16 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(k_service, k_service_retrieved)
 
         # Check ports
-        pod_ports_number = sum([len(c.get_ports()) for c in k_deploy.get_containers()])
-        self.assertEqual(len(k_service.get_ports()), port_number + pod_ports_number)
+        pod_ports_number = sum([len(c.ports) for c in k_deploy.get_containers()])
+        self.assertEqual(len(k_service.ports), port_number + pod_ports_number)
         port_found = False
 
         port_list = []
         for c in k_deploy.get_containers():
-            for port in c.get_ports():
+            for port in c.ports:
                 port_list.append(port["containerPort"])
 
-        for port in k_service.get_ports():
+        for port in k_service.ports:
             if port.get("targetPort", port.get("port", 0)) in port_list:
                 port_found = True
         self.assertTrue(port_found)

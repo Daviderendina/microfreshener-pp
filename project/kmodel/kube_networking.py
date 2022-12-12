@@ -20,7 +20,8 @@ class KubeService(KubeNetworking):
     def is_reachable_from_outside(self):
         return self.data.get("spec", {}).get("type", "ClusterIP") != "ClusterIP"
 
-    def get_ports(self):
+    @property
+    def ports(self):
         return self.data.get("spec", {}).get("ports", [])
 
 

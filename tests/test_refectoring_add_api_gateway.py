@@ -61,12 +61,12 @@ class TestAddAPIGatewayRefactoring(TestCase):
         container_name = k_pod.get_containers()[0].name
         k_pod_port_strings = [
             f"{p.get('name', container_name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_pod.get_containers()[0].get_ports()]
+            for p in k_pod.get_containers()[0].ports]
         k_svc_port_strings = [
             f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
-            for p in k_service.get_ports()]
+            for p in k_service.ports]
 
-        self.assertEqual(len(k_service.get_ports()), 2)
+        self.assertEqual(len(k_service.ports), 2)
         for port in k_pod_port_strings:
             self.assertTrue(port in k_svc_port_strings)
 
@@ -82,7 +82,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         # Cluster
         pod_host_port = 90
         k_pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
-        k_pod.get_containers()[0].get_ports()[0]["hostPort"] = pod_host_port
+        k_pod.get_containers()[0].ports[0]["hostPort"] = pod_host_port
         cluster.add_object(k_pod)
 
         # Model
@@ -111,29 +111,29 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertEquals(len(k_services), 1)
         k_service = k_services[0]
 
-        self.assertEqual(len(k_service.get_ports()), 1)
+        self.assertEqual(len(k_service.ports), 1)
 
         self.assertEqual(k_service.fullname, f"{k_pod.name}-MF.{k_pod.namespace}")
         self.assertTrue(f"{k_pod.fullname}-svc-MF" in k_service.get_selectors().keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
         for container in k_pod.get_containers():
-            for port in container.get_ports():
+            for port in container.ports:
                 self.assertIsNone(port.get("hostPort"))
 
-        self.assertEqual(len(k_service.get_ports()), 1)
+        self.assertEqual(len(k_service.ports), 1)
 
         container_name = k_pod.get_containers()[0].name
         k_pod_port_strings = [
             f"{container_name}.{p.get('name', k_pod.fullname+'-port-'+str(p['containerPort'])+'-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']}"
-            for p in k_pod.get_containers()[0].get_ports()[0:0]] # I take only the 0 cause is the one with hostPort set
+            for p in k_pod.get_containers()[0].ports[0:0]] # I take only the 0 cause is the one with hostPort set
         k_svc_port_strings = [
-            f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']}" for p in k_service.get_ports()]
+            f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']}" for p in k_service.ports]
         for port in k_pod_port_strings:
             self.assertTrue(port in k_svc_port_strings)
 
         # Check node port
-        self.assertEqual(k_service.get_ports()[0]["node_port"], pod_host_port)
+        self.assertEqual(k_service.ports[0]["node_port"], pod_host_port)
 
     '''
     Test case: Deployment has hostNetwork set as True
@@ -183,12 +183,12 @@ class TestAddAPIGatewayRefactoring(TestCase):
         container_name = k_deploy.get_containers()[0].name
         k_deploy_port_strings = [
             f"{p.get('name', container_name+k_deploy.fullname+'-port-'+str(p['containerPort'])+'-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_deploy.get_containers()[0].get_ports()]
+            for p in k_deploy.get_containers()[0].ports]
         k_svc_port_strings = [
             f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
-            for p in k_service.get_ports()]
+            for p in k_service.ports]
 
-        self.assertEqual(len(k_service.get_ports()), len(k_deploy.get_containers()[0].get_ports()))
+        self.assertEqual(len(k_service.ports), len(k_deploy.get_containers()[0].ports))
         for port in k_deploy_port_strings:
             self.assertTrue(port in k_svc_port_strings)
 
@@ -203,7 +203,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         # Cluster
         deployment_host_port = 90
         k_deploy = KubeDeployment(DEPLOYMENT_WITH_ONE_CONTAINER)
-        k_deploy.get_containers()[0].get_ports()[0]["hostPort"] = deployment_host_port
+        k_deploy.get_containers()[0].ports[0]["hostPort"] = deployment_host_port
         cluster.add_object(k_deploy)
 
 
@@ -233,7 +233,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertEquals(len(k_services), 1)
         k_service = k_services[0]
 
-        self.assertEqual(len(k_service.get_ports()), 1)
+        self.assertEqual(len(k_service.ports), 1)
 
         self.assertEqual(k_service.fullname, f"{k_deploy.name}-MF.{k_deploy.namespace}")
         self.assertTrue(f"{k_deploy.fullname}-svc-MF" in k_service.get_selectors().keys())
@@ -241,24 +241,24 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         # Check hostPort is none
         for container in k_deploy.get_containers():
-            for port in container.get_ports():
+            for port in container.ports:
                 self.assertIsNone(port.get("hostPort"))
 
         # Check ports
         k_pod_port_strings = [
             f"{p.get('name', k_deploy.fullname+'-port-'+str(p['containerPort'])+'-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']}"
-            for p in k_deploy.get_containers()[0].get_ports()]
+            for p in k_deploy.get_containers()[0].ports]
         k_svc_port_strings = [
             f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']}"
-            for p in k_service.get_ports()]
+            for p in k_service.ports]
 
-        self.assertEqual(len(k_service.get_ports()), 1)
+        self.assertEqual(len(k_service.ports), 1)
         self.assertEqual(len(k_pod_port_strings), 1)
         for port in k_pod_port_strings:
             self.assertTrue(port in k_svc_port_strings)
 
         # Check service exponed ports
-        self.assertEqual(k_service.get_ports()[0]["node_port"], deployment_host_port)
+        self.assertEqual(k_service.ports[0]["node_port"], deployment_host_port)
 
     '''
     Test case: the pod defines two container and has hostNetwork = True
@@ -271,9 +271,9 @@ class TestAddAPIGatewayRefactoring(TestCase):
         # Cluster
         host_ports = [80,81]
         k_pod = KubePod(copy.deepcopy(POD_WITH_TWO_CONTAINER))
-        k_pod.get_containers()[1].get_ports()[0]['containerPort'] = 8001
-        k_pod.get_containers()[0].get_ports()[0]['hostPort'] = host_ports[0]
-        k_pod.get_containers()[1].get_ports()[0]['hostPort'] = host_ports[1]
+        k_pod.get_containers()[1].ports[0]['containerPort'] = 8001
+        k_pod.get_containers()[0].ports[0]['hostPort'] = host_ports[0]
+        k_pod.get_containers()[1].ports[0]['hostPort'] = host_ports[1]
         cluster.add_object(k_pod)
 
         # Model
@@ -313,27 +313,27 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         # Check that hostPort is removed
         for container in k_pod.get_containers():
-            for port in container.get_ports():
+            for port in container.ports:
                 self.assertIsNone(port.get("hostPort"))
 
         # Check port protocols, names, and container port
         k_pod_port_strings = [
             f"{p.get('name', k_pod.get_containers()[0].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']}"
-            for p in k_pod.get_containers()[0].get_ports()]
+            for p in k_pod.get_containers()[0].ports]
         k_pod_port_strings += [
             f"{p.get('name', k_pod.get_containers()[1].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']}"
-            for p in k_pod.get_containers()[1].get_ports()]
+            for p in k_pod.get_containers()[1].ports]
         k_svc_port_strings = [
             f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']}"
-            for p in k_service.get_ports()]
-        self.assertEqual(len(k_service.get_ports()), 2)
+            for p in k_service.ports]
+        self.assertEqual(len(k_service.ports), 2)
 
         for port in k_pod_port_strings:
             self.assertTrue(port in k_svc_port_strings)
 
         # Check node ports exponed
         for host_port in host_ports:
-            self.assertTrue(host_port in [p["node_port"] for p in k_service.get_ports()])
+            self.assertTrue(host_port in [p["node_port"] for p in k_service.ports])
 
     '''
     Test case: the pod defines two container and has hostNetwork = True, but expose the same port
@@ -349,8 +349,8 @@ class TestAddAPIGatewayRefactoring(TestCase):
         # Cluster
         k_pod = KubePod(copy.deepcopy(POD_WITH_TWO_CONTAINER))
         k_pod.data["spec"]["hostNetwork"] = True
-        k_pod.get_containers()[0].get_ports()[0]['containerPort'] = 8000
-        k_pod.get_containers()[1].get_ports()[0]['containerPort'] = 8000
+        k_pod.get_containers()[0].ports[0]['containerPort'] = 8000
+        k_pod.get_containers()[1].ports[0]['containerPort'] = 8000
         cluster.add_object(k_pod)
 
         # Model
@@ -394,15 +394,15 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         all_pod_ports_strings = [
             f"{p.get('name', k_pod.get_containers()[0].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_pod.get_containers()[0].get_ports()]
+            for p in k_pod.get_containers()[0].ports]
         all_pod_ports_strings += [
             f"{p.get('name', k_pod.get_containers()[1].name + '.' + k_pod.fullname + '-port-' + str(p['containerPort']) + '-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_pod.get_containers()[1].get_ports()]
+            for p in k_pod.get_containers()[1].ports]
 
         k_svc_port_strings = [
             f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
-            for p in k_service.get_ports()]
-        self.assertEqual(len(k_service.get_ports()), 1)
+            for p in k_service.ports]
+        self.assertEqual(len(k_service.ports), 1)
 
         for port in k_svc_port_strings:
             self.assertTrue(port in all_pod_ports_strings)
@@ -418,8 +418,8 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         k_svc_port_strings = [
             f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
-            for p in k_service.get_ports()]
-        self.assertEqual(len(k_service.get_ports()), 1)
+            for p in k_service.ports]
+        self.assertEqual(len(k_service.ports), 1)
 
         for port in k_svc_port_strings:
             self.assertTrue(port in all_pod_ports_strings)
@@ -438,8 +438,8 @@ class TestAddAPIGatewayRefactoring(TestCase):
         # Cluster
         k_pod = KubePod(copy.deepcopy(POD_WITH_TWO_CONTAINER))
         k_pod.data["spec"]["hostNetwork"] = True
-        k_pod.get_containers()[0].get_ports()[0]['containerPort'] = 8001
-        k_pod.get_containers()[1].get_ports()[0]['containerPort'] = 8000
+        k_pod.get_containers()[0].ports[0]['containerPort'] = 8001
+        k_pod.get_containers()[1].ports[0]['containerPort'] = 8000
         cluster.add_object(k_pod)
 
         # Model
@@ -481,14 +481,14 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         k_pod_port_strings = [
             f"{p.get('name', k_pod.get_containers()[0].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_pod.get_containers()[0].get_ports()]
+            for p in k_pod.get_containers()[0].ports]
         k_pod_port_strings += [
             f"{p.get('name', k_pod.get_containers()[1].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-MF')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_pod.get_containers()[1].get_ports()]
+            for p in k_pod.get_containers()[1].ports]
         k_svc_port_strings = [
             f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
-            for p in k_service.get_ports()]
-        self.assertEqual(len(k_service.get_ports()), 2)
+            for p in k_service.ports]
+        self.assertEqual(len(k_service.ports), 2)
 
         for port in k_pod_port_strings:
             self.assertTrue(port in k_svc_port_strings)

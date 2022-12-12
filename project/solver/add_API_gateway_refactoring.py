@@ -28,7 +28,7 @@ class AddAPIGatewayRefactoring(Refactoring):
             )
             expose_svc = self._search_for_existing_svc(def_object, ports_to_expose)
             if expose_svc:
-                svc_ports = expose_svc.get_ports()
+                svc_ports = expose_svc.ports
                 svc_ports += ports_to_expose
 
             else:
@@ -49,7 +49,7 @@ class AddAPIGatewayRefactoring(Refactoring):
                 pass
 
             else:
-                for port in container.get_ports():
+                for port in container.ports:
                     if port.get("hostPort"):
                         del port["hostPort"]
 
@@ -80,7 +80,7 @@ class AddAPIGatewayRefactoring(Refactoring):
         return expose_svc
 
     def _check_ports(self, svc, ports_to_check: List[int]):
-        for svcport in svc.get_ports():
+        for svcport in svc.ports:
             exposed_port = svcport.get('node_port', svcport.get('port', None))
             if exposed_port and exposed_port in ports_to_check:
                 return False
