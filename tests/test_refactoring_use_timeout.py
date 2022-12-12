@@ -53,7 +53,7 @@ class TestRefactoringUseTimeout(TestCase):
 
         virtual_svc = cluster.virtual_services[0]
 
-        self.assertEqual(virtual_svc.get_fullname(), f"{k_service.get_fullname()}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}.{k_service.get_namespace()}")
+        self.assertEqual(virtual_svc.get_fullname(), f"{k_service.get_fullname()}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}.{k_service.namespace}")
         self.assertListEqual(virtual_svc.get_hosts(), [k_service.get_fullname()])
         self.assertEqual(virtual_svc.get_destinations()[0], k_service.get_fullname())
         self.assertEqual(virtual_svc.get_timeouts()[0][2], f"{UseTimeoutRefactoring.DEFAULT_TIMEOUT_SEC}s")

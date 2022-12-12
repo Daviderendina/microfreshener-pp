@@ -188,11 +188,11 @@ class TestComputeNodeExtender(TestCase):
         #TODO non funziona se il nome viene dato in automatico da K8s. Ad esempio utilizzando il campo generateName
         # oppure non mettendo il nome in un template, viene dato dopo il nome un codice del tipo "-ABCDD1234". Per
         # testare questa cosa, utilizzare la seguente istruzione per il nome:
-        #name = template.get_containers()[0].name + "." + statefulset.metadata.name + "-ABCDD1234." + statefulset.get_namespace() \
+        #name = template.get_containers()[0].name + "." + statefulset.metadata.name + "-ABCDD1234." + statefulset.namespace \
         #    if not template.metadata.name \
         #    else template.get_containers()[0].name + "." + template.get_name_dot_namespace()
 
-        name = statefulset.get_containers()[0].name + "." + statefulset.name + "." + statefulset.get_namespace() \
+        name = statefulset.get_containers()[0].name + "." + statefulset.name + "." + statefulset.namespace \
             if not template.get("name", None) \
             else statefulset.get_containers()[0].name + "." + template.get_fullname()
         model.add_node(Service(name=name))

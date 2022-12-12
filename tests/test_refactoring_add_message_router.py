@@ -75,7 +75,7 @@ class TestRefactoringAddMessageRouter(TestCase):
 
         # Check name
         service_name = f"{k_pod_3.name}-{MF_NAME_SUFFIX}"
-        service_ns = k_pod_3.get_namespace()
+        service_ns = k_pod_3.namespace
         self.assertEqual(k_service.get_fullname(), f"{service_name}.{service_ns}")
 
         # Check labels
@@ -153,7 +153,7 @@ class TestRefactoringAddMessageRouter(TestCase):
 
         # Check name
         service_name = f"{k_deploy.name}-{MF_NAME_SUFFIX}"
-        service_ns = k_deploy.get_namespace()
+        service_ns = k_deploy.namespace
         self.assertEqual(k_service.get_fullname(), f"{service_name}.{service_ns}")
 
         # Check labels

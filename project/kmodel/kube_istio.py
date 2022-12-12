@@ -36,7 +36,7 @@ class KubeVirtualService(KubeIstio):
 
     def get_destinations_with_namespace(self):
         d = self.get_destinations()
-        return list(map(lambda x: x + "." + self.get_namespace(), d))
+        return list(map(lambda x: x + "." + self.namespace, d))
 
     def get_gateways(self):
         return self.data.get("spec", {}).get("gateways", [])

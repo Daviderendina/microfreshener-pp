@@ -79,7 +79,7 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
     # Generate service
     service_dict = SERVICE_CLUSTERIP_TEMPLATE.copy()
     service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_NAME_SUFFIX}"
-    service_dict["metadata"]["namespace"] = defining_obj.get_namespace()
+    service_dict["metadata"]["namespace"] = defining_obj.namespace
     service_dict["spec"]["ports"] = container_ports
     service_dict["spec"]["selector"] = service_selector
     service = KubeService(service_dict)
@@ -103,7 +103,7 @@ def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: K
     # Generate service
     service_dict = copy.deepcopy(SERVICE_NODEPORT_TEMPLATE)
     service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_NAME_SUFFIX}"
-    service_dict["metadata"]["namespace"] = defining_obj.get_namespace()
+    service_dict["metadata"]["namespace"] = defining_obj.namespace
     service_dict["spec"]["ports"] = service_ports
     service_dict["spec"]["selector"] = service_selector
     service = KubeService(service_dict)
@@ -125,7 +125,7 @@ def generate_random_label(label_key: str):
 def generate_timeout_virtualsvc_for_svc(service: KubeService, timeout: float):
     vservice_template = ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE.copy()
     vservice_template["metadata"]["name"] = f"{service.get_fullname()}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}"
-    vservice_template["metadata"]["namespace"] = service.get_namespace()
+    vservice_template["metadata"]["namespace"] = service.namespace
     vservice_template["spec"]["hosts"] = [service.get_fullname()]
     vservice_template["spec"]["http"][0]["route"][0]["destination"]["host"] = service.get_fullname()
     vservice_template["spec"]["http"][0]["timeout"] = f"{str(timeout)}s"

@@ -25,7 +25,7 @@ class IngressWorker(KubeWorker):
         for ingress in self.cluster.ingress:
             for k_service_name in ingress.get_exposed_svc_names():
                 k_services = [s for s in self.cluster.services
-                              if s.get_fullname() == k_service_name + "." + ingress.get_namespace()]
+                              if s.get_fullname() == k_service_name + "." + ingress.namespace]
 
                 if len(k_services) > 0:
                     mr_nodes = [n for n in model.nodes if check_kobject_node_name_match(k_services[0], n)]
