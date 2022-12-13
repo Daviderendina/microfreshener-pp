@@ -2,6 +2,7 @@ from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell, Sm
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from k8s_template.kobject_generators import generate_timeout_virtualsvc_for_svc
+from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
 
@@ -31,6 +32,7 @@ class UseTimeoutRefactoring(Refactoring):
                     virtual_service = generate_timeout_virtualsvc_for_svc(k_service, self.DEFAULT_TIMEOUT_SEC)
 
                     self.cluster.add_object(virtual_service)
+                    self.cluster.add_export_object(ExportObject(virtual_service, None))
 
                     #TODO in verità in questo modo viene aggiunto il timeout per tutte le connessioni in ingresso: questo va bene?
 

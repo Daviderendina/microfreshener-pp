@@ -4,6 +4,7 @@ from microfreshener.core.analyser.smell import Smell, NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Service
 
 from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_ports_for_container_nodeport
+from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
 
@@ -38,6 +39,7 @@ class AddAPIGatewayRefactoring(Refactoring):
                     is_host_network=def_object.host_network
                 )
                 self.cluster.add_object(node_port_service)
+                self.cluster.add_export_object(ExportObject(node_port_service, None))
 
             if def_object.host_network:
                 # def_object.set_host_network(False) TODO qui c'è un problema: non posso toglierlo senza prima essere

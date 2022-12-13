@@ -12,6 +12,7 @@ class KubeCluster:
 
     def __init__(self):
         self.cluster_objects: list[KubeObject] = list()
+        self.cluster_export_info: list[ExportObject] = list()
 
     @property
     def workloads(self):
@@ -48,6 +49,9 @@ class KubeCluster:
     def remove_object(self, kube_object):
         if kube_object in self.cluster_objects:
             self.cluster_objects.remove(kube_object)
+
+    def add_export_object(self, export_object: ExportObject):
+        self.cluster_export_info.append(export_object)
 
     def find_workload_exposed_by_svc(self, service: KubeService) -> List[KubeWorkload]:
         exposed_obj = []

@@ -2,6 +2,7 @@ from microfreshener.core.analyser.smell import Smell, EndpointBasedServiceIntera
 from microfreshener.core.model import MicroToscaModel, Service
 
 from k8s_template.kobject_generators import generate_ports_for_container, generate_svc_clusterIP_for_container
+from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
@@ -45,10 +46,12 @@ class AddMessageRouterRefactoring(Refactoring):
                         # è di quel pod oppure di altro? Questo va fatto nell'extender
                         generated_service = generate_svc_clusterIP_for_container(container=smell_container, defining_obj=container_workload_object)
                         self.cluster.add_object(generated_service)
+                        self.cluster.add_export_object(ExportObject(generated_service, None))
 
                 else:
                     generated_service = generate_svc_clusterIP_for_container(container=smell_container, defining_obj=container_workload_object)
                     self.cluster.add_object(generated_service)
+                    self.cluster.add_export_object(ExportObject(generated_service, None))
 
             # Lo sviluppatore deve in qualche modo confermare di aver cambiato le chiamate, dall'IP al nome del svc
             # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO

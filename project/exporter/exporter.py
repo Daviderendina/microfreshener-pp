@@ -6,6 +6,6 @@ from project.kmodel.kube_cluster import KubeCluster
 class Exporter(ABC):
 
     @abstractmethod
-    def export(self):
+    def export(self, cluster: KubeCluster):
         pass
 

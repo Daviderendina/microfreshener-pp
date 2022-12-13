@@ -2,6 +2,7 @@ from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell, Sm
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from k8s_template.kobject_generators import generate_circuit_breaker_for_svc
+from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
 from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
@@ -31,3 +32,4 @@ class AddCircuitBreakerRefactoring(Refactoring):
 
                     circuit_breaker = generate_circuit_breaker_for_svc(kube_service)
                     self.cluster.add_object(circuit_breaker)
+                    self.cluster.add_export_object(ExportObject(circuit_breaker, None))

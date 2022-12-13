@@ -31,7 +31,7 @@ class YamlKImporter(KImporter):
         self.cluster = KubeCluster()
         self.export_objects: list[ExportObject] = []
 
-    def Import(self, path: str) -> tuple[KubeCluster, list[ExportObject]]:
+    def Import(self, path: str) -> KubeCluster:
         filename_list = get_filenames_from_directory(path=path)
         MyLogger().get_logger().debug(f"Found {len(filename_list)} files in folder {path}: {filename_list}")
 
@@ -47,10 +47,10 @@ class YamlKImporter(KImporter):
 
                     if kObject is not None:
                         self.cluster.add_object(kObject)
-                        self.export_objects.append(ExportObject(kObject, file))
+                        self.cluster.add_export_object(ExportObject(kObject, file))
                     else:
-                        self.export_objects.append(ExportObject(deploy_data, file))
+                        self.cluster.add_export_object(ExportObject(deploy_data, file))
             else:
-                self.export_objects.append(ExportObject(None, file))
+                self.cluster.add_export_object(ExportObject(None, file))
 
-        return self.cluster, self.export_objects
+        return self.cluster

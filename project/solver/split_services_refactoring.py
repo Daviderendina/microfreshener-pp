@@ -3,6 +3,7 @@ from microfreshener.core.model import MicroToscaModel
 from microfreshener.core.model.nodes import Compute
 
 from project.analyser.smell import MultipleServicesInOneContainerSmell
+from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -31,6 +32,7 @@ class SplitServicesRefactoring(Refactoring):
                 object_copy.data["metadata"]["name"] += f"_{name_count}"
 
                 self.cluster.add_object(object_copy)
+                self.cluster.add_export_object(ExportObject(object_copy, None))
 
                 name_count += 1
             pass
