@@ -5,8 +5,11 @@ from typing import List
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.workerimpl.compute_node_worker import ComputeNodeWorker
+from project.extender.workerimpl.container_worker import ContainerWorker
 from project.extender.workerimpl.database_worker import DatabaseWorker
+from project.extender.workerimpl.ingress_worker import IngressWorker
 from project.extender.workerimpl.istio_worker import IstioWorker
+from project.extender.workerimpl.service_worker import ServiceWorker
 from project.kmodel.kube_cluster import KubeCluster
 
 
@@ -44,6 +47,7 @@ class KubeExtender(Extender):
         return extended_model
 
     def set_all_workers(self):
-        self.worker_list = [IstioWorker(), ComputeNodeWorker(), DatabaseWorker()]
+        self.worker_list = [IstioWorker(), ComputeNodeWorker(), DatabaseWorker(),
+                            ContainerWorker(), IngressWorker(), ServiceWorker()]
 
 

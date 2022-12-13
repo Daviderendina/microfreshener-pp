@@ -11,8 +11,8 @@ from project.utils.utils import check_ports_match
 
 class AddMessageRouterRefactoring(Refactoring):
 
-    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
-        super().__init__(model, cluster)
+    def __init__(self, cluster: KubeCluster):
+        super().__init__(cluster)
 
     def apply(self, smell: Smell):
 
@@ -23,7 +23,7 @@ class AddMessageRouterRefactoring(Refactoring):
             smell_container: KubeContainer = self.cluster.get_object_by_name(smell.node.name)
 
             if smell_container is None:
-                return
+                return False
 
             container_workload_fullname: str = smell.node.name[len(smell_container.name) + 1:]
             container_workload_object = self.cluster.get_object_by_name(container_workload_fullname)
@@ -41,6 +41,8 @@ class AddMessageRouterRefactoring(Refactoring):
                             container=smell_container,
                             defining_obj=container_workload_object)
                         port_compatible_services[0].data["spec"]["ports"] += container_ports
+
+                        return True
                     else:
                         #TODO se arrivo qui le porte non sono compatibili, ma devo capire una cosa: la porta che già espone
                         # è di quel pod oppure di altro? Questo va fatto nell'extender
@@ -48,11 +50,16 @@ class AddMessageRouterRefactoring(Refactoring):
                         self.cluster.add_object(generated_service)
                         self.cluster.add_export_object(ExportObject(generated_service, None))
 
+                        return True
                 else:
                     generated_service = generate_svc_clusterIP_for_container(container=smell_container, defining_obj=container_workload_object)
                     self.cluster.add_object(generated_service)
                     self.cluster.add_export_object(ExportObject(generated_service, None))
 
+                    return True
+
             # Lo sviluppatore deve in qualche modo confermare di aver cambiato le chiamate, dall'IP al nome del svc
             # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO
+
+        return False
 

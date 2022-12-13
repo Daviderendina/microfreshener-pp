@@ -1,5 +1,6 @@
 from typing import List
 
+from microfreshener.core.analyser.costants import REFACTORING_ADD_API_GATEWAY
 from microfreshener.core.analyser.smell import Smell, NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Service
 
@@ -11,12 +12,15 @@ from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
 
 class AddAPIGatewayRefactoring(Refactoring):
     # https://alesnosek.com/blog/2017/02/14/accessing-kubernetes-pods-from-outside-of-the-cluster/
-    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
-        super().__init__(model, cluster)
+
+    def __init__(self, cluster: KubeCluster):
+        super().__init__(cluster)
 
     def apply(self, smell: Smell):
         if not isinstance(smell, NoApiGatewaySmell):
             raise RefactoringNotSupportedError
+
+        result = False
 
         # Handle Message Broker case
             #TODO per me non si può fare
@@ -41,6 +45,8 @@ class AddAPIGatewayRefactoring(Refactoring):
                 self.cluster.add_object(node_port_service)
                 self.cluster.add_export_object(ExportObject(node_port_service, None))
 
+            result = True
+
             if def_object.host_network:
                 # def_object.set_host_network(False) TODO qui c'è un problema: non posso toglierlo senza prima essere
                 # sicuro che non ci siano altri smell sugli altri container definiti dal pod. Togliendolo fregandomene di
@@ -55,7 +61,7 @@ class AddAPIGatewayRefactoring(Refactoring):
                     if port.get("hostPort"):
                         del port["hostPort"]
 
-        return self.cluster
+        return result
 
     def _get_container_and_def_object(self, service_node_name: str):
         container = self.cluster.get_object_by_name(service_node_name)

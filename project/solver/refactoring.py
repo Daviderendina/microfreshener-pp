@@ -1,19 +1,18 @@
 from abc import abstractmethod
 
-from microfreshener.core.analyser.smell import Smell, WobblyServiceInteractionSmell
-from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
+from microfreshener.core.analyser.smell import Smell
+from microfreshener.core.model import MicroToscaModel
 
 from project.kmodel.kube_cluster import KubeCluster
 
 
 class Refactoring:
 
-    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
-        self.model = model #TODO si può togliere il model, non serve a nulla
+    def __init__(self, cluster: KubeCluster):
         self.cluster = cluster
 
     @abstractmethod
-    def apply(self, smell: Smell):
+    def apply(self, smell: Smell) -> bool:
         pass
 
 

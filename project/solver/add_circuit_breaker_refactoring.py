@@ -10,8 +10,8 @@ from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
 
 class AddCircuitBreakerRefactoring(Refactoring):
 
-    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
-        super().__init__(model, cluster)
+    def __init__(self, cluster: KubeCluster):
+        super().__init__(cluster)
 
     def apply(self, smell: Smell):
         if not isinstance(smell, WobblyServiceInteractionSmell):
@@ -33,3 +33,7 @@ class AddCircuitBreakerRefactoring(Refactoring):
                     circuit_breaker = generate_circuit_breaker_for_svc(kube_service)
                     self.cluster.add_object(circuit_breaker)
                     self.cluster.add_export_object(ExportObject(circuit_breaker, None))
+
+                    return True
+
+        return False

@@ -1,8 +1,8 @@
-from microfreshener.core.analyser.smell import Smell
-from microfreshener.core.model import MicroToscaModel
+import copy
+
+from microfreshener.core.analyser.smell import Smell, MultipleServicesInOneContainerSmell
 from microfreshener.core.model.nodes import Compute
 
-from project.analyser.smell import MultipleServicesInOneContainerSmell
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
@@ -10,12 +10,10 @@ from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 class SplitServicesRefactoring(Refactoring):
 
-    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
-        super().__init__(model, cluster)
+    def __init__(self, cluster: KubeCluster):
+        super().__init__(cluster)
 
     def apply(self, smell: Smell):
-        import copy
-
         if not isinstance(smell, MultipleServicesInOneContainerSmell):
             raise RefactoringNotSupportedError
 
@@ -35,7 +33,10 @@ class SplitServicesRefactoring(Refactoring):
                 self.cluster.add_export_object(ExportObject(object_copy, None))
 
                 name_count += 1
-            pass
+
+            return True
+        else:
+            return False
 
 
         #TODO devo fare in questo caso anche il refactoring del MicroToscaModel!! Questo deve ovviamente essere fatto prima di arrivare qui

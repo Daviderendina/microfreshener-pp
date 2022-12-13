@@ -8,11 +8,10 @@ from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
 
 
 class UseTimeoutRefactoring(Refactoring):
-
     DEFAULT_TIMEOUT_SEC = 2
 
-    def __init__(self, model: MicroToscaModel, cluster: KubeCluster):
-        super().__init__(model, cluster)
+    def __init__(self, cluster: KubeCluster):
+        super().__init__(cluster)
 
     def apply(self, smell: Smell):
         if not isinstance(smell, WobblyServiceInteractionSmell):
@@ -22,7 +21,7 @@ class UseTimeoutRefactoring(Refactoring):
             for link in smell.links_cause:
 
                 if isinstance(link.target, Service):
-                    pass # Tra Service e Service
+                    pass  # Tra Service e Service
                     # Con Istio non posso mettere direttamente il timeout tra due pod, devo mettere almeno un svc davanti al
                     # target per impostare poi il timeout per quel servizio - SICURAMENTE QUESTO E' MEGLIO ESEGUIRLO PER ULTIMO,
                     # COSÌ DA AGGIUNGERE TUTTI I SVC MANCANTI!! QUESTO CASO IN TEORIA COSÌ NON ESISTE (O QUASI) #TODO
@@ -34,7 +33,11 @@ class UseTimeoutRefactoring(Refactoring):
                     self.cluster.add_object(virtual_service)
                     self.cluster.add_export_object(ExportObject(virtual_service, None))
 
-                    #TODO in verità in questo modo viene aggiunto il timeout per tutte le connessioni in ingresso: questo va bene?
+                    return True
 
-                #TODO devo assicurarmi che non ci siano già VService definiti? Potrei vedere se ci sono VService che hanno
+                    # TODO in verità in questo modo viene aggiunto il timeout per tutte le connessioni in ingresso: questo va bene?
+
+                # TODO devo assicurarmi che non ci siano già VService definiti? Potrei vedere se ci sono VService che hanno
                 # l'host come destinazione e capire in base agli hosts cosa fare. Se però funziona così è meglio
+
+        return False
