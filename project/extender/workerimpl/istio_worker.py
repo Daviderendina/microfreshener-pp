@@ -10,7 +10,6 @@ from project.kmodel.kube_networking import KubeService
 
 
 #TODO SISTEMARE LA COSA DEI NOMI
-#TODO qui devo capire quando vengono usati i FQDN e quando no!!
 
 def _check_gateway_virtualservice_match(gateway: KubeIstioGateway, virtual_service: KubeVirtualService):
     gateway_check = gateway.fullname in virtual_service.gateways

@@ -24,7 +24,6 @@ REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "ad
                "use_timeouts", "use_ts", "split_services", "split_svcs", SELECT_ALL]
 
 
-
 @click.command()
 @click.option("--kubedeploy", "--deploy", required=True, type=str, help="Folder containing Kubernetes deploy files of the system")
 @click.option("--microtoscamodel", "--model", required=True, type=str, help="MicroTosca file containing the description of the system")

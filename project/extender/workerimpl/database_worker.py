@@ -6,8 +6,10 @@ from project.kmodel.kube_container import KubeContainer
 
 
 class DatabaseWorker(KubeWorker):
-    DATABASE_PORTS = [1433, 1434, 3306, 3050, 5432, 27017]  # TODO cercare tutte le porte standard dei DB
-    DATABASE_NAMES = ["mysql", "mariadb", "mongodb", "mongo-db", "database"]  # TODO ampliare
+    DATABASE_PORTS = [1433, 1434, 1521, 3306, 33060, 3050, 5432, 8001, 8080, 27017, 7199, 8089, 443, 10000,
+                      8086, 7474, 7473]
+    DATABASE_NAMES = ["mysql", "sql", "oracle", "redis", "mongodb", "mongo-db", "database", "mariadb"
+                      "snowflake", "cassandra", "splunk", "dynamodb", "hive", "influxdb", "neo4j"]
 
     def __init__(self):
         super().__init__()

@@ -25,7 +25,7 @@ class ExportObject:
 
     def _get_output_fullname(self):
         if self.filename:
-            return f"{self.output_folder}{self.filename}" #TODO non mi piace tanto così
+            return f"{self.output_folder}{self.filename}"
         else:
             self.output_folder = ImportExportConstants.export_directory_new_files
             return f"{self.output_folder}{self.kube_object.fullname}.yaml"
