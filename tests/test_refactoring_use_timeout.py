@@ -18,7 +18,7 @@ class TestRefactoringUseTimeout(TestCase):
         model = MicroToscaModel("model")
         cluster = KubeCluster()
 
-        # Create kube objects
+        # Create deploy objects
         k_pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
         k_service = KubeService(copy.deepcopy(DEFAULT_SVC))
 

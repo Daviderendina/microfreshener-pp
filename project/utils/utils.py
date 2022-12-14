@@ -1,3 +1,4 @@
+import os
 import re
 
 from microfreshener.core.model import Root
@@ -50,3 +51,9 @@ def check_ports_match(k_service, k_container):
         if port["containerPort"] in service_ports:
             return False
     return True
+
+
+def create_folder(path):
+    file_folder = f"./{os.path.dirname(path)}"
+    if not os.path.exists(file_folder):
+        os.makedirs(file_folder, 0o777)

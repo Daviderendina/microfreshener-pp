@@ -5,6 +5,8 @@ import yaml
 
 from project.kmodel.kube_object import KubeObject
 from project.constants import ImportExportConstants
+from project.utils.utils import create_folder
+
 
 class ExportObject:
 
@@ -16,7 +18,7 @@ class ExportObject:
 
     def export(self, output_folder: str):
         self.output_folder = output_folder
-        self._create_folder()
+        create_folder(self._get_output_fullname())
 
         if self.kube_object is None:
             shutil.copy(self.filename, self._get_output_fullname())
@@ -29,11 +31,6 @@ class ExportObject:
         else:
             self.output_folder = ImportExportConstants.export_directory_new_files
             return f"{self.output_folder}{self.kube_object.fullname}.yaml"
-
-    def _create_folder(self):
-        file_folder = f"./{os.path.dirname(self._get_output_fullname())}"
-        if not os.path.exists(file_folder):
-            os.makedirs(file_folder, 0o777)
 
     def _write_to_file(self):
         YAML_SEPARATOR = "\n---\n\n"

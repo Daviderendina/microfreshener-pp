@@ -6,6 +6,7 @@ from microfreshener.core.analyser.costants import REFACTORING_NAMES, REFACTORING
     REFACTORING_ADD_CIRCUIT_BREAKER, REFACTORING_ADD_MESSAGE_ROUTER, REFACTORING_USE_TIMEOUT, REFACTORING_SPLIT_SERVICES
 from microfreshener.core.importer import YMLImporter
 
+from project.exporter.yamlkexporter import YamlKExporter
 from project.extender.extender import KubeExtender
 from project.importer.yamlkimporter import YamlKImporter
 
@@ -14,9 +15,9 @@ from project.solver.solver import Solver, KubeSolver
 #TODO
 '''
 Tra i vari controlli effettuati ad es. per Gateway etc., manca quello sulle wildcard
+https://istio.io/latest/docs/reference/config/networking/gateway/
 '''
 
-#TODO controllo che ci sia l'edge group
 
 SELECT_ALL = "all"
 
@@ -57,13 +58,17 @@ def main(kubedeploy, microtoscamodel, output, apply_refactoring: list):
     analyser = MicroToscaAnalyserBuilder(model).add_all_sniffers().build()
     analyser_result = analyser.run()
 
-    smells=[]
+    smells = []
     for k, v in analyser_result.items():
         smells += v
 
     # Run smell solver
     solver = build_solver(cluster, apply_refactoring)
     solver.solve(smells)
+
+    # Export files
+    exporter = YamlKExporter()
+    exporter.export(cluster, model, tosca_model_filename=microtoscamodel)
 
 
 def build_solver(cluster, refactoring) -> Solver:

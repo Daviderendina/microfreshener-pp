@@ -1,4 +1,4 @@
-from microfreshener.core.model import MicroToscaModel, MessageRouter
+from microfreshener.core.model import MicroToscaModel, MessageRouter, Edge
 
 from project.extender.kubeworker import KubeWorker
 from project.kmodel.kube_cluster import KubeCluster

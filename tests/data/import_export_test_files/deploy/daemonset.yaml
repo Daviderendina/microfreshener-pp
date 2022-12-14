@@ -6,7 +6,7 @@ metadata:
 
   name: fluentd-elasticsearch
 
-  namespace: kube-system
+  namespace: deploy-system
 
   labels:
 

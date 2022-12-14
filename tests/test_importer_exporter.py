@@ -2,6 +2,8 @@ import os
 import uuid
 from unittest import TestCase
 
+from microfreshener.core.importer import YMLImporter
+
 from project.exporter.yamlkexporter import YamlKExporter
 from project.importer.yamlkimporter import YamlKImporter
 
@@ -9,12 +11,14 @@ from project.importer.yamlkimporter import YamlKImporter
 class TestImporterExporter(TestCase):
 
     TEST_FILES_PATH = "./data/import_export_test_files"
+    TEST_FILES_PATH_KUBE = f"{TEST_FILES_PATH}/deploy"
+    TEST_FILES_PATH_TOSCA = f"{TEST_FILES_PATH}/helloworld.yml"
     NEW_NAME_STR = f"NEW-{uuid.uuid4().hex}"
 
     def test_import_export(self):
         # Import files
-        importer = YamlKImporter()
-        cluster = importer.Import(self.TEST_FILES_PATH)
+        cluster = YamlKImporter().Import(self.TEST_FILES_PATH_KUBE)
+        model = YMLImporter().Import(self.TEST_FILES_PATH_TOSCA)
 
         # Check that cluster has been created properly
         self.assertEqual(len(cluster.cluster_objects), 7)
@@ -26,11 +30,11 @@ class TestImporterExporter(TestCase):
 
         # Export files
         exporter = YamlKExporter()
-        exporter.export(cluster)
+        exporter.export(cluster, model, tosca_model_filename=self.TEST_FILES_PATH_TOSCA)
 
         # Read files in order to find modification
         check_importer = YamlKImporter()
-        cluster = check_importer.Import(exporter.output_folder)
+        cluster = check_importer.Import(f"{exporter.output_folder}{exporter.KUBE_DEPLOY_FOLDER}")
 
         # Check that cluster had been exported properly
         self.assertEqual(len(cluster.cluster_objects), 7)
@@ -41,13 +45,23 @@ class TestImporterExporter(TestCase):
             self.assertTrue(obj.name.startswith(self.NEW_NAME_STR))
 
         # Check folder structure
+        dirs = os.listdir(exporter.output_folder)
+        self.assertEqual(len(dirs), 2)
+        self.assertTrue(exporter.KUBE_DEPLOY_FOLDER.replace("/", "") in dirs)
+        self.assertTrue(exporter.MICRO_TOSCA_MODEL.replace("/", "") in dirs)
+
+        # Controllo che il file TOSCA sia al suo posto
+
+
         files = []
-        for folder, _, fnames in os.walk(self.TEST_FILES_PATH):
+        for folder, _, fnames in os.walk(self.TEST_FILES_PATH_KUBE):
             for file in fnames:
                 files.append(file)
 
-        for folder, _, fnames in os.walk(exporter.output_folder):
+        for folder, _, fnames in os.walk(exporter.kube_folder):
             for file in fnames:
                 files.remove(file)
 
         self.assertEqual(files, [])
+
+

@@ -14,7 +14,10 @@ class KubeObjectFactory:
 
     @staticmethod
     def build_object(object_dict, filename):
-        object_kind = object_dict["kind"]
+        object_kind = object_dict.get("kind", None)
+
+        if not object_kind:
+            return None
 
         kClass = KubeObjectFactory.kind_class_mapping.get(object_kind)
 
