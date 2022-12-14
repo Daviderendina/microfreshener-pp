@@ -56,7 +56,7 @@ class TestRefactoringAddCircuitBreaker(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
 
         # Run solver
-        solver: AddCircuitBreakerRefactoring = AddCircuitBreakerRefactoring(model, cluster)
+        solver: AddCircuitBreakerRefactoring = AddCircuitBreakerRefactoring(cluster)
         solver.apply(smell)
 
         # Check model and cluster

@@ -38,8 +38,8 @@ class ExportObject:
         if isinstance(content, dict):
             c = yaml.dump(content, sort_keys=False)
 
-        file_exists = os.path.exists(self._get_output_fullname())
-        with open(self._get_output_fullname(), "a" if file_exists else "w") as f:
-            if file_exists:
-                f.write(YAML_SEPARATOR)
-            f.write(c)
+            file_exists = os.path.exists(self._get_output_fullname())
+            with open(self._get_output_fullname(), "a" if file_exists else "w") as f:
+                if file_exists:
+                    f.write(YAML_SEPARATOR)
+                f.write(c)

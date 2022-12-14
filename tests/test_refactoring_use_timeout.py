@@ -43,7 +43,7 @@ class TestRefactoringUseTimeout(TestCase):
         smell.addLinkCause(r)
 
         # Run solver
-        solver: UseTimeoutRefactoring = UseTimeoutRefactoring(model, cluster)
+        solver: UseTimeoutRefactoring = UseTimeoutRefactoring(cluster)
         solver.apply(smell)
 
         # Check result
@@ -53,7 +53,7 @@ class TestRefactoringUseTimeout(TestCase):
 
         virtual_svc = cluster.virtual_services[0]
 
-        self.assertEqual(virtual_svc.fullname, f"{k_service.fullname}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}.{k_service.namespace}")
+        self.assertEqual(virtual_svc.fullname, f"{k_service.name}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}.{k_service.namespace}")
         self.assertListEqual(virtual_svc.hosts, [k_service.fullname])
         self.assertEqual(virtual_svc.destinations[0], k_service.fullname)
         self.assertEqual(virtual_svc.timeouts[0][2], f"{UseTimeoutRefactoring.DEFAULT_TIMEOUT_SEC}s")

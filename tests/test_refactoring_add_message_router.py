@@ -64,7 +64,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(len(cluster.services), 0)
 
         # Run solver
-        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(model, cluster)
+        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster)
         solver.apply(smell)
 
         # Test solver output
@@ -142,7 +142,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(len(cluster.services), 0)
 
         # Run solver
-        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(model, cluster)
+        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster)
         solver.apply(smell)
 
         # Test solver output
@@ -231,7 +231,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(port_number, 1)
 
         # Run solver
-        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(model, cluster)
+        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster)
         solver.apply(smell)
 
         # Test solver output
@@ -315,7 +315,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(port_number, 1)
 
         # Run solver
-        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(model, cluster)
+        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster)
         solver.apply(smell)
 
         # Test solver output

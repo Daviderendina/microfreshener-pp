@@ -1,10 +1,9 @@
 import copy
 from unittest import TestCase
 
+from microfreshener.core.analyser.smell import MultipleServicesInOneContainerSmell
 from microfreshener.core.model import MicroToscaModel, Service
 from microfreshener.core.model.nodes import Compute
-
-from project.analyser.smell import MultipleServicesInOneContainerSmell
 
 from data.kube_objects_dict import POD_WITH_TWO_CONTAINER, DEPLOYMENT_WITH_TWO_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
@@ -44,7 +43,7 @@ class TestRefactoringSplitServices(TestCase):
         self.assertEqual(len(list(model.nodes)), 3)
 
         # Run solver
-        solver: SplitServicesRefactoring = SplitServicesRefactoring(model, cluster)
+        solver: SplitServicesRefactoring = SplitServicesRefactoring(cluster)
         solver.apply(smell)
 
         # Test solver output
@@ -90,7 +89,7 @@ class TestRefactoringSplitServices(TestCase):
         self.assertEqual(len(list(model.nodes)), 3)
 
         # Run solver
-        solver: SplitServicesRefactoring = SplitServicesRefactoring(model, cluster)
+        solver: SplitServicesRefactoring = SplitServicesRefactoring(cluster)
         solver.apply(smell)
 
         # Test solver output

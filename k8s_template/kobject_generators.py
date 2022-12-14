@@ -17,7 +17,7 @@ MF_CIRCUITBREAKER_NAME = "circuitbreaker"
 def generate_ports_for_container(defining_obj: KubeObject, container: KubeContainer):
     container_ports = []
     for port in container.ports:
-        default_port_name = f"{defining_obj.fullname}-port-{port['containerPort']}-MF"
+        default_port_name = f"{defining_obj.fullname}-port-{port['containerPort']}-mf"
 
         new_port = {
             'name': port.get("name", default_port_name),
@@ -43,7 +43,7 @@ def generate_ports_for_container_nodeport(defining_obj: KubeObject, container: K
 
     container_ports = container.ports if is_host_network else [p for p in container.ports if p.get("hostPort")]
     for port in container_ports:
-        default_port_name = f"{container.name}.{defining_obj.fullname}-port-{port['containerPort']}-MF"
+        default_port_name = f"{container.name}.{defining_obj.fullname}-port-{port['containerPort']}-mf"
 
         new_port = {
             'name': port.get("name", default_port_name),
