@@ -47,7 +47,7 @@ class KubeExtender(Extender):
         return extended_model
 
     def set_all_workers(self):
-        self.worker_list = [IstioWorker(), ComputeNodeWorker(), DatabaseWorker(),
-                            ContainerWorker(), IngressWorker(), ServiceWorker()]
+        self.worker_list = [ContainerWorker(), ServiceWorker(), IngressWorker(),
+                            IstioWorker(), ComputeNodeWorker(), DatabaseWorker()]
 
 

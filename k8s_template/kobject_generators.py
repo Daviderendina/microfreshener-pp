@@ -10,9 +10,9 @@ from project.kmodel.kube_object import KubeObject
 from project.kmodel.kube_workload import KubePod, KubeWorkload
 from config.kube_config import CIRCUIT_BREAKER_CONFIG as CB
 
-MF_NAME_SUFFIX = "MF"
-MF_VIRTUALSERVICE_TIMEOUT_NAME = "VSTIMEOUT"
-MF_CIRCUITBREAKER_NAME = "CIRCUITBREAKER"
+MF_NAME_SUFFIX = "mf"
+MF_VIRTUALSERVICE_TIMEOUT_NAME = "vs-timeout"
+MF_CIRCUITBREAKER_NAME = "circuitbreaker"
 
 def generate_ports_for_container(defining_obj: KubeObject, container: KubeContainer):
     container_ports = []
@@ -125,7 +125,7 @@ def generate_random_label(label_key: str):
 
 def generate_timeout_virtualsvc_for_svc(service: KubeService, timeout: float):
     vservice_template = copy.deepcopy(ISTIO_VIRTUAL_SVC_TIMEOUT_TEMPLATE)
-    vservice_template["metadata"]["name"] = f"{service.fullname}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}"
+    vservice_template["metadata"]["name"] = f"{service.name}-{MF_VIRTUALSERVICE_TIMEOUT_NAME}-{MF_NAME_SUFFIX}"
     vservice_template["metadata"]["namespace"] = service.namespace
     vservice_template["spec"]["hosts"] = [service.fullname]
     vservice_template["spec"]["http"][0]["route"][0]["destination"]["host"] = service.fullname

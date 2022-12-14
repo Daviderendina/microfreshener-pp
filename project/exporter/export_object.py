@@ -15,7 +15,6 @@ class ExportObject:
         self.filename = filename
         self.output_folder = ""
 
-
     def export(self, output_folder: str):
         self.output_folder = output_folder
         create_folder(self._get_output_fullname())
@@ -29,8 +28,7 @@ class ExportObject:
         if self.filename:
             return f"{self.output_folder}{self.filename}"
         else:
-            self.output_folder = ImportExportConstants.export_directory_new_files
-            return f"{self.output_folder}{self.kube_object.fullname}.yaml"
+            return f"{self.output_folder}/{ImportExportConstants.export_directory_new_files}/{self.kube_object.fullname}.yaml"
 
     def _write_to_file(self):
         YAML_SEPARATOR = "\n---\n\n"

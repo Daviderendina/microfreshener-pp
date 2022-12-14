@@ -88,6 +88,16 @@ class KubeCluster:
             if result and result.string == object_name:
                 return obj
 
+            # Case: name is <name>.<namespace>.<svc> (or instead of svc something else)
+            result = re.match(obj.fullname + r"[.][a-zA-Z]*", object_name)
+            if result and result.string == object_name:
+                return obj
+
+            # Case: name is <name>.<namespace>.<svc>.<cluster> (or instead of svc.cluster something else)
+            result = re.match(obj.fullname + r"[.][a-zA-Z]*[.][a-zA-Z]*", object_name)
+            if result and result.string == object_name:
+                return obj
+
             # Case: name is <name>.<namespace>
             if obj.fullname == object_name:
                 return obj

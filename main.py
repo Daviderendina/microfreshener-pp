@@ -28,9 +28,13 @@ REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "ad
 @click.command()
 @click.option("--kubedeploy", "--deploy", required=True, type=str, help="Folder containing Kubernetes deploy files of the system")
 @click.option("--microtoscamodel", "--model", required=True, type=str, help="MicroTosca file containing the description of the system")
-@click.option("--output", "--out", default="./output", type=str, help="Output folder of the tool")
+@click.option("--output", "--out", default="./out", type=str, help="Output folder of the tool")
 @click.option("--refactoring", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one refactoring. This option can be used multiple times, for adding more than one refactoring", multiple=True)
-def main(kubedeploy, microtoscamodel, output, apply_refactoring: list):
+def main(kubedeploy, microtoscamodel, output, refactoring: list):
+    run(kubedeploy, microtoscamodel, output, refactoring)
+
+
+def run(kubedeploy, microtoscamodel, output, refactoring: list):
 
     if not os.path.exists(kubedeploy):
         raise ValueError(f"Kubedeploy path passed as parameter ({kubedeploy}) not found")
@@ -56,14 +60,16 @@ def main(kubedeploy, microtoscamodel, output, apply_refactoring: list):
 
     # Run sniffer on the model
     analyser = MicroToscaAnalyserBuilder(model).add_all_sniffers().build()
-    analyser_result = analyser.run()
+    analyser_result = analyser.run(smell_as_dict=False)
 
     smells = []
-    for k, v in analyser_result.items():
-        smells += v
+
+    for _, node_smells in analyser_result.items():
+        for node_smell in node_smells:
+            smells += node_smell.get("smells", [])
 
     # Run smell solver
-    solver = build_solver(cluster, apply_refactoring)
+    solver = build_solver(cluster, refactoring)
     solver.solve(smells)
 
     # Export files
@@ -94,4 +100,11 @@ def build_solver(cluster, refactoring) -> Solver:
 
 
 if __name__ == '__main__':
-    main()
+    run(
+        microtoscamodel='/home/davide/PycharmProjects/microfreshener++/tests/data/robot-shop/microTOSCA.yml',
+        kubedeploy='/home/davide/PycharmProjects/microfreshener++/tests/data/robot-shop/deployment',
+        output="./out",
+        refactoring=["all"]
+    )
+
+
