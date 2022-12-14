@@ -5,7 +5,7 @@ from microfreshener.core.model import MicroToscaModel, Service, Edge
 
 from project.extender.extender import KubeExtender
 from project.extender.workerimpl.container_worker import ContainerWorker
-from data.kube_objects_dict import POD_WITH_ONE_CONTAINER
+from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_workload import KubePod
 

@@ -5,7 +5,7 @@ from microfreshener.core.analyser.smell import EndpointBasedServiceInteractionSm
 from microfreshener.core.model import Service, MicroToscaModel, MessageRouter
 
 from k8s_template.kobject_generators import MF_NAME_SUFFIX
-from data.kube_objects_dict import POD_WITH_TWO_CONTAINER, POD_WITH_ONE_CONTAINER, DEFAULT_SVC, \
+from tests.data.kube_objects_dict import POD_WITH_TWO_CONTAINER, POD_WITH_ONE_CONTAINER, DEFAULT_SVC, \
     DEPLOYMENT_WITH_ONE_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService

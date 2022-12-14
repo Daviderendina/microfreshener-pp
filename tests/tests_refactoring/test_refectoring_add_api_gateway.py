@@ -4,7 +4,7 @@ from unittest import TestCase
 from microfreshener.core.analyser.smell import NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Edge, Service
 
-from data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH_ONE_CONTAINER, POD_WITH_TWO_CONTAINER
+from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH_ONE_CONTAINER, POD_WITH_TWO_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_workload import KubePod, KubeDeployment
 

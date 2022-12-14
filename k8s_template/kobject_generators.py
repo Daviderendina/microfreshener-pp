@@ -47,8 +47,7 @@ def generate_ports_for_container_nodeport(defining_obj: KubeObject, container: K
 
         new_port = {
             'name': port.get("name", default_port_name),
-            'port': port.get("containerPort")
-        }
+            'port': port.get("containerPort")}
 
         if is_host_network:
             new_port['node_port'] = port.get("containerPort")

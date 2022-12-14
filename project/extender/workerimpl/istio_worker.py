@@ -21,11 +21,6 @@ def _check_gateway_virtualservice_match(gateway: KubeIstioGateway, virtual_servi
     return host_check and gateway_check
 
 
-def _find_node_by_name(model: MicroToscaModel, name: str):
-    # TODO forse inventarsi qualcosa di meglio
-    return next(iter([mr for mr in model.nodes if mr.name == name]), None)
-
-
 class IstioWorker(KubeWorker):
     GATEWAY_NODE_GENERIC_NAME = "istio-ingress-gateway"
 
@@ -53,13 +48,13 @@ class IstioWorker(KubeWorker):
             timeouts: List[(list, str)] = vservice.timeouts
             for (route, destination, timeout) in timeouts:
                 if route == destination:
-                    node = _find_node_by_name(self.model, route)
+                    node = self.model.get_node_by_name(route)
                     if node is not None:
                         for interaction in [r for r in node.incoming_interactions if isinstance(r, InteractsWith)]:
                             interaction.set_timeout(True)
                 else:
-                    route_mr_node = _find_node_by_name(self.model, route)
-                    destination_mr_node = _find_node_by_name(self.model, destination)
+                    route_mr_node = self.model.get_node_by_name(route)
+                    destination_mr_node = self.model.get_node_by_name(destination)
 
                     if route_mr_node is not None and destination_mr_node is not None:
                         for r in [r for r in route_mr_node.interactions if r.target == destination_mr_node]:
@@ -68,7 +63,7 @@ class IstioWorker(KubeWorker):
     def _search_for_timeouts_with_destination_rule(self):
         for rule in self.cluster.destination_rules:
             if rule.timeout is not None:
-                mr_node = _find_node_by_name(model=self.model, name=rule.host)
+                mr_node = self.model.get_node_by_name(rule.host)
                 for r in list(mr_node.incoming_interactions):
                     r.set_timeout(True)
 
@@ -94,7 +89,7 @@ class IstioWorker(KubeWorker):
 
                             is_one_pod_exposed = self._has_pod_exposed(gateway=gateway, service=service)
                             if is_one_pod_exposed:
-                                service_node = _find_node_by_name(self.model, service.fullname
+                                service_node = self.model.get_node_by_name(service.fullname
                                                                   + ".svc.cluster.local")
 
                                 if service_node is not None:
@@ -105,7 +100,7 @@ class IstioWorker(KubeWorker):
             self.model.delete_node(gateway_node)
 
     def _find_or_create_gateway(self) -> MessageRouter:
-        gateway_node = _find_node_by_name(self.model, self.GATEWAY_NODE_GENERIC_NAME)
+        gateway_node = self.model.get_node_by_name(self.GATEWAY_NODE_GENERIC_NAME)
         if gateway_node is None:
             gateway_node = MessageRouter(self.GATEWAY_NODE_GENERIC_NAME)
             self.model.edge.add_member(gateway_node)

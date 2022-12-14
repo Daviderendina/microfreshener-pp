@@ -9,6 +9,7 @@ from project.utils.utils import check_kobject_node_name_match
 
 
 class ServiceWorker(KubeWorker):
+    #
     # TODO ogni volta che inserisco una nuova relazione MR-->SVC oppure aggiungo direttamente un nuovo MR, devo controllare
     # che tutto quello esposto sotto sia compatibile in termini di porte
 
