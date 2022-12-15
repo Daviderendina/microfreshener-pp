@@ -11,6 +11,14 @@ from project.kmodel.kube_workload import KubePod, KubeDeployment
 from project.solver.add_API_gateway_refactoring import AddAPIGatewayRefactoring
 
 
+def apply_solver(solver, smell):
+    pending_ops = []
+    solver.set_solver_pending_ops(pending_ops)
+    solver.apply(smell)
+    for ops, obj in pending_ops:
+        ops(obj)
+
+
 class TestAddAPIGatewayRefactoring(TestCase):
 
     '''
@@ -41,7 +49,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         # Refactoring
         solver: AddAPIGatewayRefactoring = AddAPIGatewayRefactoring(cluster)
-        solver.apply(smell)
+        apply_solver(solver, smell)
 
         # Check
         self.assertEqual(len(cluster.cluster_objects), 2)
@@ -52,7 +60,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertEquals(len(k_services), 1)
         k_service = k_services[0]
 
-        #TODO self.assertFalse(k_pod.data["spec"]["hostNetwork"])
+        self.assertFalse(k_pod.data["spec"]["hostNetwork"])
 
         self.assertEqual(k_service.fullname, f"{k_pod.name}-mf.{k_pod.namespace}")
         self.assertTrue(f"{k_pod.fullname}-svc-mf" in k_service.selectors.keys())
@@ -163,14 +171,14 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         # Refactoring
         solver: AddAPIGatewayRefactoring = AddAPIGatewayRefactoring(cluster)
-        solver.apply(smell)
+        apply_solver(solver, smell)
 
         # Check
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len([n for n in model.nodes]), 1)
         self.assertEqual(len(model.edge.members), 1)
 
-        #TODO self.assertFalse(k_deploy.pod_spec.data["spec"]["hostNetwork"])
+        self.assertFalse(k_deploy.pod_spec["hostNetwork"])
 
         k_services: list = cluster.services
         self.assertEquals(len(k_services), 1)
@@ -373,7 +381,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         # Refactoring
         solver: AddAPIGatewayRefactoring = AddAPIGatewayRefactoring(cluster)
         solver.apply(smell_1)
-        solver.apply(smell_2)
+        apply_solver(solver, smell_2)
 
         # Check
         self.assertEqual(len(cluster.cluster_objects), 3)
@@ -390,7 +398,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertTrue(f"{k_pod.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
-        #TODO self.assertFalse(k_pod.data["spec"]["hostNetwork"])
+        self.assertFalse(k_pod.data["spec"]["hostNetwork"])
 
         all_pod_ports_strings = [
             f"{p.get('name', k_pod.containers[0].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-mf')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
@@ -462,7 +470,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         # Refactoring
         solver: AddAPIGatewayRefactoring = AddAPIGatewayRefactoring(cluster)
         solver.apply(smell_1)
-        solver.apply(smell_2)
+        apply_solver(solver, smell_2)
 
         # Check
         self.assertEqual(len(cluster.cluster_objects), 2)
@@ -473,7 +481,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertEquals(len(k_services), 1)
         k_service = k_services[0]
 
-        #TODO self.assertFalse(k_pod.data["spec"]["hostNetwork"])
+        self.assertFalse(k_pod.data["spec"]["hostNetwork"])
 
         self.assertEqual(k_service.fullname, f"{k_pod.name}-mf.{k_pod.namespace}")
         self.assertTrue(f"{k_pod.fullname}-svc-mf" in k_service.selectors.keys())

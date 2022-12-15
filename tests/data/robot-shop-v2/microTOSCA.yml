@@ -1,4 +1,4 @@
-description: robot-shop
+description: robot-shop-v2
 imports:
 - {micro: 'https://di-unipi-socc.github.io/microTOSCA/1.1/microTOSCA.yaml'}
 topology_template:
@@ -7,92 +7,98 @@ topology_template:
       members: [web.default.svc]
       type: micro.groups.Edge
   node_templates:
-    cart.default:
+    cart.cart.default:
+      requirements:
+      - {interaction: redis.default.svc}
+      - {interaction: catalogue.default.svc}
+      type: micro.nodes.Service
+    cart_2.cart.default:
       requirements:
       - {interaction: redis.default.svc}
       - {interaction: catalogue.default.svc}
       type: micro.nodes.Service
     cart.default.svc:
       requirements:
-      - {interaction: cart.default}
+      - {interaction: cart.cart.default}
+      - {interaction: cart_2.cart.default}
       type: micro.nodes.MessageRouter
-    catalogue.default:
+    catalogue.catalogue.default:
       requirements: []
       type: micro.nodes.Service
     catalogue.default.svc:
       requirements:
-      - {interaction: catalogue.default}
+      - {interaction: catalogue.catalogue.default}
       type: micro.nodes.MessageRouter
-    dispatch.default:
+    dispatch.dispatch.default:
       requirements:
       - {interaction: rabbitmq.default.svc}
       type: micro.nodes.Service
-    load.default:
+    load.load.default:
       requirements:
       - {interaction: web.default.svc}
       type: micro.nodes.Service
-    mongodb.default:
+    mongodb.mongodb.default:
       requirements: []
       type: micro.nodes.Service
     mongodb.default.svc:
       requirements:
-      - {interaction: mongodb.default}
+      - {interaction: mongodb.mongodb.default}
       type: micro.nodes.MessageRouter
-    mysql.default:
+    mysql.mysql.default:
       requirements: []
       type: micro.nodes.Service
     mysql.default.svc:
       requirements:
-      - {interaction: mysql.default}
+      - {interaction: mysql.mysql.default}
       type: micro.nodes.MessageRouter
-    payment.default:
+    payment.payment.default:
       requirements:
       - {interaction: user.default.svc}
       type: micro.nodes.Service
     payment.default.svc:
       requirements:
-      - {interaction: payment.default}
+      - {interaction: payment.payment.default}
       type: micro.nodes.MessageRouter
-    rabbitmq.default:
+    rabbitmq.rabbitmq.default:
       requirements: []
       type: micro.nodes.Service
     rabbitmq.default.svc:
       requirements:
-      - {interaction: rabbitmq.default}
+      - {interaction: rabbitmq.rabbitmq.default}
       type: micro.nodes.MessageRouter
-    ratings.default:
+    ratings.ratings.default:
       requirements:
       - {interaction: catalogue.default.svc}
       - {interaction: mysql.default.svc}
       type: micro.nodes.Service
     ratings.default.svc:
       requirements:
-      - {interaction: ratings.default}
+      - {interaction: ratings.ratings.default}
       type: micro.nodes.MessageRouter
-    redis.default:
+    redis.redis.default:
       requirements: []
       type: micro.nodes.Datastore
     redis.default.svc:
       requirements:
-      - {interaction: redis.default}
+      - {interaction: redis.redis.default}
       type: micro.nodes.MessageRouter
-    shipping.default:
+    shipping.shipping.default:
       requirements:
       - {interaction: mysql.default.svc}
       - {interaction: cart.default.svc}
       type: micro.nodes.Service
     shipping.default.svc:
       requirements:
-      - {interaction: shipping.default}
+      - {interaction: shipping.shipping.default}
       type: micro.nodes.MessageRouter
-    user.default:
+    user.user.default:
       requirements: []
       type: micro.nodes.Service
     user.default.svc:
       requirements:
-      - {interaction: user.default}
+      - {interaction: user.user.default}
       type: micro.nodes.MessageRouter
-    web.default:
+    web.web.default:
       requirements:
       - {interaction: user.default.svc}
       - {interaction: payment.default.svc}
@@ -103,7 +109,7 @@ topology_template:
       type: micro.nodes.Service
     web.default.svc:
       requirements:
-      - {interaction: web.default}
+      - {interaction: web.web.default}
       type: micro.nodes.MessageRouter
   relationship_templates:
     c:

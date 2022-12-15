@@ -8,10 +8,11 @@ from microfreshener.core.analyser.smell import Smell
 from typing import List
 
 from project.kmodel.kube_cluster import KubeCluster
+from project.kmodel.kube_object import KubeObject
 from project.solver.add_API_gateway_refactoring import AddAPIGatewayRefactoring
 from project.solver.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
 from project.solver.add_message_router_refactoring import AddMessageRouterRefactoring
-from project.solver.refactoring import Refactoring
+from project.solver.pending_ops import PENDING_OPS
 from project.solver.split_services_refactoring import SplitServicesRefactoring
 from project.solver.use_timeout_refactoring import UseTimeoutRefactoring
 
@@ -27,6 +28,7 @@ class KubeSolver(Solver):
 
     def __init__(self, kube_cluster: KubeCluster, refactoring_list: List[str] = None):
         self.kube_cluster = kube_cluster
+        self.pending_ops: (PENDING_OPS, KubeObject) = []
 
         self.refactoring = {}
         for refactoring in refactoring_list:
@@ -38,6 +40,7 @@ class KubeSolver(Solver):
 
         self.set_refactoring(refactoring_list)
 
+
     def solve(self, smells: list[Smell]) -> KubeCluster:
         for smell in smells:
             refactoring: list = self.refactoring.get(smell.name, None)
@@ -47,6 +50,10 @@ class KubeSolver(Solver):
                 while i < len(refactoring) and not refactoring_res:
                     refactoring_res = refactoring[i].apply(smell)
                     i += 1
+
+        for ops, obj in self.pending_ops:
+            x = ops.value
+
         return self.kube_cluster
 
     def set_refactoring(self, refactoring_list):
@@ -63,8 +70,10 @@ class KubeSolver(Solver):
                 self.refactoring[SMELL_WOBBLY_SERVICE_INTERACTION_SMELL] += [AddCircuitBreakerRefactoring(self.kube_cluster)]
 
         if REFACTORING_ADD_API_GATEWAY in refactoring_list:
-            self.refactoring[SMELL_NO_API_GATEWAY] = [AddAPIGatewayRefactoring(self.kube_cluster)]
+            refactoring = AddAPIGatewayRefactoring(self.kube_cluster)
+            refactoring.set_solver_pending_ops(self.pending_ops)
+            self.refactoring[SMELL_NO_API_GATEWAY] = [refactoring]
 
         if REFACTORING_SPLIT_SERVICES in refactoring_list:
-            self.refactoring[SMELL_MULTIPLE_SERVICES_IN_ONE_CONTAINER] = SplitServicesRefactoring(self.kube_cluster)
+            self.refactoring[SMELL_MULTIPLE_SERVICES_IN_ONE_CONTAINER] = [SplitServicesRefactoring(self.kube_cluster)]
 

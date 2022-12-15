@@ -32,3 +32,20 @@ spec:
           requests:
             cpu: 100m
             memory: 50Mi
+      - name: cart_2
+        image: robotshop/rs-cart:latest
+        # agent networking access
+        env:
+          - name: INSTANA_AGENT_HOST
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+        ports:
+        - containerPort: 8081
+        resources:
+          limits:
+            cpu: 200m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi

@@ -8,6 +8,7 @@ from k8s_template.kobject_generators import generate_svc_NodePort_for_container,
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
+from project.solver.pending_ops import PENDING_OPS
 
 
 class AddAPIGatewayRefactoring(Refactoring):
@@ -16,11 +17,11 @@ class AddAPIGatewayRefactoring(Refactoring):
     def __init__(self, cluster: KubeCluster):
         super().__init__(cluster)
 
-    def apply(self, smell: Smell):
+    def apply(self, smell: NoApiGatewaySmell):
+        result = False
+
         if not isinstance(smell, NoApiGatewaySmell):
             raise RefactoringNotSupportedError
-
-        result = False
 
         # Handle Message Broker case
             #TODO per me non si può fare
@@ -48,14 +49,10 @@ class AddAPIGatewayRefactoring(Refactoring):
             result = True
 
             if def_object.host_network:
-                # def_object.set_host_network(False) TODO qui c'è un problema: non posso toglierlo senza prima essere
-                # sicuro che non ci siano altri smell sugli altri container definiti dal pod. Togliendolo fregandomene di
-                # tutto rischio di fare un casino, perché poi non mi becca più lo smell
-
-                # La soluzione più comoda mi sembra quella di creare una classe PendingOperations che viene chiamata dopo
-                # tutta l'analisi e prima della scrittura del cluster su disco.
-                pass
-
+                if self.solver_pending_ops is not None:
+                    pending_action = (PENDING_OPS.REMOVE_WORKLOAD_HOST_NETWORK, def_object)
+                    if not pending_action in self.solver_pending_ops:
+                        self.solver_pending_ops.append(pending_action)
             else:
                 for port in container.ports:
                     if port.get("hostPort"):

@@ -1,7 +1,6 @@
 from abc import abstractmethod
 
 from microfreshener.core.analyser.smell import Smell
-from microfreshener.core.model import MicroToscaModel
 
 from project.kmodel.kube_cluster import KubeCluster
 
@@ -10,10 +9,14 @@ class Refactoring:
 
     def __init__(self, cluster: KubeCluster):
         self.cluster = cluster
+        self.solver_pending_ops = None
 
     @abstractmethod
     def apply(self, smell: Smell) -> bool:
         pass
+
+    def set_solver_pending_ops(self, solver_pending_ops):
+        self.solver_pending_ops = solver_pending_ops
 
 
 class RefactoringNotSupportedError(Exception):

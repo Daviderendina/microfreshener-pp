@@ -101,8 +101,8 @@ def build_solver(cluster, refactoring) -> Solver:
 
 if __name__ == '__main__':
     run(
-        microtoscamodel='/home/davide/PycharmProjects/microfreshener++/tests/data/robot-shop/microTOSCA.yml',
-        kubedeploy='/home/davide/PycharmProjects/microfreshener++/tests/data/robot-shop/deployment',
+        microtoscamodel='/home/davide/PycharmProjects/microfreshener++/tests/data/robot-shop-v2/microTOSCA.yml',
+        kubedeploy='/home/davide/PycharmProjects/microfreshener++/tests/data/robot-shop-v2/deployment',
         output="./out",
         refactoring=["all"]
     )
