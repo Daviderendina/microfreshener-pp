@@ -1,3 +1,4 @@
+import re
 from typing import List
 
 from microfreshener.core.model import MicroToscaModel, MessageRouter, InteractsWith
@@ -14,11 +15,31 @@ from project.kmodel.kube_networking import KubeService
 def _check_gateway_virtualservice_match(gateway: KubeIstioGateway, virtual_service: KubeVirtualService):
     gateway_check = gateway.fullname in virtual_service.gateways
 
-    gateway_hosts = gateway.hosts_exposed
-    virtual_service_hosts = virtual_service.hosts
-    host_check = len([h for h in gateway_hosts if h in virtual_service_hosts])
+    # New check
+    for host in gateway.hosts_exposed:
+        # Divide hostname and ns
+        if "/" in host:
+            namespace, name = host.split("/")[0], host.split("/")[1:]
+            if namespace == ".":
+                namespace = gateway.namespace
+        else:
+            namespace, name = "*", host
 
-    return host_check and gateway_check
+        # Check namespace
+        namespace_check = namespace == "*" or namespace == virtual_service.namespace
+
+        # Check name
+        regex = ""
+        for c in name:
+            regex += "[.]" if c == "." else c if c != "*" else "[a-zA-Z0-9_.]+"
+
+        for svc_host in virtual_service.hosts:
+            if re.match(regex, svc_host).string == svc_host:
+                return True and namespace_check and gateway_check
+
+        return False
+
+
 
 
 class IstioWorker(KubeWorker):

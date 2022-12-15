@@ -7,9 +7,9 @@ from project.extender.extender import KubeExtender
 from project.extender.workerimpl.istio_worker import IstioWorker
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
-from data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC
-from data.istio_objects_dict import VIRTUAL_SERVICE_TIMEOUT, DESTINATION_RULE_TIMEOUT, DESTINATION_RULE_CIRCUIT_BREAKER, \
-    GATEWAY
+from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC
+from tests.data.istio_objects_dict import VIRTUAL_SERVICE_TIMEOUT, DESTINATION_RULE_TIMEOUT, \
+    DESTINATION_RULE_CIRCUIT_BREAKER, GATEWAY
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubePod
 
@@ -251,6 +251,8 @@ class TestIstioExtender(TestCase):
         model.add_group(Edge("edge"))
         cluster = KubeCluster()
 
+        gateway_vs_host = "*.bookinfo.com"
+
         label = {'app': 'test'}
 
         # Kubernetes
@@ -265,9 +267,9 @@ class TestIstioExtender(TestCase):
 
         host_name = k_virtualservice.fullname  # TODO FQDN?
         k_gateway.data["spec"]["selectors"] = label
-        k_gateway.data["spec"]["servers"][0]["hosts"] = [host_name]
+        k_gateway.data["spec"]["servers"][0]["hosts"] = [gateway_vs_host]
 
-        k_virtualservice.data["spec"]["hosts"] = [host_name]
+        k_virtualservice.data["spec"]["hosts"] = [gateway_vs_host.replace("*", "wildcard.test")]
         k_virtualservice.data["spec"]["gateways"] = [k_gateway.fullname]  # TODO FQDN?
         k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"][
             "host"] = k_service.fullname  # TODO FQDN?
