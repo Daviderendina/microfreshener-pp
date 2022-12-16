@@ -56,13 +56,15 @@ class TestRefactoringAddCircuitBreaker(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
 
         # Run solver
-        solver: AddCircuitBreakerRefactoring = AddCircuitBreakerRefactoring(cluster)
+        solver: AddCircuitBreakerRefactoring = AddCircuitBreakerRefactoring(cluster, model)
         solver.apply(smell)
 
         # Check model and cluster
         self.assertEqual(len(list(model.nodes)), 2)
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len(cluster.destination_rules), 1)
+
+        self.assertTrue(r.circuit_breaker)
 
         # Check destination rule (circuit breaker) created
         circuit_breaker = cluster.destination_rules[0]

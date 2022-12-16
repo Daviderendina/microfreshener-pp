@@ -28,12 +28,19 @@ class AddCircuitBreakerRefactoring(Refactoring):
                     kube_service = self.cluster.get_object_by_name(link.target.name)
 
                     if not isinstance(kube_service, KubeService):
-                        return
+                        return False
 
                     circuit_breaker = generate_circuit_breaker_for_svc(kube_service)
                     self.cluster.add_object(circuit_breaker)
                     self.cluster.add_export_object(ExportObject(circuit_breaker, None))
 
+                    # Refactor model
+                    self._refactor_model(link.target)
+
                     return True
 
         return False
+
+    def _refactor_model(self, mr_node):
+        for link in mr_node.incoming_interactions:
+            link.set_circuit_breaker(True)
