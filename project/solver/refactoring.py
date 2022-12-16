@@ -1,14 +1,16 @@
 from abc import abstractmethod
 
 from microfreshener.core.analyser.smell import Smell
+from microfreshener.core.model import MicroToscaModel
 
 from project.kmodel.kube_cluster import KubeCluster
 
 
 class Refactoring:
 
-    def __init__(self, cluster: KubeCluster):
+    def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
         self.cluster = cluster
+        self.model = model
         self.solver_pending_ops = None
 
     @abstractmethod

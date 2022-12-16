@@ -23,7 +23,7 @@ class ServiceWorker(KubeWorker):
         self.cluster = kube_cluster
 
         for k_service, defining_obj in self._get_svc_with_object_exposed():
-            mr_node = next(iter([mr for mr in model.nodes if check_kobject_node_name_match(k_service, mr)]), None)
+            mr_node = next(iter([mr for mr in model.nodes if check_kobject_node_name_match(k_service, mr)]), None) #TODO
 
             if mr_node is None:
                 self._handle_mr_node_not_found(k_service, defining_obj)

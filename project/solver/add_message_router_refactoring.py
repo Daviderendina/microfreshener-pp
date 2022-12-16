@@ -11,8 +11,8 @@ from project.utils.utils import check_ports_match
 
 class AddMessageRouterRefactoring(Refactoring):
 
-    def __init__(self, cluster: KubeCluster):
-        super().__init__(cluster)
+    def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
+        super().__init__(cluster, model)
 
     def apply(self, smell: Smell):
 
@@ -59,7 +59,7 @@ class AddMessageRouterRefactoring(Refactoring):
                     return True
 
             # Lo sviluppatore deve in qualche modo confermare di aver cambiato le chiamate, dall'IP al nome del svc
-            # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO
+            # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO Report refactoring
 
         return False
 

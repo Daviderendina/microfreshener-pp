@@ -20,7 +20,7 @@ class IngressWorker(KubeWorker):
         self.cluster = kube_cluster
 
         ingress_controller = self._find_or_create_ingress_controller()
-        #TODO devo fare un MR per ogni Ingress definito oppure faccio passare tutto dall'Ingress Controller (es. MicroMiner fa così)
+        #TODO devo fare un MR per ogni Ingress definito
 
         for ingress in self.cluster.ingress:
             for k_service_name in ingress.get_exposed_svc_names():

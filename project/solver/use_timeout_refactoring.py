@@ -10,8 +10,8 @@ from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
 class UseTimeoutRefactoring(Refactoring):
     DEFAULT_TIMEOUT_SEC = 2
 
-    def __init__(self, cluster: KubeCluster):
-        super().__init__(cluster)
+    def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
+        super().__init__(cluster, model)
 
     def apply(self, smell: Smell):
         if not isinstance(smell, WobblyServiceInteractionSmell):
