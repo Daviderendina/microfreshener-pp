@@ -43,20 +43,27 @@ class KubeSolver(Solver):
 
         self.set_refactoring(refactoring_list)
 
+    def apply_refactoring(self, refactoring_list, smell):
+        i = 0
+        refactoring_res = False
+        while i < len(refactoring_list) and not refactoring_res:
+            refactoring_res = refactoring_list[i].apply(smell)
+            i += 1
+        return refactoring_res
+
     def solve(self, smells) -> KubeCluster:
-        for smell in smells:
-            refactoring: list = self.refactoring.get(smell.name, None)
-            if refactoring is not None:
-                i = 0
-                refactoring_res = False
-                while i < len(refactoring) and not refactoring_res:
-                    refactoring_res = refactoring[i].apply(smell)
-                    i += 1
+        smell_solved = 0
+        for smell in [s for s in smells if s]:
+            available_refactoring: list = self.refactoring.get(smell.name, None)
+            if available_refactoring is not None:
+                result = self.apply_refactoring(available_refactoring, smell)
+                if result:
+                    smell_solved += 1
 
         for ops, obj in self.pending_ops:
             ops.value(obj)
 
-        return self.kube_cluster
+        return smell_solved
 
     def set_refactoring(self, refactoring_list):
         refactoring_list = list(set(refactoring_list))

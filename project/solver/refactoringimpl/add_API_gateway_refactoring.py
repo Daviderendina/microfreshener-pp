@@ -2,7 +2,7 @@ from typing import List
 
 from microfreshener.core.analyser.costants import REFACTORING_ADD_API_GATEWAY
 from microfreshener.core.analyser.smell import Smell, NoApiGatewaySmell
-from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
+from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, MessageBroker
 
 from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_ports_for_container_nodeport
 from project.exporter.export_object import ExportObject
@@ -34,9 +34,9 @@ class AddAPIGatewayRefactoring(Refactoring):
             raise RefactoringNotSupportedError
 
         # Handle Message Broker case
-            # TODO mi aspetto di avere un pod che implementi il MB, quindi il caso è analogo a quello del Service
+            # TODO Mi aspetto di avere un pod che implementi il MB, quindi il caso è analogo a quello del Service
 
-        if isinstance(smell.node, Service):
+        if isinstance(smell.node, Service): # TODO or isinstance(smell.node, MessageBroker):
             container, def_object = self._get_container_and_def_object(smell.node.name)
             ports_to_expose = generate_ports_for_container_nodeport(def_object, container, def_object.host_network)
             expose_svc = self._search_for_existing_svc(def_object, ports_to_expose)
@@ -44,7 +44,7 @@ class AddAPIGatewayRefactoring(Refactoring):
             # Case: exists a Service that can expose this object
             if expose_svc and expose_svc.is_reachable_from_outside():
                 expose_svc.ports.extend(ports_to_expose)
-                self._refactor_model_service_exists(expose_svc, service_node=smell.node)
+                self._refactor_model_service_exists(expose_svc, smell_node=smell.node)
 
                 result = True
 
@@ -107,12 +107,12 @@ class AddAPIGatewayRefactoring(Refactoring):
 
         return True
 
-    def _refactor_model_service_exists(self, expose_svc: KubeService, service_node: Service):
+    def _refactor_model_service_exists(self, expose_svc: KubeService, smell_node: Service):
         message_router_node = self.model.get_node_by_name(expose_svc.fullname)
 
         if message_router_node:
-            self.model.edge.remove_member(service_node)
-            self.model.add_interaction(source_node=message_router_node, target_node=service_node)
+            self.model.edge.remove_member(smell_node)
+            self.model.add_interaction(source_node=message_router_node, target_node=smell_node)
         else:
             return False
 

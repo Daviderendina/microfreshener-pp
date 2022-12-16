@@ -52,23 +52,20 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list):
     extender.set_all_workers()
     extender.extend(model, cluster)
 
-    # Run sniffer on the model
-    analyser = MicroToscaAnalyserBuilder(model).add_all_sniffers().build()
-    analyser_result = analyser.run(smell_as_dict=False)
+    smell_solved = -1
+    while smell_solved != 0:
+        # Run sniffer on the model
+        analyser = MicroToscaAnalyserBuilder(model).add_all_sniffers().build()
+        analyser_result = analyser.run(smell_as_dict=False)
+        smells = [smell for sublist in [smell.get("smells", []) for sublist in analyser_result.values() for smell in sublist] for smell in sublist]
 
-    smells = []
+        # Run smell solver
+        solver = build_solver(cluster, refactoring)
+        smell_solved = solver.solve(smells)
 
-    for _, node_smells in analyser_result.items():
-        for node_smell in node_smells:
-            smells += node_smell.get("smells", [])
-
-    # Run smell solver
-    solver = build_solver(cluster, refactoring)
-    solver.solve(smells)
-
-    # Export files
-    exporter = YamlKExporter()
-    exporter.export(cluster, model, tosca_model_filename=microtoscamodel)
+        # Export files
+        exporter = YamlKExporter()
+        exporter.export(cluster, model, tosca_model_filename=microtoscamodel)
 
 
 def build_solver(cluster, refactoring) -> Solver:
