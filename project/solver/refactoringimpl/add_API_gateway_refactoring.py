@@ -10,8 +10,8 @@ from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubeWorkload
-from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
 from project.solver.pending_ops import PENDING_OPS
+from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
 class AddAPIGatewayRefactoring(Refactoring):

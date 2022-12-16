@@ -9,7 +9,7 @@ from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubePod
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC
-from project.solver.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
+from project.solver.refactoringimpl.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
 
 
 class TestRefactoringAddCircuitBreaker(TestCase):

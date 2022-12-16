@@ -5,7 +5,7 @@ from k8s_template.kobject_generators import generate_ports_for_container, genera
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
-from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
+from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 from project.utils.utils import check_ports_match
 
 
@@ -59,7 +59,7 @@ class AddMessageRouterRefactoring(Refactoring):
                     return True
 
             # Lo sviluppatore deve in qualche modo confermare di aver cambiato le chiamate, dall'IP al nome del svc
-            # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO Report refactoring
+            # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO Report refactoringimpl
 
         return False
 

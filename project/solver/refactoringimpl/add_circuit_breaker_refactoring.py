@@ -5,7 +5,7 @@ from k8s_template.kobject_generators import generate_circuit_breaker_for_svc
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
-from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
+from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
 class AddCircuitBreakerRefactoring(Refactoring):

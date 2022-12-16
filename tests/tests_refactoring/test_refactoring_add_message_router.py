@@ -11,7 +11,7 @@ from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubePod, KubeDeployment
 
-from project.solver.add_message_router_refactoring import AddMessageRouterRefactoring
+from project.solver.refactoringimpl.add_message_router_refactoring import AddMessageRouterRefactoring
 
 
 class TestRefactoringAddMessageRouter(TestCase):

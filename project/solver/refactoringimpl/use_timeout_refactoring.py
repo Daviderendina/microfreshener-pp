@@ -4,7 +4,7 @@ from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 from k8s_template.kobject_generators import generate_timeout_virtualsvc_for_svc
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
-from project.solver.refactoring import Refactoring, RefactoringNotSupportedError
+from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
 class UseTimeoutRefactoring(Refactoring):

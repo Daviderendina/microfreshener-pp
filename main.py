@@ -23,7 +23,7 @@ REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "ad
 @click.option("--kubedeploy", "--deploy", required=True, type=str, help="Folder containing Kubernetes deploy files of the system")
 @click.option("--microtoscamodel", "--model", required=True, type=str, help="MicroTosca file containing the description of the system")
 @click.option("--output", "--out", default="./out", type=str, help="Output folder of the tool")
-@click.option("--refactoring", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one refactoring. This option can be used multiple times, for adding more than one refactoring", multiple=True)
+@click.option("--refactoringimpl", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one refactoringimpl. This option can be used multiple times, for adding more than one refactoringimpl", multiple=True)
 def main(kubedeploy, microtoscamodel, output, refactoring: list):
     run(kubedeploy, microtoscamodel, output, refactoring)
 

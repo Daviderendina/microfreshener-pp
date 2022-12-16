@@ -9,12 +9,12 @@ from typing import List
 
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_object import KubeObject
-from project.solver.add_API_gateway_refactoring import AddAPIGatewayRefactoring
-from project.solver.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
-from project.solver.add_message_router_refactoring import AddMessageRouterRefactoring
+from project.solver.refactoringimpl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
+from project.solver.refactoringimpl.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
+from project.solver.refactoringimpl.add_message_router_refactoring import AddMessageRouterRefactoring
 from project.solver.pending_ops import PENDING_OPS
-from project.solver.split_services_refactoring import SplitServicesRefactoring
-from project.solver.use_timeout_refactoring import UseTimeoutRefactoring
+from project.solver.refactoringimpl.split_services_refactoring import SplitServicesRefactoring
+from project.solver.refactoringimpl.use_timeout_refactoring import UseTimeoutRefactoring
 
 
 class Solver:
