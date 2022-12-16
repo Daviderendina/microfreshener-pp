@@ -22,7 +22,8 @@ class SplitServicesRefactoring(Refactoring):
         compute_object = self.cluster.get_object_by_name(compute_node.name)
 
         if compute_object:
-            self.cluster.remove_object(compute_object)
+            self.cluster.remove_object(compute_object) # ATTENZIONE: se non rimuove nulla fa sparire obj e basta TODO
+            self.model.delete_node(compute_node)
 
             name_count = 1
             for container in compute_object.containers.copy():
@@ -35,9 +36,15 @@ class SplitServicesRefactoring(Refactoring):
 
                 name_count += 1
 
+                # Refactor model
+                service_node = self.model.get_node_by_name(container.fullname) #TODO quì può essere none? Ocio
+                compute_node = Compute(object_copy.fullname)
+
+                self.model.add_node(compute_node)
+                self.model.add_deployed_on(source_node=service_node, target_node=compute_node)
+
             return True
         else:
             return False
 
-    #TODO il refactor del model non serve: è il deploy che devo dividere, il modello è già diviso!!
 
