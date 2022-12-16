@@ -62,15 +62,34 @@ class TestRefactoringAddMessageRouter(TestCase):
         # Assert that everything had been created properly
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len(cluster.services), 0)
+        self.assertEqual(len([n for n in model.services]), 4)
 
         # Run solver
-        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster)
+        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster, model)
         solver.apply(smell)
 
-        # Test solver output
         # Check cluster
         self.assertEqual(len(cluster.cluster_objects), 4)
         self.assertEqual(len(cluster.services), 1)
+
+        # Check model
+        self.assertEqual(len([n for n in model.services]), 4)
+        self.assertEqual(len([n for n in model.message_routers]), 1)
+
+        mr_node = list(model.message_routers)[0]
+        self.assertTrue(len(mr_node.incoming_interactions), 3)
+        self.assertTrue(len(mr_node.interactions), 1)
+        self.assertEqual(mr_node.interactions[0].target, node_svc_4)
+        sources = [node_svc_1, node_svc_2, node_svc_3]
+        self.assertTrue(mr_node.incoming_interactions[0].source in sources)
+        self.assertTrue(mr_node.incoming_interactions[1].source in sources)
+        self.assertTrue(mr_node.incoming_interactions[2].source in sources)
+        sources.remove(mr_node.incoming_interactions[0].source)
+        sources.remove(mr_node.incoming_interactions[1].source)
+        sources.remove(mr_node.incoming_interactions[2].source)
+        self.assertEqual(len(sources), 0)
+
+        # Get KubeService
         k_service = cluster.services[0]
 
         # Check name
@@ -104,8 +123,8 @@ class TestRefactoringAddMessageRouter(TestCase):
         k_pod_2 = KubePod(copy.deepcopy(POD_WITH_TWO_CONTAINER))
         k_deploy = KubeDeployment(DEPLOYMENT_WITH_ONE_CONTAINER)
 
-        k_pod_1.data["metadata"]["name"]  = "pod_1"
-        k_pod_2.data["metadata"]["name"]  = "pod_2"
+        k_pod_1.data["metadata"]["name"] = "pod_1"
+        k_pod_2.data["metadata"]["name"] = "pod_2"
 
         cluster.add_object(k_pod_1)
         cluster.add_object(k_pod_2)
@@ -142,7 +161,7 @@ class TestRefactoringAddMessageRouter(TestCase):
         self.assertEqual(len(cluster.services), 0)
 
         # Run solver
-        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster)
+        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster, model)
         solver.apply(smell)
 
         # Test solver output
@@ -228,20 +247,35 @@ class TestRefactoringAddMessageRouter(TestCase):
         # Assert that everything had been created properly
         self.assertEqual(len(cluster.cluster_objects), 4)
         self.assertEqual(len(cluster.services), 1)
+        self.assertEqual(len([n for n in model.nodes]), 5)
         self.assertEqual(port_number, 1)
 
         # Run solver
-        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster)
+        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster, model)
         solver.apply(smell)
 
-        # Test solver output
         # Check cluster
-        self.assertEqual(len(cluster.services), 1)
         self.assertEqual(len(cluster.cluster_objects), 4)
+        self.assertEqual(len(cluster.services), 1)
+        self.assertEqual(len([n for n in model.nodes]), 5)
         k_service_retrieved = cluster.services[0]
-
-        # Check name
         self.assertEqual(k_service, k_service_retrieved)
+
+        # Check model
+        self.assertEqual(len([m for m in model.message_routers]), 1)
+        mr_node = [m for m in model.message_routers][0]
+        self.assertEqual(len([r for r in mr_node.incoming_interactions]), 3)
+        self.assertEqual(len([r for r in mr_node.interactions]), 1)
+        self.assertEqual(mr_node.interactions[0].target, node_svc_4)
+
+        targets = [node_svc_1, node_svc_2, node_svc_3]
+        self.assertTrue(mr_node.incoming_interactions[0].source in targets)
+        self.assertTrue(mr_node.incoming_interactions[1].source in targets)
+        self.assertTrue(mr_node.incoming_interactions[2].source in targets)
+        targets.remove(mr_node.incoming_interactions[0].source)
+        targets.remove(mr_node.incoming_interactions[1].source)
+        targets.remove(mr_node.incoming_interactions[2].source)
+        self.assertEqual(len(targets), 0)
 
         # Check ports
         pod_ports_number = sum([len(c.ports) for c in k_pod_3.containers])
@@ -312,16 +346,18 @@ class TestRefactoringAddMessageRouter(TestCase):
         # Assert that everything had been created properly
         self.assertEqual(len(cluster.cluster_objects), 4)
         self.assertEqual(len(cluster.services), 1)
+        self.assertEqual(len([n for n in model.nodes]), 5)
         self.assertEqual(port_number, 1)
 
         # Run solver
-        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster)
+        solver: AddMessageRouterRefactoring = AddMessageRouterRefactoring(cluster, model)
         solver.apply(smell)
 
         # Test solver output
         # Check cluster
-        self.assertEqual(len(cluster.services), 1)
         self.assertEqual(len(cluster.cluster_objects), 4)
+        self.assertEqual(len(cluster.services), 1)
+        self.assertEqual(len([n for n in model.nodes]), 5)
         k_service_retrieved = cluster.services[0]
 
         # Check name
