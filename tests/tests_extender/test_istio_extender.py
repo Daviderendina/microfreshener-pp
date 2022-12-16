@@ -281,7 +281,7 @@ class TestIstioExtender(TestCase):
 
         # TOSCA model
         svc_node = Service(k_pod.containers[0].name + "." + k_pod.fullname)
-        mr_node = MessageRouter(k_service.fullname + ".svc.cluster.local")
+        mr_node = MessageRouter(k_service.fullname)# + ".svc.cluster.local")
         model.add_node(svc_node)
         model.add_node(mr_node)
         model.edge.add_member(mr_node)

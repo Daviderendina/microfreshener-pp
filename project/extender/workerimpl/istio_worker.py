@@ -91,7 +91,6 @@ class IstioWorker(KubeWorker):
     def _search_for_circuit_breaker(self):
         for rule in self.cluster.destination_rules:
             if rule.is_circuit_breaker:
-                # TODO anche qui suppongo che siano stati usati i FQDN
                 node = next(iter([n for n in self.model.nodes if n.name == rule.host]), None)
                 if node is not None:
                     for r in node.incoming_interactions:
@@ -110,8 +109,7 @@ class IstioWorker(KubeWorker):
 
                             is_one_pod_exposed = self._has_pod_exposed(gateway=gateway, service=service)
                             if is_one_pod_exposed:
-                                service_node = self.model.get_node_by_name(service.fullname
-                                                                  + ".svc.cluster.local")
+                                service_node = self.model.get_node_by_name(service.fullname)
 
                                 if service_node is not None:
                                     self.model.edge.remove_member(service_node)

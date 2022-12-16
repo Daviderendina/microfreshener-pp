@@ -12,12 +12,6 @@ from project.importer.yamlkimporter import YamlKImporter
 
 from project.solver.solver import Solver, KubeSolver
 
-#TODO
-'''
-Tra i vari controlli effettuati ad es. per Gateway etc., manca quello sulle wildcard
-https://istio.io/latest/docs/reference/config/networking/gateway/
-'''
-
 
 SELECT_ALL = "all"
 

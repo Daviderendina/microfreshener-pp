@@ -19,7 +19,7 @@ def _check_for_compute_added(model) -> (int, int):
     relationship_found = 0
     for node in [c for c in list(model.nodes) if isinstance(c, Compute)]:
         compute_found += 1
-        relationship_found += len([r for r in node.incoming_interactions if isinstance(r, DeployedOn)])
+        relationship_found += len([r for r in node.deploys])
     return compute_found, relationship_found
 
 
