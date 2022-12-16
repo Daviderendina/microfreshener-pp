@@ -33,9 +33,9 @@ class UseTimeoutRefactoring(Refactoring):
                     self.cluster.add_object(virtual_service)
                     self.cluster.add_export_object(ExportObject(virtual_service, None))
 
-                    return True
+                    link.set_timeout(True)
 
-                    # TODO in verità in questo modo viene aggiunto il timeout per tutte le connessioni in ingresso: questo va bene?
+                    return True
 
                 # TODO devo assicurarmi che non ci siano già VService definiti? Potrei vedere se ci sono VService che hanno
                 # l'host come destinazione e capire in base agli hosts cosa fare. Se però funziona così è meglio

@@ -43,13 +43,14 @@ class TestRefactoringUseTimeout(TestCase):
         smell.addLinkCause(r)
 
         # Run solver
-        solver: UseTimeoutRefactoring = UseTimeoutRefactoring(cluster)
+        solver: UseTimeoutRefactoring = UseTimeoutRefactoring(cluster, model)
         solver.apply(smell)
 
         # Check result
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len(list(model.nodes)), 2)
         self.assertEqual(len(cluster.virtual_services), 1)
+        self.assertTrue(r.timeout)
 
         virtual_svc = cluster.virtual_services[0]
 

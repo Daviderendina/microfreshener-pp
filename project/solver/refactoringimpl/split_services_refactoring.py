@@ -39,5 +39,5 @@ class SplitServicesRefactoring(Refactoring):
         else:
             return False
 
+    #TODO il refactor del model non serve: è il deploy che devo dividere, il modello è già diviso!!
 
-        #TODO devo fare in questo caso anche il refactoringimpl del MicroToscaModel!! Questo deve ovviamente essere fatto prima di arrivare qui
