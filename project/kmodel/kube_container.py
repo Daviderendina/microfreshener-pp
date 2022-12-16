@@ -3,8 +3,9 @@ from project.kmodel.kube_object import KubeObject
 
 class KubeContainer(KubeObject):
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, workload_fullname: str):
         super().__init__(data)
+        self.workload_fullname = workload_fullname
 
     @property
     def name(self):
@@ -16,7 +17,7 @@ class KubeContainer(KubeObject):
 
     @property
     def fullname(self):
-        return self.name
+        return f"{self.name}.{self.workload_fullname}"
 
     def get_container_ports_numbers(self):
         result = [p.get("containerPort", None) for p in self.ports]

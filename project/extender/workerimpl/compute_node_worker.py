@@ -21,7 +21,7 @@ class ComputeNodeWorker(KubeWorker):
             compute_node = Compute(pod_fullname)
             for container in containers:
                 service_nodes = [s for s in model.services
-                                 if check_kobject_node_name_match(container, s, defining_obj_fullname=pod_fullname)]
+                                 if check_kobject_node_name_match(container, s)]
 
                 if len(service_nodes) > 0:
                     self._add_compute_node_if_not_present(compute_node)

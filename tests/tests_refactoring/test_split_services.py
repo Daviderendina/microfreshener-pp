@@ -43,7 +43,7 @@ class TestRefactoringSplitServices(TestCase):
         self.assertEqual(len(list(model.nodes)), 3)
 
         # Run solver
-        solver: SplitServicesRefactoring = SplitServicesRefactoring(cluster)
+        solver: SplitServicesRefactoring = SplitServicesRefactoring(cluster, model)
         solver.apply(smell)
 
         # Test solver output
@@ -89,7 +89,7 @@ class TestRefactoringSplitServices(TestCase):
         self.assertEqual(len(list(model.nodes)), 3)
 
         # Run solver
-        solver: SplitServicesRefactoring = SplitServicesRefactoring(cluster)
+        solver: SplitServicesRefactoring = SplitServicesRefactoring(cluster, model)
         solver.apply(smell)
 
         # Test solver output

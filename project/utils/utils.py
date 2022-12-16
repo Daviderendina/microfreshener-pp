@@ -21,8 +21,8 @@ def get_dict_key_by_value(dictionary: dict, search_value: str):
         print(f"[utils.get_dict_key_by_value] - Value <{search_value}> not found in dictionary {dictionary}")
 
 
-def check_kobject_node_name_match(kobject, tosca_node: Root, defining_obj_fullname=""):
-    # Case: tosca_node.name is <name>.<ns>
+def check_kobject_node_name_match(kobject, tosca_node: Root):
+    # Case: tosca_node.name is <name>.<ns> or tosca_node.name is <container>.<name>.<ns>
     if tosca_node.name == kobject.fullname:
         return True
 
@@ -31,11 +31,6 @@ def check_kobject_node_name_match(kobject, tosca_node: Root, defining_obj_fullna
     result = re.match(match_regex, tosca_node.name)
     if result and result.string == tosca_node.name:
         return True
-
-    # Case: tosca_node.name is <container>.<name>.<ns>
-    if defining_obj_fullname != "":
-        if f"{kobject.fullname}.{defining_obj_fullname}" == tosca_node.name:
-            return True
 
     return False
 

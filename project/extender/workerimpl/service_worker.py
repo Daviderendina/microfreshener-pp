@@ -51,7 +51,7 @@ class ServiceWorker(KubeWorker):
         self.model.add_node(mr_node)
 
         for container in exposed_containers:
-            service_node = next(iter([s for s in self.model.services if check_kobject_node_name_match(container, s, defining_obj_fullname=workload_obj.fullname)]), None)
+            service_node = next(iter([s for s in self.model.services if check_kobject_node_name_match(container, s)]), None)
             if service_node is not None:
 
                 if k_service.is_reachable_from_outside() and service_node in self.model.edge:
