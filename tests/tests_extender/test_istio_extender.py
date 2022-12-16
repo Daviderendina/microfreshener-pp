@@ -265,14 +265,14 @@ class TestIstioExtender(TestCase):
         k_virtualservice = KubeVirtualService(copy.deepcopy(VIRTUAL_SERVICE_TIMEOUT))
         k_gateway = KubeIstioGateway(copy.deepcopy(GATEWAY))
 
-        host_name = k_virtualservice.fullname  # TODO FQDN?
+        host_name = k_virtualservice.fullname
         k_gateway.data["spec"]["selectors"] = label
         k_gateway.data["spec"]["servers"][0]["hosts"] = [gateway_vs_host]
 
         k_virtualservice.data["spec"]["hosts"] = [gateway_vs_host.replace("*", "wildcard.test")]
-        k_virtualservice.data["spec"]["gateways"] = [k_gateway.fullname]  # TODO FQDN?
+        k_virtualservice.data["spec"]["gateways"] = [k_gateway.fullname]
         k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"][
-            "host"] = k_service.fullname  # TODO FQDN?
+            "host"] = k_service.fullname
 
         cluster.add_object(k_pod)
         cluster.add_object(k_virtualservice)

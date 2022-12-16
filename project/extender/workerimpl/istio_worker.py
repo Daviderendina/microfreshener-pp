@@ -10,8 +10,6 @@ from project.kmodel.kube_istio import KubeIstioGateway, KubeVirtualService
 from project.kmodel.kube_networking import KubeService
 
 
-#TODO SISTEMARE LA COSA DEI NOMI
-
 def _check_gateway_virtualservice_match(gateway: KubeIstioGateway, virtual_service: KubeVirtualService):
     gateway_check = gateway.fullname in virtual_service.gateways
 
@@ -65,7 +63,6 @@ class IstioWorker(KubeWorker):
 
     def _search_for_timeouts_with_virtual_service(self):
         for vservice in self.cluster.virtual_services:
-            #TODO anche qui, do per scontato che nei VServices route e destination siamo definiti come FQDN
             timeouts: List[(list, str)] = vservice.timeouts
             for (route, destination, timeout) in timeouts:
                 if route == destination:
