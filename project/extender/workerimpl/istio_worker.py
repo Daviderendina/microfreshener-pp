@@ -1,7 +1,7 @@
 import re
 from typing import List
 
-from microfreshener.core.model import MicroToscaModel, MessageRouter, InteractsWith
+from microfreshener.core.model import MicroToscaModel, MessageRouter, InteractsWith, Service
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.workerimpl.service_worker import ServiceWorker
@@ -66,13 +66,13 @@ class IstioWorker(KubeWorker):
             timeouts: List[(list, str)] = vservice.timeouts
             for (route, destination, timeout) in timeouts:
                 if route == destination:
-                    node = self.model.get_node_by_name(route)
+                    node = self.model.get_node_by_name(route, MessageRouter)
                     if node is not None:
                         for interaction in [r for r in node.incoming_interactions if isinstance(r, InteractsWith)]:
                             interaction.set_timeout(True)
                 else:
-                    route_mr_node = self.model.get_node_by_name(route)
-                    destination_mr_node = self.model.get_node_by_name(destination)
+                    route_mr_node = self.model.get_node_by_name(route, MessageRouter)
+                    destination_mr_node = self.model.get_node_by_name(destination, MessageRouter)
 
                     if route_mr_node is not None and destination_mr_node is not None:
                         for r in [r for r in route_mr_node.interactions if r.target == destination_mr_node]:
@@ -81,7 +81,7 @@ class IstioWorker(KubeWorker):
     def _search_for_timeouts_with_destination_rule(self):
         for rule in self.cluster.destination_rules:
             if rule.timeout is not None:
-                mr_node = self.model.get_node_by_name(rule.host)
+                mr_node = self.model.get_node_by_name(rule.host, MessageRouter)
                 for r in list(mr_node.incoming_interactions):
                     r.set_timeout(True)
 
@@ -106,17 +106,17 @@ class IstioWorker(KubeWorker):
 
                             is_one_pod_exposed = self._has_pod_exposed(gateway=gateway, service=service)
                             if is_one_pod_exposed:
-                                service_node = self.model.get_node_by_name(service.fullname)
+                                kube_service_node = self.model.get_node_by_name(service.fullname, MessageRouter)
 
-                                if service_node is not None:
-                                    self.model.edge.remove_member(service_node)
-                                    self.model.add_interaction(source_node=gateway_node, target_node=service_node)
+                                if kube_service_node is not None:
+                                    self.model.edge.remove_member(kube_service_node)
+                                    self.model.add_interaction(source_node=gateway_node, target_node=kube_service_node)
 
         if len(gateway_node.interactions) + len(gateway_node.incoming_interactions) == 0:
             self.model.delete_node(gateway_node)
 
     def _find_or_create_gateway(self) -> MessageRouter:
-        gateway_node = self.model.get_node_by_name(self.GATEWAY_NODE_GENERIC_NAME)
+        gateway_node = self.model.get_node_by_name(self.GATEWAY_NODE_GENERIC_NAME, MessageRouter)
         if gateway_node is None:
             gateway_node = MessageRouter(self.GATEWAY_NODE_GENERIC_NAME)
             self.model.edge.add_member(gateway_node)

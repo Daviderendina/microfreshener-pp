@@ -74,64 +74,64 @@ class TestIstioExtender(TestCase):
         self.assertEqual(len(mr_node.incoming_interactions), 2)
         self.assertTrue(mr_node.incoming_interactions[0].timeout)
         self.assertTrue(mr_node.incoming_interactions[1].timeout)
-
-    def test_timeout_virtual_service_pod_pod(self):
-        model = MicroToscaModel(name="service-model")
-        model.add_group(Edge("edge-group"))
-        cluster = KubeCluster()
-
-        # Kubernetes
-        k_pod_1 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
-        k_pod_2 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
-        k_pod_3 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
-        k_pod_1.data["metadata"]["labels"] = {'app': 'test'}
-        k_pod_2.data["metadata"]["labels"] = {'app': 'test'}
-        k_pod_3.data["metadata"]["labels"] = {'app': 'test'}
-        k_pod_1.data["metadata"]["name"] = k_pod_1.data["metadata"]["name"] + "_1"
-        k_pod_2.data["metadata"]["name"] = k_pod_2.data["metadata"]["name"] + "_2"
-        k_pod_3.data["metadata"]["name"] = k_pod_3.data["metadata"]["name"] + "_3"
-
-        k_container_3_name = k_pod_3.containers[0].name + "." + k_pod_3.fullname
-        k_virtualservice = KubeVirtualService(VIRTUAL_SERVICE_TIMEOUT)
-        k_virtualservice.data.get("spec", {}).get("hosts", []).append(k_container_3_name)
-        k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"]["host"] = k_container_3_name
-
-        cluster.add_object(k_pod_1)
-        cluster.add_object(k_pod_2)
-        cluster.add_object(k_pod_3)
-        cluster.add_object(k_virtualservice)
-
-        # MicroToscaModel
-        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
-        service_node_3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.fullname)
-        model.add_node(service_node_1)
-        model.add_node(service_node_2)
-        model.add_node(service_node_3)
-        model.add_interaction(source_node=service_node_1, target_node=service_node_3)
-        model.add_interaction(source_node=service_node_2, target_node=service_node_3)
-
-        # Check models
-        self.assertEqual(len(cluster.cluster_objects), 4)
-        self.assertEqual(len(list(model.nodes)), 3)
-        self.assertFalse(service_node_3.incoming_interactions[0].timeout)
-        self.assertFalse(service_node_3.incoming_interactions[1].timeout)
-
-        # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[IstioWorker()])
-        extender.extend(model, cluster)
-
-        # Check results
-        self.assertEqual(len(cluster.cluster_objects), 4)
-        self.assertEqual(len(list(model.nodes)), 3)
-        self.assertEqual(len(service_node_1.interactions), 1)
-        self.assertEqual(len(service_node_1.incoming_interactions), 0)
-        self.assertEqual(len(service_node_2.interactions), 1)
-        self.assertEqual(len(service_node_2.incoming_interactions), 0)
-        self.assertEqual(len(service_node_3.interactions), 0)
-        self.assertEqual(len(service_node_3.incoming_interactions), 2)
-        self.assertTrue(service_node_3.incoming_interactions[0].timeout)
-        self.assertTrue(service_node_3.incoming_interactions[1].timeout)
+    #
+    # def test_timeout_virtual_service_pod_pod(self):
+    #     model = MicroToscaModel(name="service-model")
+    #     model.add_group(Edge("edge-group"))
+    #     cluster = KubeCluster()
+    #
+    #     # Kubernetes
+    #     k_pod_1 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+    #     k_pod_2 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+    #     k_pod_3 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+    #     k_pod_1.data["metadata"]["labels"] = {'app': 'test'}
+    #     k_pod_2.data["metadata"]["labels"] = {'app': 'test'}
+    #     k_pod_3.data["metadata"]["labels"] = {'app': 'test'}
+    #     k_pod_1.data["metadata"]["name"] = k_pod_1.data["metadata"]["name"] + "_1"
+    #     k_pod_2.data["metadata"]["name"] = k_pod_2.data["metadata"]["name"] + "_2"
+    #     k_pod_3.data["metadata"]["name"] = k_pod_3.data["metadata"]["name"] + "_3"
+    #
+    #     k_container_3_name = k_pod_3.containers[0].name + "." + k_pod_3.fullname
+    #     k_virtualservice = KubeVirtualService(VIRTUAL_SERVICE_TIMEOUT)
+    #     k_virtualservice.data.get("spec", {}).get("hosts", []).append(k_container_3_name)
+    #     k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"]["host"] = k_container_3_name
+    #
+    #     cluster.add_object(k_pod_1)
+    #     cluster.add_object(k_pod_2)
+    #     cluster.add_object(k_pod_3)
+    #     cluster.add_object(k_virtualservice)
+    #
+    #     # MicroToscaModel
+    #     service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
+    #     service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
+    #     service_node_3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.fullname)
+    #     model.add_node(service_node_1)
+    #     model.add_node(service_node_2)
+    #     model.add_node(service_node_3)
+    #     model.add_interaction(source_node=service_node_1, target_node=service_node_3)
+    #     model.add_interaction(source_node=service_node_2, target_node=service_node_3)
+    #
+    #     # Check models
+    #     self.assertEqual(len(cluster.cluster_objects), 4)
+    #     self.assertEqual(len(list(model.nodes)), 3)
+    #     self.assertFalse(service_node_3.incoming_interactions[0].timeout)
+    #     self.assertFalse(service_node_3.incoming_interactions[1].timeout)
+    #
+    #     # Run extender
+    #     extender: KubeExtender = KubeExtender(worker_list=[IstioWorker()])
+    #     extender.extend(model, cluster)
+    #
+    #     # Check results
+    #     self.assertEqual(len(cluster.cluster_objects), 4)
+    #     self.assertEqual(len(list(model.nodes)), 3)
+    #     self.assertEqual(len(service_node_1.interactions), 1)
+    #     self.assertEqual(len(service_node_1.incoming_interactions), 0)
+    #     self.assertEqual(len(service_node_2.interactions), 1)
+    #     self.assertEqual(len(service_node_2.incoming_interactions), 0)
+    #     self.assertEqual(len(service_node_3.interactions), 0)
+    #     self.assertEqual(len(service_node_3.incoming_interactions), 2)
+    #     self.assertTrue(service_node_3.incoming_interactions[0].timeout)
+    #     self.assertTrue(service_node_3.incoming_interactions[1].timeout)
 
     def test_timeout_destination_rule_pod_service(self):
         model = MicroToscaModel(name="service-model")
@@ -187,62 +187,62 @@ class TestIstioExtender(TestCase):
         self.assertTrue(mr_node.incoming_interactions[0].timeout)
         self.assertTrue(mr_node.incoming_interactions[1].timeout)
 
-    def test_timeout_destination_rule_pod_pod(self):
-        model = MicroToscaModel(name="service-model")
-        model.add_group(Edge("edge-group"))
-        cluster = KubeCluster()
-
-        # Kubernetes
-        k_pod_1 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
-        k_pod_2 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
-        k_pod_3 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
-        k_pod_1.data["metadata"]["labels"] = {'app': 'test'}
-        k_pod_2.data["metadata"]["labels"] = {'app': 'test'}
-        k_pod_3.data["metadata"]["labels"] = {'app': 'test'}
-        k_pod_1.data["metadata"]["name"] = k_pod_1.data["metadata"]["name"] + "_1"
-        k_pod_2.data["metadata"]["name"] = k_pod_2.data["metadata"]["name"] + "_2"
-        k_pod_3.data["metadata"]["name"] = k_pod_3.data["metadata"]["name"] + "_3"
-
-        k_container_3_name = k_pod_3.containers[0].name + "." + k_pod_3.fullname
-        k_destinationrule = KubeDestinationRule(DESTINATION_RULE_TIMEOUT)
-        k_destinationrule.data["spec"]["host"] = k_container_3_name
-
-        cluster.add_object(k_pod_1)
-        cluster.add_object(k_pod_2)
-        cluster.add_object(k_pod_3)
-        cluster.add_object(k_destinationrule)
-
-        # MicroToscaModel
-        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
-        service_node_3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.fullname)
-        model.add_node(service_node_1)
-        model.add_node(service_node_2)
-        model.add_node(service_node_3)
-        model.add_interaction(source_node=service_node_1, target_node=service_node_3)
-        model.add_interaction(source_node=service_node_2, target_node=service_node_3)
-
-        # Check models
-        self.assertEqual(len(cluster.cluster_objects), 4)
-        self.assertEqual(len(list(model.nodes)), 3)
-        self.assertFalse(service_node_3.incoming_interactions[0].timeout)
-        self.assertFalse(service_node_3.incoming_interactions[1].timeout)
-
-        # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[IstioWorker()])
-        extender.extend(model, cluster)
-
-        # Check results
-        self.assertEqual(len(cluster.cluster_objects), 4)
-        self.assertEqual(len(list(model.nodes)), 3)
-        self.assertEqual(len(service_node_1.interactions), 1)
-        self.assertEqual(len(service_node_1.incoming_interactions), 0)
-        self.assertEqual(len(service_node_2.interactions), 1)
-        self.assertEqual(len(service_node_2.incoming_interactions), 0)
-        self.assertEqual(len(service_node_3.interactions), 0)
-        self.assertEqual(len(service_node_3.incoming_interactions), 2)
-        self.assertTrue(service_node_3.incoming_interactions[0].timeout)
-        self.assertTrue(service_node_3.incoming_interactions[1].timeout)
+    # def test_timeout_destination_rule_pod_pod(self):
+    #     model = MicroToscaModel(name="service-model")
+    #     model.add_group(Edge("edge-group"))
+    #     cluster = KubeCluster()
+    #
+    #     # Kubernetes
+    #     k_pod_1 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+    #     k_pod_2 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+    #     k_pod_3 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+    #     k_pod_1.data["metadata"]["labels"] = {'app': 'test'}
+    #     k_pod_2.data["metadata"]["labels"] = {'app': 'test'}
+    #     k_pod_3.data["metadata"]["labels"] = {'app': 'test'}
+    #     k_pod_1.data["metadata"]["name"] = k_pod_1.data["metadata"]["name"] + "_1"
+    #     k_pod_2.data["metadata"]["name"] = k_pod_2.data["metadata"]["name"] + "_2"
+    #     k_pod_3.data["metadata"]["name"] = k_pod_3.data["metadata"]["name"] + "_3"
+    #
+    #     k_container_3_name = k_pod_3.containers[0].name + "." + k_pod_3.fullname
+    #     k_destinationrule = KubeDestinationRule(DESTINATION_RULE_TIMEOUT)
+    #     k_destinationrule.data["spec"]["host"] = k_container_3_name
+    #
+    #     cluster.add_object(k_pod_1)
+    #     cluster.add_object(k_pod_2)
+    #     cluster.add_object(k_pod_3)
+    #     cluster.add_object(k_destinationrule)
+    #
+    #     # MicroToscaModel
+    #     service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
+    #     service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
+    #     service_node_3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.fullname)
+    #     model.add_node(service_node_1)
+    #     model.add_node(service_node_2)
+    #     model.add_node(service_node_3)
+    #     model.add_interaction(source_node=service_node_1, target_node=service_node_3)
+    #     model.add_interaction(source_node=service_node_2, target_node=service_node_3)
+    #
+    #     # Check models
+    #     self.assertEqual(len(cluster.cluster_objects), 4)
+    #     self.assertEqual(len(list(model.nodes)), 3)
+    #     self.assertFalse(service_node_3.incoming_interactions[0].timeout)
+    #     self.assertFalse(service_node_3.incoming_interactions[1].timeout)
+    #
+    #     # Run extender
+    #     extender: KubeExtender = KubeExtender(worker_list=[IstioWorker()])
+    #     extender.extend(model, cluster)
+    #
+    #     # Check results
+    #     self.assertEqual(len(cluster.cluster_objects), 4)
+    #     self.assertEqual(len(list(model.nodes)), 3)
+    #     self.assertEqual(len(service_node_1.interactions), 1)
+    #     self.assertEqual(len(service_node_1.incoming_interactions), 0)
+    #     self.assertEqual(len(service_node_2.interactions), 1)
+    #     self.assertEqual(len(service_node_2.incoming_interactions), 0)
+    #     self.assertEqual(len(service_node_3.interactions), 0)
+    #     self.assertEqual(len(service_node_3.incoming_interactions), 2)
+    #     self.assertTrue(service_node_3.incoming_interactions[0].timeout)
+    #     self.assertTrue(service_node_3.incoming_interactions[1].timeout)
 
     # TEST GATEWAY
 
@@ -281,7 +281,7 @@ class TestIstioExtender(TestCase):
 
         # TOSCA model
         svc_node = Service(k_pod.containers[0].name + "." + k_pod.fullname)
-        mr_node = MessageRouter(k_service.fullname)# + ".svc.cluster.local")
+        mr_node = MessageRouter(k_service.fullname)
         model.add_node(svc_node)
         model.add_node(mr_node)
         model.edge.add_member(mr_node)

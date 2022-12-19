@@ -72,7 +72,8 @@ class AddMessageRouterRefactoring(Refactoring):
         # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO Report refactoringimpl
 
     def _refactor_model(self, smell_node: Service, exposing_svc_name: str, smell_links, svc_exists: bool):
-        message_router = self.model.get_node_by_name(exposing_svc_name) if svc_exists else MessageRouter(exposing_svc_name)
+        message_router = self.model.get_node_by_name(exposing_svc_name, MessageRouter) \
+            if svc_exists else MessageRouter(exposing_svc_name)
 
         if message_router:
             if not svc_exists:

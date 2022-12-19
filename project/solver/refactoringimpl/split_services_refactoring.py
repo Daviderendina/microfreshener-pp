@@ -2,7 +2,7 @@ import copy
 
 from microfreshener.core.analyser.smell import Smell, MultipleServicesInOneContainerSmell
 from microfreshener.core.model import MicroToscaModel
-from microfreshener.core.model.nodes import Compute
+from microfreshener.core.model.nodes import Compute, Service
 
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
@@ -37,7 +37,7 @@ class SplitServicesRefactoring(Refactoring):
                 name_count += 1
 
                 # Refactor model
-                service_node = self.model.get_node_by_name(container.fullname) #TODO quì può essere none? Ocio
+                service_node = self.model.get_node_by_name(container.fullname, Service) #TODO quì può essere none? Ocio
                 compute_node = Compute(object_copy.fullname)
 
                 self.model.add_node(compute_node)

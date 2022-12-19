@@ -108,7 +108,7 @@ class AddAPIGatewayRefactoring(Refactoring):
         return True
 
     def _refactor_model_service_exists(self, expose_svc: KubeService, smell_node: Service):
-        message_router_node = self.model.get_node_by_name(expose_svc.fullname)
+        message_router_node = self.model.get_node_by_name(expose_svc.fullname, MessageRouter)
 
         if message_router_node:
             self.model.edge.remove_member(smell_node)
