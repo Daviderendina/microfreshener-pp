@@ -5,7 +5,7 @@ from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, E
 
 from project.extender.extender import KubeExtender
 from project.extender.impl.service_worker import ServiceWorker
-from data.kube_objects_dict import DEFAULT_SVC, POD_WITH_ONE_CONTAINER
+from tests.data.kube_objects_dict import DEFAULT_SVC, POD_WITH_ONE_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubePod
@@ -19,6 +19,7 @@ class TestServiceExtender(TestCase):
     '''
     def test_model_service_is_kubernetes_service(self):
         model = MicroToscaModel(name="test_model_service_is_kubernetes_service")
+        model.add_group(Edge(""))
         cluster = KubeCluster()
 
         # Add objects to cluster
@@ -123,7 +124,6 @@ class TestServiceExtender(TestCase):
     '''
     Test case: the communication between two pods is direct, but there's in the K8s deploy a SVC between the pods
     '''
-
     def test_service_not_found(self):
         model = MicroToscaModel(name="service-model")
         model.add_group(Edge("edge"))
@@ -184,9 +184,9 @@ class TestServiceExtender(TestCase):
     '''
     Test case: MessageRouter found
     '''
-
     def test_service_is_present(self):
         model = MicroToscaModel(name="service-model")
+        model.add_group(Edge(""))
         cluster = KubeCluster()
 
         # Add objects to cluster
@@ -235,7 +235,6 @@ class TestServiceExtender(TestCase):
     '''
     Test case: Service node is edge node and K8s Service is exponed on the host (for ex. NodePort)
     '''
-
     def test_tosca_service_edge_and_with_kservice_published(self):
         model = MicroToscaModel(name="service-model")
         model.add_group(Edge("edge"))
@@ -278,7 +277,6 @@ class TestServiceExtender(TestCase):
     '''
     Test case: Service node is edge node and K8s Service is ClusterIP
     '''
-
     def test_tosca_service_edge_and_with_kservice_clusterip(self):
         model = MicroToscaModel(name="service-model")
         model.add_group(Edge("edge"))
@@ -317,3 +315,70 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(mr.interactions), 1)
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
+
+
+    '''
+    Test case: Service node is in edge but KubeService is ClusterIP
+    '''
+    def test_edge_with_clusterip(self):
+        model = MicroToscaModel("test_edge_with_clusterip")
+        model.add_group(Edge("edge"))
+        cluster = KubeCluster()
+
+        # Kube objects
+        kube_svc = KubeService(DEFAULT_SVC)
+        kube_svc.data["spec"]["type"] = "ClusterIP"
+        cluster.add_object(kube_svc)
+
+        # Model
+        mr = MessageRouter(kube_svc.fullname)
+        model.add_node(mr)
+        model.edge.add_member(mr)
+
+        # Check model and cluster
+        self.assertEqual(len(cluster.cluster_objects), 1)
+        self.assertEqual(len(list(model.nodes)), 1)
+        self.assertEqual(len(list(model.edge.members)), 1)
+
+        # Run extender
+        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender.extend(model, cluster)
+
+        # Check results
+        self.assertEqual(len(cluster.cluster_objects), 1)
+        self.assertEqual(len(list(model.nodes)), 1)
+        self.assertEqual(len(list(model.edge.members)), 0)
+
+    '''
+    Test case: Service node is not in edge but KubeService is NodePort
+    '''
+    def test_not_edge_with_nodeport(self):
+        model = MicroToscaModel("test_edge_with_clusterip")
+        model.add_group(Edge("edge"))
+        cluster = KubeCluster()
+
+        # Kube objects
+        kube_svc = KubeService(DEFAULT_SVC)
+        kube_svc.data["spec"]["type"] = "ClusterIP"
+        cluster.add_object(kube_svc)
+
+        # Model
+        mr = MessageRouter(kube_svc.fullname)
+        model.add_node(mr)
+        model.edge.add_member(mr)
+
+        # Check model and cluster
+        self.assertEqual(len(cluster.cluster_objects), 1)
+        self.assertEqual(len(list(model.nodes)), 1)
+        self.assertEqual(len(list(model.edge.members)), 1)
+
+        # Run extender
+        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender.extend(model, cluster)
+
+        # Check results
+        self.assertEqual(len(cluster.cluster_objects), 1)
+        self.assertEqual(len(list(model.nodes)), 1)
+        self.assertEqual(len(list(model.edge.members)), 0)
+
+

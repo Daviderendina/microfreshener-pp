@@ -6,7 +6,9 @@ from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
 from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.ignorer import Ignorer, IgnoreType
 from project.kmodel.kube_cluster import KubeCluster
+from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubeWorkload
 from project.utils.utils import check_kobject_node_name_match
 
@@ -28,10 +30,22 @@ class ServiceWorker(KubeWorker):
         if not ignore:
             ignore = IgnoreNothing()
 
+        self._check_message_router_does_not_expose(ignore)
+        self._check_services_at_edge(ignore)
+
+    def _check_services_at_edge(self, ignore: Ignorer):
+        for mr_node in [s for s in self.model.message_routers if not ignore.is_node_ignored(s, IgnoreType.WORKER, self.name)]:
+            kube_service: KubeService = self.cluster.get_object_by_name(mr_node.name)
+            if kube_service.is_reachable_from_outside() and mr_node not in self.model.edge:
+                self.model.edge.add_member(mr_node)
+            elif not kube_service.is_reachable_from_outside() and mr_node in self.model.edge:
+                self.model.edge.remove_member(mr_node)
+
+    def _check_message_router_does_not_expose(self, ignore):
         for k_service, defining_obj in self._get_svc_with_object_exposed():
 
             not_ignored_nodes = self._get_nodes_not_ignored(self.model.nodes, ignore)
-            mr_node = next(iter([mr for mr in not_ignored_nodes if check_kobject_node_name_match(k_service, mr)]), None) #TODO
+            mr_node = next(iter([mr for mr in not_ignored_nodes if check_kobject_node_name_match(k_service, mr)]), None)
 
             if mr_node is None:
                 self._handle_mr_node_not_found(k_service, defining_obj)
@@ -99,3 +113,4 @@ class ServiceWorker(KubeWorker):
                 result.append((k_service, workload))
 
         return result
+
