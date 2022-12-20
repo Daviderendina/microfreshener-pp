@@ -1,6 +1,9 @@
 from microfreshener.core.model import MicroToscaModel, Service, Datastore
 
+from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
+from project.ignorer.ignore_config import IgnoreConfig
+from project.ignorer.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 
@@ -12,15 +15,19 @@ class DatabaseWorker(KubeWorker):
                       "snowflake", "cassandra", "splunk", "dynamodb", "hive", "influxdb", "neo4j"]
 
     def __init__(self):
-        super().__init__()
+        super().__init__(WorkerNames.DATABASE_WORKER)
         self.cluster = None
         self.model = None
 
-    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster):
+    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster, ignore: IgnoreConfig):
         self.model = model
         self.cluster = kube_cluster
 
-        for service_node in [s for s in model.services if len(s.interactions) == 0]:
+        if not ignore:
+            ignore = IgnoreNothing()
+        not_ignored_services = self._get_nodes_not_ignored(self.model.services, ignore)
+
+        for service_node in [s for s in not_ignored_services if len(s.interactions) == 0]:
             container = kube_cluster.get_object_by_name(service_node.name)
 
             if container and isinstance(container, KubeContainer) and self._is_database(container):

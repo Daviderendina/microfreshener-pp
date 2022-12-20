@@ -1,0 +1,25 @@
+{
+  "rules" : [
+    {
+      "node" : {
+      	"name": "container.name.namespace",
+        "type": "micro.nodes.Service"
+      },
+      "ignore_worker": [
+        "Database"
+      ]
+    },
+    {
+      "node" : {
+      	"name": "name.namespace",
+        "type": "micro.nodes.MessageRouter"
+      },
+      "ignore_refactoring": [
+        "Add-api-gateway", "Add-circuit-breaker"
+      ],
+      "ignore_smell": [
+        "all"
+      ]
+    }
+  ]
+}

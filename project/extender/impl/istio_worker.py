@@ -3,8 +3,11 @@ from typing import List
 
 from microfreshener.core.model import MicroToscaModel, MessageRouter, InteractsWith, Service
 
+from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
-from project.extender.workerimpl.service_worker import ServiceWorker
+from project.extender.impl.service_worker import ServiceWorker
+from project.ignorer.ignore_config import IgnoreConfig
+from project.ignorer.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_istio import KubeIstioGateway, KubeVirtualService
 from project.kmodel.kube_networking import KubeService
@@ -44,14 +47,18 @@ class IstioWorker(KubeWorker):
     GATEWAY_NODE_GENERIC_NAME = "istio-ingress-gateway"
 
     def __init__(self):
-        super().__init__()
+        super().__init__(WorkerNames.ISTIO_WORKER)
         self.model = None
         self.cluster: KubeCluster = None
+        self.ignore = None
         self.executed_only_after_workers.append(ServiceWorker)
 
-    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster):
+    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster, ignore: IgnoreConfig):
         self.model = model
         self.cluster = kube_cluster
+
+        if not ignore:
+            self.ignore = IgnoreNothing()
 
         self._search_for_gateways()
         self._search_for_circuit_breaker()
@@ -62,12 +69,14 @@ class IstioWorker(KubeWorker):
         self._search_for_timeouts_with_destination_rule()
 
     def _search_for_timeouts_with_virtual_service(self):
+        not_ignored_nodes = self._get_nodes_not_ignored(self.model.message_routers, self.ignore)
+
         for vservice in self.cluster.virtual_services:
             timeouts: List[(list, str)] = vservice.timeouts
             for (route, destination, timeout) in timeouts:
                 if route == destination:
                     node = self.model.get_node_by_name(route, MessageRouter)
-                    if node is not None:
+                    if node is not None and node in not_ignored_nodes:
                         for interaction in [r for r in node.incoming_interactions if isinstance(r, InteractsWith)]:
                             interaction.set_timeout(True)
                 else:
@@ -79,21 +88,27 @@ class IstioWorker(KubeWorker):
                             r.set_timeout(True)
 
     def _search_for_timeouts_with_destination_rule(self):
+        not_ignored_nodes = self._get_nodes_not_ignored(self.model.message_routers, self.ignore)
+
         for rule in self.cluster.destination_rules:
             if rule.timeout is not None:
                 mr_node = self.model.get_node_by_name(rule.host, MessageRouter)
-                for r in list(mr_node.incoming_interactions):
-                    r.set_timeout(True)
+                if mr_node in not_ignored_nodes:
+                    for r in list(mr_node.incoming_interactions):
+                        r.set_timeout(True)
 
     def _search_for_circuit_breaker(self):
+        not_ignored_nodes = self._get_nodes_not_ignored(self.model.nodes, self.ignore)
+
         for rule in self.cluster.destination_rules:
             if rule.is_circuit_breaker:
                 node = next(iter([n for n in self.model.nodes if n.name == rule.host]), None)
-                if node is not None:
+                if node is not None and node in not_ignored_nodes:
                     for r in node.incoming_interactions:
                         r.set_circuit_breaker(True)
 
     def _search_for_gateways(self):
+        not_ignored_nodes = self._get_nodes_not_ignored(self.model.message_routers, self.ignore)
         gateway_node = self._find_or_create_gateway()
 
         for gateway in self.cluster.istio_gateways:
@@ -108,7 +123,7 @@ class IstioWorker(KubeWorker):
                             if is_one_pod_exposed:
                                 kube_service_node = self.model.get_node_by_name(service.fullname, MessageRouter)
 
-                                if kube_service_node is not None:
+                                if kube_service_node is not None and kube_service_node in not_ignored_nodes:
                                     self.model.edge.remove_member(kube_service_node)
                                     self.model.add_interaction(source_node=gateway_node, target_node=kube_service_node)
 

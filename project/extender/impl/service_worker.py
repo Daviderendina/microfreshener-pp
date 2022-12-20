@@ -2,7 +2,10 @@
 from microfreshener.core.model import MicroToscaModel, InteractsWith
 from microfreshener.core.model.nodes import Service, MessageRouter
 
+from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
+from project.ignorer.ignore_config import IgnoreConfig
+from project.ignorer.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_workload import KubeWorkload
 from project.utils.utils import check_kobject_node_name_match
@@ -14,16 +17,21 @@ class ServiceWorker(KubeWorker):
     # che tutto quello esposto sotto sia compatibile in termini di porte
 
     def __init__(self):
-        super().__init__()
+        super().__init__(WorkerNames.SERVICE_WORKER)
         self.model = None
         self.cluster = None
 
-    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster) -> MicroToscaModel:
+    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster, ignore: IgnoreConfig) -> MicroToscaModel:
         self.model = model
         self.cluster = kube_cluster
 
+        if not ignore:
+            ignore = IgnoreNothing()
+
         for k_service, defining_obj in self._get_svc_with_object_exposed():
-            mr_node = next(iter([mr for mr in model.nodes if check_kobject_node_name_match(k_service, mr)]), None) #TODO
+
+            not_ignored_nodes = self._get_nodes_not_ignored(self.model.nodes, ignore)
+            mr_node = next(iter([mr for mr in not_ignored_nodes if check_kobject_node_name_match(k_service, mr)]), None) #TODO
 
             if mr_node is None:
                 self._handle_mr_node_not_found(k_service, defining_obj)

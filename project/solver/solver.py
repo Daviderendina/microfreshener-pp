@@ -4,19 +4,21 @@ from microfreshener.core.analyser.costants import REFACTORING_ADD_MESSAGE_ROUTER
     SMELL_ENDPOINT_BASED_SERVICE_INTERACTION, SMELL_WOBBLY_SERVICE_INTERACTION_SMELL, \
     SMELL_NO_API_GATEWAY, SMELL_MULTIPLE_SERVICES_IN_ONE_CONTAINER, REFACTORING_SPLIT_SERVICES, \
     REFACTORING_ADD_API_GATEWAY, REFACTORING_USE_TIMEOUT, REFACTORING_ADD_CIRCUIT_BREAKER, REFACTORING_NAMES
-from microfreshener.core.analyser.smell import Smell
 from typing import List
 
+from microfreshener.core.analyser.smell import Smell, NodeSmell, GroupSmell
 from microfreshener.core.model import MicroToscaModel
 
+from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
+from project.ignorer.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_object import KubeObject
-from project.solver.refactoringimpl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
-from project.solver.refactoringimpl.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
-from project.solver.refactoringimpl.add_message_router_refactoring import AddMessageRouterRefactoring
+from project.solver.impl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
+from project.solver.impl.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
+from project.solver.impl.add_message_router_refactoring import AddMessageRouterRefactoring
 from project.solver.pending_ops import PENDING_OPS
-from project.solver.refactoringimpl.split_services_refactoring import SplitServicesRefactoring
-from project.solver.refactoringimpl.use_timeout_refactoring import UseTimeoutRefactoring
+from project.solver.impl.split_services_refactoring import SplitServicesRefactoring
+from project.solver.impl.use_timeout_refactoring import UseTimeoutRefactoring
 
 
 class Solver:
@@ -28,10 +30,12 @@ class Solver:
 
 class KubeSolver(Solver):
 
-    def __init__(self, kube_cluster: KubeCluster, model: MicroToscaModel, refactoring_list: List[str] = None):
+    def __init__(self, kube_cluster: KubeCluster, model: MicroToscaModel, refactoring_list: List[str],
+                 ignore: IgnoreConfig = IgnoreNothing()):
         self.kube_cluster = kube_cluster
         self.model = model
         self.pending_ops: (PENDING_OPS, KubeObject) = []
+        self.ignore = ignore
 
         self.refactoring = {}
         if refactoring_list is None:
@@ -51,19 +55,35 @@ class KubeSolver(Solver):
             i += 1
         return refactoring_res
 
-    def solve(self, smells) -> KubeCluster:
+    def solve(self, smells):
         smell_solved = 0
         for smell in [s for s in smells if s]:
-            available_refactoring: list = self.refactoring.get(smell.name, None)
+            available_refactoring = self.get_available_refactoring(smell)
+
             if available_refactoring is not None:
                 result = self.apply_refactoring(available_refactoring, smell)
                 if result:
                     smell_solved += 1
 
         for ops, obj in self.pending_ops:
-            ops.value(obj)
+            ops(obj)
 
         return smell_solved
+
+    def get_available_refactoring(self, smell: Smell):
+        available_refactoring: list = self.refactoring.get(smell.name, [])
+
+        for refactoring in available_refactoring:
+            if isinstance(smell, NodeSmell):
+                if self.ignore.is_node_ignored(smell.node, IgnoreType.REFACTORING, refactoring.name):
+                    available_refactoring.remove(refactoring)
+
+            elif isinstance(smell, GroupSmell):
+                for node in smell.group.members:
+                    if self.ignore.is_node_ignored(node, IgnoreType.REFACTORING, smell.name):
+                        available_refactoring.remove(refactoring)
+
+        return available_refactoring
 
     def set_refactoring(self, refactoring_list):
         refactoring_list = list(set(refactoring_list))

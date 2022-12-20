@@ -3,11 +3,14 @@ import os.path
 import click
 from microfreshener.core.analyser import MicroToscaAnalyserBuilder
 from microfreshener.core.analyser.costants import REFACTORING_NAMES, REFACTORING_ADD_API_GATEWAY, \
-    REFACTORING_ADD_CIRCUIT_BREAKER, REFACTORING_ADD_MESSAGE_ROUTER, REFACTORING_USE_TIMEOUT, REFACTORING_SPLIT_SERVICES
+    REFACTORING_ADD_CIRCUIT_BREAKER, REFACTORING_ADD_MESSAGE_ROUTER, REFACTORING_USE_TIMEOUT, \
+    REFACTORING_SPLIT_SERVICES, SMELLS_NAME
 from microfreshener.core.importer import YMLImporter
 
+from project.constants import IGNORE_CONFIG_SCHEMA
 from project.exporter.yamlkexporter import YamlKExporter
 from project.extender.extender import KubeExtender
+from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
 from project.importer.yamlkimporter import YamlKImporter
 
 from project.solver.solver import Solver, KubeSolver
@@ -15,7 +18,7 @@ from project.solver.solver import Solver, KubeSolver
 
 SELECT_ALL = "all"
 
-REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "add_messagerouter", "add_mr",
+REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "add_message_router", "add_mr",
                "use_timeouts", "use_ts", "split_services", "split_svcs", SELECT_ALL]
 
 
@@ -23,18 +26,22 @@ REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "ad
 @click.option("--kubedeploy", "--deploy", required=True, type=str, help="Folder containing Kubernetes deploy files of the system")
 @click.option("--microtoscamodel", "--model", required=True, type=str, help="MicroTosca file containing the description of the system")
 @click.option("--output", "--out", default="./out", type=str, help="Output folder of the tool")
-@click.option("--refactoringimpl", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one refactoringimpl. This option can be used multiple times, for adding more than one refactoringimpl", multiple=True)
-def main(kubedeploy, microtoscamodel, output, refactoring: list):
-    run(kubedeploy, microtoscamodel, output, refactoring)
+@click.option("--impl", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one impl. This option can be used multiple times, for adding more than one impl", multiple=True)
+@click.option("--ignore_config", "--ig", type=str, help="The file that specifies which smell, refactoring or worker ignore")
+def main(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config):
+    run(kubedeploy, microtoscamodel, output, refactoring, ignore_config)
 
 
-def run(kubedeploy, microtoscamodel, output, refactoring: list):
+def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_path):
 
     if not os.path.exists(kubedeploy):
         raise ValueError(f"Kubedeploy path passed as parameter ({kubedeploy}) not found")
 
     if not os.path.exists(microtoscamodel):
         raise ValueError(f"File passed as MicroTosca model ({microtoscamodel}) not found")
+
+    if ignore_config_path is None or not os.path.exists(microtoscamodel):
+        raise ValueError(f"File passed as ignore config ({ignore_config_path}) not found")
 
     if not os.path.exists(output):
         os.makedirs(output, 0o777)
@@ -47,6 +54,9 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list):
     importer = YamlKImporter()
     cluster = importer.Import(kubedeploy)
 
+    # Read ignore config from disk
+    ignore_config = IgnoreConfig(ignore_config_path, IGNORE_CONFIG_SCHEMA)
+
     # Run extender
     extender = KubeExtender()
     extender.set_all_workers()
@@ -55,12 +65,12 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list):
     smell_solved = -1
     while smell_solved != 0:
         # Run sniffer on the model
-        analyser = MicroToscaAnalyserBuilder(model).add_all_sniffers().build()
+        analyser = build_analyser(model, ignore_config)
         analyser_result = analyser.run(smell_as_dict=False)
         smells = [smell for sublist in [smell.get("smells", []) for sublist in analyser_result.values() for smell in sublist] for smell in sublist]
 
         # Run smell solver
-        solver = build_solver(cluster, refactoring)
+        solver = build_solver(cluster, model, refactoring)
         smell_solved = solver.solve(smells)
 
         # Export files
@@ -68,9 +78,20 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list):
         exporter.export(cluster, model, tosca_model_filename=microtoscamodel)
 
 
-def build_solver(cluster, refactoring) -> Solver:
+def build_analyser(model, ignore_config):
+    analyser = MicroToscaAnalyserBuilder(model).add_all_sniffers().build()
+
+    for node in model.nodes:
+        for smell in SMELLS_NAME:
+            if ignore_config.is_node_ignored(node, IgnoreType.SMELLS, smell):
+                analyser.ignore_smell_for_node(node, smell)
+
+    return analyser
+
+
+def build_solver(cluster, model, refactoring) -> Solver:
     if SELECT_ALL in refactoring:
-        return KubeSolver(cluster, REFACTORING_NAMES)
+        return KubeSolver(cluster, model, REFACTORING_NAMES)
 
     selected_refactoring = []
     for r in refactoring:

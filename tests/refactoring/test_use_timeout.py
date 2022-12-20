@@ -9,7 +9,7 @@ from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubePod
-from project.solver.refactoringimpl.use_timeout_refactoring import UseTimeoutRefactoring
+from project.solver.impl.use_timeout_refactoring import UseTimeoutRefactoring
 
 
 class TestRefactoringUseTimeout(TestCase):

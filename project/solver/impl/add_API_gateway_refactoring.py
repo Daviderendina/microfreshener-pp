@@ -18,7 +18,7 @@ class AddAPIGatewayRefactoring(Refactoring):
     # https://alesnosek.com/blog/2017/02/14/accessing-kubernetes-pods-from-outside-of-the-cluster/
 
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
-        super().__init__(cluster, model)
+        super().__init__(cluster, model, REFACTORING_ADD_API_GATEWAY)
 
     '''
     #TESI
@@ -34,7 +34,7 @@ class AddAPIGatewayRefactoring(Refactoring):
             raise RefactoringNotSupportedError
 
         # Handle Message Broker case
-            # TODO Mi aspetto di avere un pod che implementi il MB, quindi il caso è analogo a quello del Service
+            #TODO Mi aspetto di avere un pod che implementi il MB, quindi il caso è analogo a quello del Service
 
         if isinstance(smell.node, Service): # TODO or isinstance(smell.node, MessageBroker):
             container, def_object = self._get_container_and_def_object(smell.node.name)

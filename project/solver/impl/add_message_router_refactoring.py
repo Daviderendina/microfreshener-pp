@@ -1,3 +1,4 @@
+from microfreshener.core.analyser.costants import REFACTORING_ADD_MESSAGE_ROUTER
 from microfreshener.core.analyser.smell import Smell, EndpointBasedServiceInteractionSmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
@@ -12,7 +13,7 @@ from project.utils.utils import check_ports_match
 class AddMessageRouterRefactoring(Refactoring):
 
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
-        super().__init__(cluster, model)
+        super().__init__(cluster, model, REFACTORING_ADD_MESSAGE_ROUTER)
 
     def _find_compatible_exposing_service(self, workload, container):
         selected_service = None
@@ -69,7 +70,7 @@ class AddMessageRouterRefactoring(Refactoring):
         return False
 
         # Lo sviluppatore deve in qualche modo confermare di aver cambiato le chiamate, dall'IP al nome del svc
-        # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO Report refactoringimpl
+        # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO Report impl
 
     def _refactor_model(self, smell_node: Service, exposing_svc_name: str, smell_links, svc_exists: bool):
         message_router = self.model.get_node_by_name(exposing_svc_name, MessageRouter) \

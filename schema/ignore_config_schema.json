@@ -1,0 +1,125 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "rules"
+    ],
+    "properties": {
+        "rules": {
+            "type": "array",
+            "default": [],
+            "title": "The ignore rules defined",
+            "items": {
+                "type": "object",
+                "default": {},
+                "title": "A single ignore rule",
+                "required": [
+                    "node"
+                ],
+                "properties": {
+                    "node": {
+                        "type": "object",
+                        "default": {},
+                        "title": "The node Schema",
+                        "required": [
+                            "name",
+                            "type"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "default": "",
+                                "title": "The name of the node to which this rule applies"
+                            },
+                            "type": {
+                                "type": "string",
+                                "default": "",
+                                "title": "The type of the node to which this rule applies",
+                                "enum": [
+                                    "micro.nodes.Service", "micro.nodes.Compute", "micro.nodes.DataStore",
+                                    "micro.nodes.MessageBroker", "micro.nodes.MessageRouter"
+                                ]
+                            }
+                        }
+                    },
+                    "ignore_worker": {
+                        "type": "array",
+                        "default": [],
+                        "title": "Rules for ignore execution of a worker (extender) on the node",
+                        "items": {
+                            "type": "string",
+                            "default": "",
+                            "title": "A Schema",
+                            "enum": [
+                                "all",
+                                "Compute-node",
+                                "Container",
+                                "Database",
+                                "Ingress",
+                                "Istio",
+                                "Service"
+                            ]
+                        }
+                    },
+                    "ignore_refactoring": {
+                        "type": "array",
+                        "default": [],
+                        "title": "Rules for ignore execution of a refactoring on the node",
+                        "items": {
+                            "type": "string",
+                            "title": "A Schema",
+                            "enum": [
+                                "all",
+                                "Add-message-router",
+                                "Add-circuit-breaker",
+                                "Use-timeout",
+                                "Add-api-gateway",
+                                "Split-service-in-two-pods"
+                            ]
+                        }
+                    },
+                    "ignore_smell": {
+                        "type": "array",
+                        "default": [],
+                        "title": "Rules for ignore execution of a sniffer on the node",
+                        "items": {
+                            "type": "string",
+                            "default": "",
+                            "title": "A Schema",
+                            "enum": [
+                                "all",
+                                "Endpoint-based-service-interaction",
+                                "Wobbly-service-interaction",
+                                "Shared-persistency",
+                                "No-api-gateway",
+                                "Cross-team-data-management",
+                                "Multiple-services-in-one-container"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "examples": [{
+        "rules": [{
+            "node": {
+                "name": "container.name.namespace",
+                "type": "micro.nodes.Service"
+            },
+            "ignore_worker": [
+                "all"
+            ],
+            "ignore_refactoring": [
+                "add_api_gateway",
+                "add_circuit_breaker"
+            ],
+            "ignore_smell": [
+                ""
+            ]
+        }]
+    }]
+}

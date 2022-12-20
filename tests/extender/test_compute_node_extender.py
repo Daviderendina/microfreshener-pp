@@ -6,7 +6,7 @@ from microfreshener.core.model.nodes import Service, MessageRouter, Compute
 from microfreshener.core.model.relationships import DeployedOn
 
 from project.extender.extender import KubeExtender
-from project.extender.workerimpl.compute_node_worker import ComputeNodeWorker
+from project.extender.impl.compute_node_worker import ComputeNodeWorker
 
 from tests.data.kube_objects_dict import *
 from project.kmodel.kube_cluster import KubeCluster

@@ -1,3 +1,4 @@
+from microfreshener.core.analyser.costants import REFACTORING_ADD_CIRCUIT_BREAKER
 from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell, Smell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
@@ -11,7 +12,7 @@ from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 class AddCircuitBreakerRefactoring(Refactoring):
 
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
-        super().__init__(cluster, model)
+        super().__init__(cluster, model, REFACTORING_ADD_CIRCUIT_BREAKER)
 
     def apply(self, smell: Smell):
         if not isinstance(smell, WobblyServiceInteractionSmell):

@@ -8,10 +8,11 @@ from project.kmodel.kube_cluster import KubeCluster
 
 class Refactoring:
 
-    def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
+    def __init__(self, cluster: KubeCluster, model: MicroToscaModel, name):
         self.cluster = cluster
         self.model = model
         self.solver_pending_ops = None
+        self.name = name
 
     @abstractmethod
     def apply(self, smell: Smell) -> bool:

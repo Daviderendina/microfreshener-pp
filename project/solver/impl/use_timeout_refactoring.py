@@ -1,3 +1,4 @@
+from microfreshener.core.analyser.costants import REFACTORING_USE_TIMEOUT
 from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell, Smell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
@@ -11,7 +12,7 @@ class UseTimeoutRefactoring(Refactoring):
     DEFAULT_TIMEOUT_SEC = 2
 
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
-        super().__init__(cluster, model)
+        super().__init__(cluster, model, REFACTORING_USE_TIMEOUT)
 
     def apply(self, smell: Smell):
         if not isinstance(smell, WobblyServiceInteractionSmell):

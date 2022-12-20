@@ -8,7 +8,7 @@ from microfreshener.core.model.nodes import Compute
 from tests.data.kube_objects_dict import POD_WITH_TWO_CONTAINER, DEPLOYMENT_WITH_TWO_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_workload import KubePod, KubeDeployment
-from project.solver.refactoringimpl.split_services_refactoring import SplitServicesRefactoring
+from project.solver.impl.split_services_refactoring import SplitServicesRefactoring
 
 
 class TestRefactoringSplitServices(TestCase):

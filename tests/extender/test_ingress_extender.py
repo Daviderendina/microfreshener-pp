@@ -4,7 +4,7 @@ from unittest import TestCase
 from microfreshener.core.model import MicroToscaModel, Service, Edge, MessageRouter, KIngress
 
 from project.extender.extender import KubeExtender
-from project.extender.workerimpl.ingress_worker import IngressWorker
+from project.extender.impl.ingress_worker import IngressWorker
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC, DEFAULT_SVC_INGRESS
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService, KubeIngress

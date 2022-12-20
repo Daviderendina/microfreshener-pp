@@ -1,5 +1,6 @@
 import copy
 
+from microfreshener.core.analyser.costants import REFACTORING_SPLIT_SERVICES
 from microfreshener.core.analyser.smell import Smell, MultipleServicesInOneContainerSmell
 from microfreshener.core.model import MicroToscaModel
 from microfreshener.core.model.nodes import Compute, Service
@@ -12,7 +13,7 @@ from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 class SplitServicesRefactoring(Refactoring):
 
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
-        super().__init__(cluster, model)
+        super().__init__(cluster, model, REFACTORING_SPLIT_SERVICES)
 
     def apply(self, smell: Smell):
         if not isinstance(smell, MultipleServicesInOneContainerSmell):

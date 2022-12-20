@@ -8,7 +8,7 @@ from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_workload import KubePod, KubeDeployment
 
-from project.solver.refactoringimpl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
+from project.solver.impl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
 
 
 def apply_solver(solver, smell):
