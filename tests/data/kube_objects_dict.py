@@ -200,16 +200,16 @@ DEFAULT_SVC_INGRESS = {
         "ingressClassName": "nginx - example",
         "rules": [
             {
-                "http" : {
-                    "paths" : [
+                "http": {
+                    "paths": [
                         {
                             "path": "/testpath",
                             "pathType": "Prefix",
-                            "backend" : {
-                                "service" : {
-                                    "name" : "test",
-                                    "port" : {
-                                        "number" : 80
+                            "backend": {
+                                "service": {
+                                    "name": "test",
+                                    "port": {
+                                        "number": 80
                                     }
                                 }
                             }

@@ -1,4 +1,5 @@
 import copy
+import os
 from unittest import TestCase
 
 from microfreshener.core.analyser.costants import REFACTORING_ADD_API_GATEWAY
@@ -22,8 +23,8 @@ class TestIgnoreConfig(TestCase):
 
     # Tests with json
     def test_ignore_config(self):
-        ignore_config = "../data/ignore_config/ignore_config.json"
-        ignore_config_schema = "../../schema/ignore_config_schema.json"
+        ignore_config = os.getcwd().split("tests")[0] + "/tests/data/ignore_config/ignore_config.json"
+        ignore_config_schema = os.getcwd().split("tests")[0] + "/tests/../schema/ignore_config_schema.json"
 
         # Model
         model = MicroToscaModel("")
@@ -47,8 +48,8 @@ class TestIgnoreConfig(TestCase):
         self.assertTrue(ig.is_node_ignored(mr, IgnoreType.SMELLS, "No-api-gateway"))
 
     def test_ignore_config_with_error(self):
-        ignore_config = "../data/ignore_config/ignore_config_error.json"
-        ignore_config_schema = "../../schema/ignore_config_schema.json"
+        ignore_config = os.getcwd().split("tests")[0] + "/tests/data/ignore_config/ignore_config_error.json"
+        ignore_config_schema = os.getcwd().split("tests")[0] + "/tests/../schema/ignore_config_schema.json"
 
         # Model
         model = MicroToscaModel("")
@@ -62,7 +63,7 @@ class TestIgnoreConfig(TestCase):
             ig = IgnoreConfig(ignore_config, ignore_config_schema)
             ig.import_config()
 
-            self.assertIsNone(ig.data)
+            self.assertIsNone(ig.config)
             self.assertIsNone(ig.schema)
         except ValueError:
             self.assertTrue(True)

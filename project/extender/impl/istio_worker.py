@@ -41,8 +41,6 @@ def _check_gateway_virtualservice_match(gateway: KubeIstioGateway, virtual_servi
         return False
 
 
-
-
 class IstioWorker(KubeWorker):
     GATEWAY_NODE_GENERIC_NAME = "istio-ingress-gateway"
 
