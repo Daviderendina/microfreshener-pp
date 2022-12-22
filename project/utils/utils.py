@@ -34,8 +34,6 @@ def check_kobject_node_name_match(kobject, tosca_node: Root):
 
     return False
 
-#TODO cambiare il next(iter(..), None) PER TUTTI
-
 
 def check_ports_match(k_service, k_container):
     service_ports = []

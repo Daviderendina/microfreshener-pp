@@ -13,3 +13,4 @@ class WorkerNames:
     SERVICE_WORKER = "service"
 
 IGNORE_CONFIG_SCHEMA = "../schema/ignore_config_schema.json"
+

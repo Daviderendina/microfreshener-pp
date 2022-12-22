@@ -15,21 +15,6 @@ class AddMessageRouterRefactoring(Refactoring):
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
         super().__init__(cluster, model, REFACTORING_ADD_MESSAGE_ROUTER)
 
-    def _find_compatible_exposing_service(self, workload, container):
-        selected_service = None
-
-        exposing_service = self.cluster.find_svc_exposing_workload(workload)
-
-        if len(exposing_service) > 0:
-            port_compatible_services = [s for s in exposing_service if check_ports_match(s, container)]
-
-            if len(port_compatible_services) > 0:
-                port_compatible_services.sort(key=lambda svc: len(self.cluster.find_workload_exposed_by_svc(svc)))
-
-                selected_service = port_compatible_services[0]
-
-        return selected_service
-
     def apply(self, smell: Smell):
 
         if not isinstance(smell, EndpointBasedServiceInteractionSmell):
@@ -71,6 +56,21 @@ class AddMessageRouterRefactoring(Refactoring):
 
         # Lo sviluppatore deve in qualche modo confermare di aver cambiato le chiamate, dall'IP al nome del svc
         # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO Report impl
+
+    def _find_compatible_exposing_service(self, workload, container):
+        selected_service = None
+
+        exposing_service = self.cluster.find_svc_exposing_workload(workload)
+
+        if len(exposing_service) > 0:
+            port_compatible_services = [s for s in exposing_service if check_ports_match(s, container)]
+
+            if len(port_compatible_services) > 0:
+                port_compatible_services.sort(key=lambda svc: len(self.cluster.find_workload_exposed_by_svc(svc)))
+
+                selected_service = port_compatible_services[0]
+
+        return selected_service
 
     def _refactor_model(self, smell_node: Service, exposing_svc_name: str, smell_links, svc_exists: bool):
         message_router = self.model.get_node_by_name(exposing_svc_name, MessageRouter) \

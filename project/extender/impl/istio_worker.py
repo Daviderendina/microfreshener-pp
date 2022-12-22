@@ -100,7 +100,7 @@ class IstioWorker(KubeWorker):
 
         for rule in self.cluster.destination_rules:
             if rule.is_circuit_breaker:
-                node = next(iter([n for n in self.model.nodes if n.name == rule.host]), None)
+                node = self.model.get_node_by_name(rule.host)
                 if node is not None and node in not_ignored_nodes:
                     for r in node.incoming_interactions:
                         r.set_circuit_breaker(True)
