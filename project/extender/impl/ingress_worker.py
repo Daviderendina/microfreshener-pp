@@ -50,7 +50,7 @@ class IngressWorker(KubeWorker):
                     if kube_service and not kube_service.is_reachable_from_outside():
                         self.model.edge.remove_member(mr_node)
 
-                    ingress_node = MessageRouter(ingress.fullname)
+                    ingress_node = MessageRouter(ingress.typed_fullname)
                     self.model.add_node(ingress_node)
                     self.model.edge.add_member(ingress_node)
                     self.model.add_interaction(source_node=ingress_node, target_node=mr_node)

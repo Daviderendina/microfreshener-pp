@@ -7,6 +7,7 @@ from microfreshener.core.model.relationships import DeployedOn
 
 from project.extender.extender import KubeExtender
 from project.extender.impl.compute_node_worker import ComputeNodeWorker
+from project.kmodel.shortnames import KUBE_STATEFULSET
 
 from tests.data.kube_objects_dict import *
 from project.kmodel.kube_cluster import KubeCluster
@@ -52,8 +53,8 @@ class TestComputeNodeExtender(TestCase):
         cluster.add_object(svc)
         cluster.add_object(pod)
 
-        message_router_node = MessageRouter(name=svc.fullname + ".svc.local.cluster")
-        service_node = Service(name=pod.containers[0].name + "." + pod.fullname)
+        message_router_node = MessageRouter(name=svc.typed_fullname)
+        service_node = Service(name=pod.containers[0].name + "." + pod.typed_fullname)
         model.add_node(message_router_node)
         model.add_node(service_node)
         model.add_interaction(message_router_node, service_node)
@@ -80,9 +81,9 @@ class TestComputeNodeExtender(TestCase):
         cluster.add_object(svc)
         cluster.add_object(pod)
 
-        mr_node = MessageRouter(name=svc.fullname + ".svc")
-        svc1_node = Service(name=pod.containers[0].name + "." + pod.fullname)
-        svc2_node = Service(name=pod.containers[1].name + "." + pod.fullname)
+        mr_node = MessageRouter(name=svc.typed_fullname)
+        svc1_node = Service(name=pod.containers[0].name + "." + pod.typed_fullname)
+        svc2_node = Service(name=pod.containers[1].name + "." + pod.typed_fullname)
         model.add_node(mr_node)
         model.add_node(svc1_node)
         model.add_node(svc2_node)
@@ -110,7 +111,7 @@ class TestComputeNodeExtender(TestCase):
         deploy = KubeDeployment(DEPLOYMENT_WITH_ONE_CONTAINER)
         cluster.add_object(deploy)
 
-        service_node = Service(name=deploy.containers[0].name+"."+deploy.fullname)
+        service_node = Service(name=deploy.containers[0].name+"."+deploy.typed_fullname)
         model.add_node(service_node)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
@@ -134,8 +135,8 @@ class TestComputeNodeExtender(TestCase):
         deploy = KubeDeployment(DEPLOYMENT_WITH_TWO_CONTAINER)
         cluster.add_object(deploy)
 
-        svc1_node = Service(name=deploy.containers[0].name+"."+deploy.fullname)
-        svc2_node = Service(name=deploy.containers[1].name+"."+deploy.fullname)
+        svc1_node = Service(name=deploy.containers[0].name+"."+deploy.typed_fullname)
+        svc2_node = Service(name=deploy.containers[1].name+"."+deploy.typed_fullname)
         model.add_node(svc1_node)
         model.add_node(svc2_node)
 
@@ -160,7 +161,7 @@ class TestComputeNodeExtender(TestCase):
         rs = KubeReplicaSet(REPLICASET_WITH_ONE_CONTAINER)
         cluster.add_object(rs)
 
-        service_node = Service(name=rs.containers[0].name+"."+rs.fullname)
+        service_node = Service(name=rs.containers[0].name+"."+rs.typed_fullname)
         model.add_node(service_node)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
@@ -186,9 +187,9 @@ class TestComputeNodeExtender(TestCase):
 
         template = statefulset.pod_spec
 
-        name = statefulset.containers[0].name + "." + statefulset.name + "." + statefulset.namespace \
+        name = f"{statefulset.containers[0].name}.{statefulset.name}.{statefulset.namespace}.{KUBE_STATEFULSET}" \
             if not template.get("name", None) \
-            else statefulset.containers[0].name + "." + template.fullname
+            else f"{statefulset.containers[0].name}.{template.fullname}.{KUBE_STATEFULSET}"
         model.add_node(Service(name=name))
 
         self.assertEqual(len(cluster.cluster_objects), 1)

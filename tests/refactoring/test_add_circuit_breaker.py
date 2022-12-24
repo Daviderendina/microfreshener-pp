@@ -37,8 +37,8 @@ class TestRefactoringAddCircuitBreaker(TestCase):
         cluster.add_object(k_service)
 
         # Populate model
-        service = Service(f"{k_pod.containers[0].name}.{k_pod.fullname}")
-        messagerouter = MessageRouter(k_service.fullname)
+        service = Service(f"{k_pod.containers[0].name}.{k_pod.typed_fullname}")
+        messagerouter = MessageRouter(k_service.typed_fullname)
 
         model.add_node(service)
         model.add_node(messagerouter)

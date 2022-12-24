@@ -33,10 +33,8 @@ class TestIstioExtender(TestCase):
         k_pod_2.data["metadata"]["name"] = k_pod_2.data["metadata"]["name"]  + "_2"
 
         k_virtualservice = KubeVirtualService(VIRTUAL_SERVICE_TIMEOUT)
-        k_virtualservice.data.get("spec", {}).get("hosts", []) \
-            .append(k_service.fullname + ".svc.cluster.local")
-        k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"]["host"] = \
-            k_service.fullname + ".svc.cluster.local"
+        k_virtualservice.data.get("spec", {}).get("hosts", []).append(k_service.typed_fullname)
+        k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"]["host"] = k_service.typed_fullname
 
         cluster.add_object(k_service)
         cluster.add_object(k_pod_1)
@@ -44,9 +42,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_virtualservice)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
-        mr_node = MessageRouter(k_service.fullname + ".svc.cluster.local")
+        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname)
+        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname)
+        mr_node = MessageRouter(k_service.typed_fullname)
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(mr_node)
@@ -156,9 +154,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_destinationrule)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
-        mr_node = MessageRouter(k_service.fullname + ".svc.cluster.local")
+        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname)
+        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname)
+        mr_node = MessageRouter(k_service.typed_fullname)
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(mr_node)
@@ -280,8 +278,8 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_gateway)
 
         # TOSCA model
-        svc_node = Service(k_pod.containers[0].name + "." + k_pod.fullname)
-        mr_node = MessageRouter(k_service.fullname)
+        svc_node = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
+        mr_node = MessageRouter(k_service.typed_fullname)
         model.add_node(svc_node)
         model.add_node(mr_node)
         model.edge.add_member(mr_node)
@@ -318,7 +316,7 @@ class TestIstioExtender(TestCase):
         k_pod_2 = KubePod(data_2)
         k_pod_3 = KubePod(data_3)
 
-        k_container_3_name = k_pod_3.containers[0].name + "." + k_pod_3.fullname
+        k_container_3_name = k_pod_3.containers[0].name + "." + k_pod_3.typed_fullname
         k_destinationrule = KubeDestinationRule(DESTINATION_RULE_CIRCUIT_BREAKER)
         k_destinationrule.data["spec"]["host"] = k_container_3_name
 
@@ -328,9 +326,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_destinationrule)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
-        service_node_3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.fullname)
+        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname)
+        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname)
+        service_node_3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.typed_fullname)
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(service_node_3)
@@ -374,7 +372,7 @@ class TestIstioExtender(TestCase):
         k_pod_2.data["metadata"]["name"] = k_pod_2.data["metadata"]["name"] + "_2"
 
         k_destinationrule = KubeDestinationRule(DESTINATION_RULE_CIRCUIT_BREAKER)
-        k_destinationrule.data["spec"]["host"] = k_service.fullname + ".svc.cluster.local"
+        k_destinationrule.data["spec"]["host"] = k_service.typed_fullname
 
         cluster.add_object(k_service)
         cluster.add_object(k_pod_1)
@@ -382,9 +380,9 @@ class TestIstioExtender(TestCase):
         cluster.add_object(k_destinationrule)
 
         # MicroToscaModel
-        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
-        mr_node = MessageRouter(k_service.fullname + ".svc.cluster.local")
+        service_node_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname)
+        service_node_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname)
+        mr_node = MessageRouter(k_service.typed_fullname)
         model.add_node(service_node_1)
         model.add_node(service_node_2)
         model.add_node(mr_node)

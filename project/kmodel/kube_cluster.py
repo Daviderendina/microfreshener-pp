@@ -3,7 +3,7 @@ from typing import List
 
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
-from project.kmodel.kube_networking import KubeService, KubeIngress
+from project.kmodel.kube_networking import KubeService, KubeIngress, KubeNetworking
 from project.kmodel.kube_object import KubeObject
 from project.kmodel.kube_workload import KubeWorkload
 
@@ -19,12 +19,17 @@ class KubeCluster:
         return [obj for obj in self.cluster_objects if isinstance(obj, KubeWorkload)]
 
     @property
+    def networkings(self):
+        return [n for n in self.cluster_objects if isinstance(n, KubeNetworking)]
+
+    @property
     def services(self):
         return [svc for svc in self.cluster_objects if isinstance(svc, KubeService)]
 
     @property
     def containers(self):
-        return [(w.fullname, w.containers) for w in self.workloads]
+        #TODO tornare direttamente l'oggetto!!!
+        return [(w.typed_fullname, w.containers) for w in self.workloads] #TODO typed?
 
     @property
     def ingress(self):
@@ -76,42 +81,50 @@ class KubeCluster:
     def find_workload_defining_container(self, container_fullname: str):
         for workload in self.workloads:
             for container in workload.containers:
-                search_container_fullname = f"{container.name}.{workload.fullname}"
+                search_container_fullname = f"{container.name}.{workload.typed_fullname}"
                 if container_fullname == search_container_fullname:
                     return workload
 
     def get_object_by_name(self, object_name: str):
+        objects_found = []
         for obj in self.cluster_objects:
 
             # Case: name is FQDN
             result = re.match(obj.fullname + r"[.][a-zA-Z]*[.]cluster[.]local", object_name)
             if result and result.string == object_name:
-                return obj
+                if not obj in objects_found:
+                    objects_found.append(obj)
 
             # Case: name is <name>.<namespace>.<svc> (or instead of svc something else)
             result = re.match(obj.fullname + r"[.][a-zA-Z]*", object_name)
             if result and result.string == object_name:
-                return obj
+                if not obj in objects_found:
+                    objects_found.append(obj)
 
             # Case: name is <name>.<namespace>.<svc>.<cluster> (or instead of svc.cluster something else)
             result = re.match(obj.fullname + r"[.][a-zA-Z]*[.][a-zA-Z]*", object_name)
             if result and result.string == object_name:
-                return obj
+                if not obj in objects_found:
+                    objects_found.append(obj)
 
             # Case: name is <name>.<namespace>
             if obj.fullname == object_name:
-                return obj
+                if not obj in objects_found:
+                    objects_found.append(obj)
 
             # Case: name is only <name>
-            possible = []
             if obj.name == object_name:
-                possible.append(obj)
-            if len(possible) == 1:
-                return possible[0]
+                if not obj in objects_found:
+                    objects_found.append(obj)
 
             # Case: name is a container name
             if isinstance(obj, KubeWorkload):
                 for container in obj.containers:
-                    container_fullname = f"{container.name}.{obj.fullname}"
-                    if container_fullname == object_name:
-                        return container
+                    if container.typed_fullname == object_name:
+                        if not obj in objects_found:
+                            objects_found.append(container)
+
+        if len(objects_found) > 1:
+            raise AttributeError(f"More than one object found with name: {object_name}")
+
+        return objects_found[0] if objects_found else None

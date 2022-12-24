@@ -4,6 +4,7 @@ class KubeObject:
 
     def __init__(self, data: dict):
         self.data: dict = data
+        self.shortname = ""
 
     @property
     def name(self):
@@ -16,6 +17,10 @@ class KubeObject:
     @property
     def fullname(self):
         return f"{self.name}.{self.namespace}"
+
+    @property
+    def typed_fullname(self):
+        return f"{self.fullname}.{self.shortname}"
 
     def set_labels(self, labels: dict):
         if self.data.get("metadata", {}).get("labels", None):

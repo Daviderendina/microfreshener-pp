@@ -1,4 +1,5 @@
 from project.kmodel.kube_object import KubeObject
+from project.kmodel.shortnames import KUBE_INGRESS, KUBE_SERVICE
 
 
 class KubeNetworking(KubeObject):
@@ -9,6 +10,7 @@ class KubeService(KubeNetworking):
 
     def __init__(self, data: dict):
         super().__init__(data)
+        self.shortname = KUBE_SERVICE
 
     @property
     def selectors(self):
@@ -29,6 +31,7 @@ class KubeIngress(KubeNetworking):
 
     def __init__(self, data: dict):
         super().__init__(data)
+        self.shortname = KUBE_INGRESS
 
     def get_exposed_svc_names(self):
         result = list()

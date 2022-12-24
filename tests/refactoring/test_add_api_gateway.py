@@ -35,7 +35,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         cluster.add_object(k_pod)
 
         # Model
-        svc = Service(k_pod.containers[0].name + "." + k_pod.fullname)
+        svc = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
         model.add_node(svc)
         model.edge.add_member(svc)
 
@@ -81,7 +81,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
             self.assertTrue(port in k_svc_port_strings)
 
         # Check message router
-        self.assertEqual(model.edge.members[0].name, k_service.fullname)
+        self.assertEqual(model.edge.members[0].name, k_service.typed_fullname)
         self.assertEqual(list(model.message_routers)[0].interactions[0].target, svc)
         self.assertEqual(len(list(model.message_routers)[0].interactions), 1)
 
@@ -101,7 +101,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         cluster.add_object(k_pod)
 
         # Model
-        svc = Service(k_pod.containers[0].name + "." + k_pod.fullname)
+        svc = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
         model.add_node(svc)
         model.edge.add_member(svc)
 
@@ -166,7 +166,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         cluster.add_object(k_deploy)
 
         # Model
-        svc = Service(k_deploy.containers[0].name + "." + k_deploy.fullname)
+        svc = Service(k_deploy.containers[0].name + "." + k_deploy.typed_fullname)
         model.add_node(svc)
         model.edge.add_member(svc)
 
@@ -227,7 +227,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
 
         # Model
-        svc = Service(k_deploy.containers[0].name + "." + k_deploy.fullname)
+        svc = Service(k_deploy.containers[0].name + "." + k_deploy.typed_fullname)
         model.add_node(svc)
         model.edge.add_member(svc)
 
@@ -298,8 +298,8 @@ class TestAddAPIGatewayRefactoring(TestCase):
         cluster.add_object(k_pod)
 
         # Model
-        svc_1 = Service(k_pod.containers[0].name + "." + k_pod.fullname)
-        svc_2 = Service(k_pod.containers[1].name + "." + k_pod.fullname)
+        svc_1 = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
+        svc_2 = Service(k_pod.containers[1].name + "." + k_pod.typed_fullname)
         model.add_node(svc_1)
         model.add_node(svc_2)
         model.edge.add_member(svc_1)
@@ -399,8 +399,8 @@ class TestAddAPIGatewayRefactoring(TestCase):
             # cluster.add_object(k_pod)
 
         # Model
-        svc_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        svc_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
+        svc_1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname)
+        svc_2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname)
         model.add_node(svc_1)
         model.add_node(svc_2)
         model.edge.add_member(svc_1)
@@ -502,8 +502,8 @@ class TestAddAPIGatewayRefactoring(TestCase):
         cluster.add_object(k_pod)
 
         # Model
-        svc_1 = Service(k_pod.containers[0].name + "." + k_pod.fullname)
-        svc_2 = Service(k_pod.containers[1].name + "." + k_pod.fullname)
+        svc_1 = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
+        svc_2 = Service(k_pod.containers[1].name + "." + k_pod.typed_fullname)
         model.add_node(svc_1)
         model.add_node(svc_2)
         model.edge.add_member(svc_1)

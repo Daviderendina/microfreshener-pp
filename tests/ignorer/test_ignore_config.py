@@ -82,7 +82,7 @@ class TestIgnoreConfig(TestCase):
         cluster.add_object(k_pod)
 
         # Model
-        svc = Service(k_pod.containers[0].name + "." + k_pod.fullname)
+        svc = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
         model.add_node(svc)
         model.edge.add_member(svc)
 
@@ -123,7 +123,7 @@ class TestIgnoreConfig(TestCase):
         cluster.add_object(k_pod)
 
         # Model
-        svc = Service(k_pod.containers[0].name + "." + k_pod.fullname)
+        svc = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
         model.add_node(svc)
         model.edge.add_member(svc)
 
@@ -162,7 +162,7 @@ class TestIgnoreConfig(TestCase):
         deploy.containers[0].ports[0]["containerPort"] = 3306
         cluster.add_object(deploy)
 
-        service_node = Service(name=deploy.containers[0].name+"."+deploy.fullname)
+        service_node = Service(name=deploy.containers[0].name+"."+deploy.typed_fullname)
         model.add_node(service_node)
 
         # Ignore config
@@ -183,8 +183,6 @@ class TestIgnoreConfig(TestCase):
         self.assertFalse(Compute in list(map(type, model.services)))
 
     def test_ignore_database_worker(self):
-
-
         model = MicroToscaModel(name="container-test-model")
         cluster = KubeCluster()
 
@@ -192,7 +190,7 @@ class TestIgnoreConfig(TestCase):
         deploy.containers[0].ports[0]["containerPort"] = 3306
         cluster.add_object(deploy)
 
-        service_node = Service(name=deploy.containers[0].name+"."+deploy.fullname)
+        service_node = Service(name=deploy.containers[0].name+"."+deploy.typed_fullname)
         model.add_node(service_node)
 
         # Ignore config

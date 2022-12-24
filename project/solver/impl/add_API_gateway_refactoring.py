@@ -117,7 +117,7 @@ class AddAPIGatewayRefactoring(Refactoring):
             return False
 
     def _refactor_model_service_added(self, node_port_service: KubeService, service_node):
-        message_router_node = MessageRouter(node_port_service.fullname)
+        message_router_node = MessageRouter(node_port_service.typed_fullname)
 
         self.model.add_node(message_router_node)
 

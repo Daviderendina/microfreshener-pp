@@ -57,8 +57,8 @@ class TestIngressExtender(TestCase):
         cluster.add_object(k_ingress)
 
         # Add Service to Tosca Model
-        svc = Service(k_pod.containers[0].name + "." + k_pod.fullname)
-        mr = MessageRouter(k_svc.fullname + ".svc.cluster.local")
+        svc = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
+        mr = MessageRouter(k_svc.typed_fullname)
         model.add_node(svc)
         model.add_node(mr)
         model.edge.add_member(mr)
@@ -73,7 +73,7 @@ class TestIngressExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len([n for n in model.nodes]), 3)
 
-        ic_node: MessageRouter = [n for n in model.message_routers if n.name == k_ingress.fullname][0]
+        ic_node: MessageRouter = [n for n in model.message_routers if n.name == k_ingress.typed_fullname][0]
 
         self.assertTrue(ic_node in model.edge)
         self.assertTrue(mr in model.edge)
@@ -110,9 +110,9 @@ class TestIngressExtender(TestCase):
         cluster.add_object(k_ingress)
 
         # Add Service to Tosca Model
-        svc = Service(k_pod.containers[0].name + "." + k_pod.fullname)
-        mr = MessageRouter(k_svc.fullname + ".svc.cluster.local")
-        ic_name = "nginx-ingress-controller-32ede32-fer34"
+        svc = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
+        mr = MessageRouter(k_svc.typed_fullname)
+        ic_name = "nginx-ingress-controller-32ede32-fer34.ing"
         ic = MessageRouter(ic_name)
         model.add_node(svc)
         model.add_node(mr)
@@ -130,7 +130,7 @@ class TestIngressExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len([n for n in model.nodes]), 4)
 
-        ic_node: MessageRouter = [n for n in model.nodes if n.name == k_ingress.fullname][0]
+        ic_node: MessageRouter = [n for n in model.nodes if n.name == k_ingress.typed_fullname][0]
 
         self.assertTrue(ic_node in model.edge)
         self.assertTrue(mr not in model.edge)
@@ -167,9 +167,9 @@ class TestIngressExtender(TestCase):
         cluster.add_object(k_ingress)
 
         # Add Service to Tosca Model
-        svc = Service(k_pod.containers[0].name + "." + k_pod.fullname)
-        mr = MessageRouter(k_svc.fullname + ".svc.cluster.local")
-        ic_name = "nginx-ingress-controller-32ede32-fer34"
+        svc = Service(k_pod.containers[0].name + "." + k_pod.typed_fullname)
+        mr = MessageRouter(k_svc.typed_fullname)
+        ic_name = "nginx-ingress-controller-32ede32-fer34.ing"
         ic = MessageRouter(ic_name)
         model.add_node(svc)
         model.add_node(mr)
@@ -186,7 +186,7 @@ class TestIngressExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len([n for n in model.nodes]), 4)
 
-        ic_node: MessageRouter = [n for n in model.nodes if n.name == k_ingress.fullname][0]
+        ic_node: MessageRouter = [n for n in model.nodes if n.name == k_ingress.typed_fullname][0]
 
         self.assertTrue(ic_node in model.edge)
         self.assertTrue(mr not in model.edge)
@@ -249,11 +249,11 @@ class TestIngressExtender(TestCase):
         cluster.add_object(ingress)
 
         # Model
-        mr_1 = MessageRouter(svc_1.fullname)
-        mr_2 = MessageRouter(svc_2.fullname)
-        mr_3 = MessageRouter(svc_3.fullname)
-        mr_4 = MessageRouter(svc_4.fullname)
-        ing = MessageRouter(ingress.fullname)
+        mr_1 = MessageRouter(svc_1.typed_fullname)
+        mr_2 = MessageRouter(svc_2.typed_fullname)
+        mr_3 = MessageRouter(svc_3.typed_fullname)
+        mr_4 = MessageRouter(svc_4.typed_fullname)
+        ing = MessageRouter(ingress.typed_fullname)
 
         model.add_node(mr_1)
         model.add_node(mr_2)

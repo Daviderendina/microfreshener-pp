@@ -21,8 +21,8 @@ class ComputeNodeWorker(KubeWorker):
         if not ignore:
             ignore = IgnoreNothing()
 
-        for pod_fullname, containers in self.cluster.containers:
-            compute_node = Compute(pod_fullname)
+        for workload_typed_fullname, containers in self.cluster.containers:
+            compute_node = Compute(workload_typed_fullname)
             for container in containers:
 
                 not_ignored_services = self._get_nodes_not_ignored(list(self.model.services), ignore)

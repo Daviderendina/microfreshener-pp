@@ -1,6 +1,7 @@
 from typing import List, Dict
 
 from project.kmodel.kube_object import KubeObject
+from project.kmodel.shortnames import ISTIO_VIRTUAL_SERVICE, ISTIO_DESTINATION_RULE, ISTIO_GATEWAY
 
 
 class KubeIstio(KubeObject):
@@ -11,6 +12,7 @@ class KubeVirtualService(KubeIstio):
 
     def __init__(self, data: dict):
         super().__init__(data)
+        self.shortname = ISTIO_VIRTUAL_SERVICE
 
     @property
     def timeouts(self):
@@ -57,6 +59,7 @@ class KubeDestinationRule(KubeIstio):
 
     def __init__(self, data: dict):
         super().__init__(data)
+        self.shortname = ISTIO_DESTINATION_RULE
 
     @property
     def is_circuit_breaker(self) -> bool:
@@ -76,6 +79,7 @@ class KubeDestinationRule(KubeIstio):
 class KubeIstioGateway(KubeIstio):
     def __init__(self, data: dict):
         super().__init__(data)
+        self.shortname = ISTIO_GATEWAY
 
     @property
     def hosts_exposed(self):

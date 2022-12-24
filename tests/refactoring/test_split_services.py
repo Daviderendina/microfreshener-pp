@@ -20,14 +20,14 @@ class TestRefactoringSplitServices(TestCase):
         k_pod = KubePod(copy.deepcopy(POD_WITH_TWO_CONTAINER))
         cluster.add_object(k_pod)
 
-        node_svc_name_1 = k_pod.containers[0].name + "." + k_pod.fullname
+        node_svc_name_1 = k_pod.containers[0].name + "." + k_pod.typed_fullname
         node_svc_1 = Service(node_svc_name_1)
-        node_svc_name_2 = k_pod.containers[1].name + "." + k_pod.fullname
+        node_svc_name_2 = k_pod.containers[1].name + "." + k_pod.typed_fullname
         node_svc_2 = Service(node_svc_name_2)
         model.add_node(node_svc_1)
         model.add_node(node_svc_2)
 
-        node_compute = Compute(k_pod.fullname)
+        node_compute = Compute(k_pod.typed_fullname)
         model.add_node(node_compute)
 
         r1 = model.add_deployed_on(source_node=node_svc_1, target_node=node_compute)
@@ -68,14 +68,14 @@ class TestRefactoringSplitServices(TestCase):
         k_deploy = KubeDeployment(DEPLOYMENT_WITH_TWO_CONTAINER)
         cluster.add_object(k_deploy)
 
-        node_svc_name_1 = k_deploy.containers[0].name + "." + k_deploy.fullname
-        node_svc_name_2 = k_deploy.containers[1].name + "." + k_deploy.fullname
+        node_svc_name_1 = k_deploy.containers[0].name + "." + k_deploy.typed_fullname
+        node_svc_name_2 = k_deploy.containers[1].name + "." + k_deploy.typed_fullname
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
         model.add_node(node_svc_1)
         model.add_node(node_svc_2)
 
-        node_compute = Compute(k_deploy.fullname)
+        node_compute = Compute(k_deploy.typed_fullname)
         model.add_node(node_compute)
 
         r1 = model.add_deployed_on(source_node=node_svc_1, target_node=node_compute)

@@ -34,10 +34,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_pod_3)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.fullname
-        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.fullname
-        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.fullname
-        node_svc_name_4 = k_pod_3.containers[0].name + "." + k_pod_3.fullname
+        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname
+        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname
+        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.typed_fullname
+        node_svc_name_4 = k_pod_3.containers[0].name + "." + k_pod_3.typed_fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -131,10 +131,10 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_deploy)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.fullname
-        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.fullname
-        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.fullname
-        node_svc_name_4 = k_deploy.containers[0].name + "." + k_deploy.fullname
+        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname
+        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname
+        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.typed_fullname
+        node_svc_name_4 = k_deploy.containers[0].name + "." + k_deploy.typed_fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
@@ -217,16 +217,16 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_service)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.fullname
-        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.fullname
-        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.fullname
-        node_svc_name_4 = k_pod_3.containers[0].name + "." + k_pod_3.fullname
+        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname
+        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname
+        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.typed_fullname
+        node_svc_name_4 = k_pod_3.containers[0].name + "." + k_pod_3.typed_fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
         node_svc_3 = Service(node_svc_name_3)
         node_svc_4 = Service(node_svc_name_4)
-        node_mr = MessageRouter(k_service.fullname)
+        node_mr = MessageRouter(k_service.typed_fullname)
 
         model.add_node(node_svc_1)
         model.add_node(node_svc_2)
@@ -316,16 +316,16 @@ class TestRefactoringAddMessageRouter(TestCase):
         cluster.add_object(k_service)
 
         # Create TOSCA nodes
-        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.fullname
-        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.fullname
-        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.fullname
-        node_svc_name_4 = k_deploy.containers[0].name + "." + k_deploy.fullname
+        node_svc_name_1 = k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname
+        node_svc_name_2 = k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname
+        node_svc_name_3 = k_pod_2.containers[1].name + "." + k_pod_2.typed_fullname
+        node_svc_name_4 = k_deploy.containers[0].name + "." + k_deploy.typed_fullname
 
         node_svc_1 = Service(node_svc_name_1)
         node_svc_2 = Service(node_svc_name_2)
         node_svc_3 = Service(node_svc_name_3)
         node_svc_4 = Service(node_svc_name_4)
-        node_mr = MessageRouter(k_service.fullname)
+        node_mr = MessageRouter(k_service.typed_fullname)
 
         model.add_node(node_svc_1)
         model.add_node(node_svc_2)

@@ -3,6 +3,7 @@ from typing import List
 
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_object import KubeObject
+from project.kmodel.shortnames import KUBE_POD, KUBE_DEPLOYMENT, KUBE_REPLICASET, KUBE_STATEFULSET
 from project.kmodel.utils import cast_container_list
 
 
@@ -51,10 +52,11 @@ class KubePod(KubeWorkload):
 
     def __init__(self, data: dict):
         super().__init__(data)
+        self.shortname = KUBE_POD
 
     @property
     def containers(self):
-        return cast_container_list(self.data.get("spec", {}).get("containers", []), self.fullname)
+        return cast_container_list(self.data.get("spec", {}).get("containers", []), self)
 
     def set_containers(self, container_list):
         self.data["spec"]["containers"] = container_to_dict(container_list)
@@ -86,7 +88,7 @@ class KubePodDefiner(KubeWorkload):
 
     @property
     def containers(self):
-        return cast_container_list(self.pod_spec.get("containers", []), self.fullname)
+        return cast_container_list(self.pod_spec.get("containers", []), self)
 
     def set_containers(self, container_list):
         self.data["spec"]["template"]["spec"]["containers"] = container_to_dict(container_list)
@@ -116,15 +118,18 @@ class KubeDeployment(KubePodDefiner):
 
     def __init__(self, data: dict):
         super().__init__(data)
+        self.shortname = KUBE_DEPLOYMENT
 
 
 class KubeReplicaSet(KubePodDefiner):
 
     def __init__(self, data: dict):
         super().__init__(data)
+        self.shortname = KUBE_REPLICASET
 
 
 class KubeStatefulSet(KubePodDefiner):
 
     def __init__(self, data: dict):
         super().__init__(data)
+        self.shortname = KUBE_STATEFULSET

@@ -37,10 +37,10 @@ class TestServiceExtender(TestCase):
         cluster.add_object(k_pod_3)
 
         # Add Service to Tosca Model
-        svc1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        svc2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
-        svc3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.fullname)
-        mr = Service(k_svc.fullname + ".svc.cluster.local")
+        svc1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname)
+        svc2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname)
+        svc3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.typed_fullname)
+        mr = Service(k_svc.typed_fullname)
         model.add_node(svc1)
         model.add_node(svc2)
         model.add_node(svc3)
@@ -95,8 +95,8 @@ class TestServiceExtender(TestCase):
         cluster.add_object(k_pod_3)
 
         # Add Service to Tosca Model
-        svc1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        svc3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.fullname)
+        svc1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname)
+        svc3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.typed_fullname)
         model.add_node(svc1)
         model.add_node(svc3)
         model.add_interaction(source_node=svc1, target_node=svc3)
@@ -147,9 +147,9 @@ class TestServiceExtender(TestCase):
         k_svc.data["spec"]["selector"] = label
 
         # Add Service to Tosca Model
-        svc1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        svc2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.fullname)
-        svc3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.fullname)
+        svc1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname)
+        svc2 = Service(k_pod_2.containers[0].name + "." + k_pod_2.typed_fullname)
+        svc3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.typed_fullname)
         model.add_node(svc1)
         model.add_node(svc2)
         model.add_node(svc3)
@@ -201,9 +201,9 @@ class TestServiceExtender(TestCase):
         cluster.add_object(k_pod_3)
 
         # Add Service to Tosca Model
-        svc1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.fullname)
-        svc3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.fullname)
-        mr = MessageRouter(k_svc.fullname + ".svc.cluster.local")
+        svc1 = Service(k_pod_1.containers[0].name + "." + k_pod_1.typed_fullname)
+        svc3 = Service(k_pod_3.containers[0].name + "." + k_pod_3.typed_fullname)
+        mr = MessageRouter(k_svc.typed_fullname)
         model.add_node(svc1)
         model.add_node(svc3)
         model.add_node(mr)
@@ -249,7 +249,7 @@ class TestServiceExtender(TestCase):
         cluster.add_object(pod)
 
         # Add Service to Tosca Model
-        svc = Service(pod.containers[0].name + "." + pod.fullname)
+        svc = Service(pod.containers[0].name + "." + pod.typed_fullname)
         model.add_node(svc)
         model.edge.add_member(svc)
 
@@ -291,7 +291,7 @@ class TestServiceExtender(TestCase):
         cluster.add_object(pod)
 
         # Add Service to Tosca Model
-        svc = Service(pod.containers[0].name + "." + pod.fullname)
+        svc = Service(pod.containers[0].name + "." + pod.typed_fullname)
         model.add_node(svc)
         model.edge.add_member(svc)
 
@@ -331,7 +331,7 @@ class TestServiceExtender(TestCase):
         cluster.add_object(kube_svc)
 
         # Model
-        mr = MessageRouter(kube_svc.fullname)
+        mr = MessageRouter(kube_svc.typed_fullname)
         model.add_node(mr)
         model.edge.add_member(mr)
 
@@ -363,7 +363,7 @@ class TestServiceExtender(TestCase):
         cluster.add_object(kube_svc)
 
         # Model
-        mr = MessageRouter(kube_svc.fullname)
+        mr = MessageRouter(kube_svc.typed_fullname)
         model.add_node(mr)
         model.edge.add_member(mr)
 

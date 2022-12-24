@@ -48,7 +48,7 @@ class AddMessageRouterRefactoring(Refactoring):
                 self.cluster.add_object(generated_service)
                 self.cluster.add_export_object(ExportObject(generated_service, None))
 
-                self._refactor_model(smell.node, generated_service.fullname, smell.links_cause, svc_exists=False)
+                self._refactor_model(smell.node, generated_service.typed_fullname, smell.links_cause, svc_exists=False)
 
                 return True
 
