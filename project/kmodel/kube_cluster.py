@@ -28,8 +28,7 @@ class KubeCluster:
 
     @property
     def containers(self):
-        #TODO tornare direttamente l'oggetto!!!
-        return [(w.typed_fullname, w.containers) for w in self.workloads] #TODO typed?
+        return [container for sublist in [w.containers for w in self.workloads] for container in sublist]
 
     @property
     def ingress(self):

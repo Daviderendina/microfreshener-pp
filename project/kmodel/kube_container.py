@@ -7,6 +7,7 @@ class KubeContainer(KubeObject):
         super().__init__(data)
         self.workload_fullname = workload_fullname
         self.workload_shortname = workload_shortname
+        # TODO fare un unico parametro!! Divido qui dentro al massimo
 
     @property
     def name(self):
@@ -23,6 +24,10 @@ class KubeContainer(KubeObject):
     @property
     def typed_fullname(self):
         return f"{self.name}.{self.workload_fullname}.{self.workload_shortname}"
+
+    @property
+    def defining_workload_fullname(self):
+        return f"{self.workload_fullname}.{self.workload_shortname}"
 
     def get_container_ports_numbers(self):
         result = [p.get("containerPort", None) for p in self.ports]

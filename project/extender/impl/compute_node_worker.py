@@ -21,16 +21,19 @@ class ComputeNodeWorker(KubeWorker):
         if not ignore:
             ignore = IgnoreNothing()
 
-        for workload_typed_fullname, containers in self.cluster.containers:
-            compute_node = Compute(workload_typed_fullname)
-            for container in containers:
+        for container in self.cluster.containers:
+            compute_node = self._get_or_create_compute(container.defining_workload_fullname)
 
-                not_ignored_services = self._get_nodes_not_ignored(list(self.model.services), ignore)
-                service_nodes = [s for s in not_ignored_services if check_kobject_node_name_match(container, s)]
+            not_ignored_services = self._get_nodes_not_ignored(list(self.model.services), ignore)
+            service_nodes = [s for s in not_ignored_services if check_kobject_node_name_match(container, s)]
 
-                if len(service_nodes) > 0:
-                    self._add_compute_node_if_not_present(compute_node)
-                    model.add_deployed_on(source_node=service_nodes[0], target_node=compute_node)
+            if len(service_nodes) > 0:
+                self._add_compute_node_if_not_present(compute_node)
+                model.add_deployed_on(source_node=service_nodes[0], target_node=compute_node)
+
+    def _get_or_create_compute(self, compute_name):
+        compute_node = self.model.get_node_by_name(compute_name)
+        return compute_node if compute_node else Compute(compute_name)
 
     def _add_compute_node_if_not_present(self, compute_node: Compute):
         if compute_node not in self.model.computes:
