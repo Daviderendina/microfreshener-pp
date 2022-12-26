@@ -2,7 +2,7 @@ from typing import List
 
 from microfreshener.core.analyser.costants import REFACTORING_ADD_API_GATEWAY
 from microfreshener.core.analyser.smell import NoApiGatewaySmell
-from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
+from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, MessageBroker
 
 from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_ports_for_container_nodeport
 from project.exporter.export_object import ExportObject
@@ -36,9 +36,9 @@ class AddAPIGatewayRefactoring(Refactoring):
             raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
 
         # Handle Message Broker case
-            #TODO Mi aspetto di avere un pod che implementi il MB, quindi il caso è analogo a quello del Service
+            # The message broker is implemented through a Pod, so this case is the same as Service
 
-        if isinstance(smell.node, Service): # TODO or isinstance(smell.node, MessageBroker):
+        if isinstance(smell.node, Service) or isinstance(smell.node, MessageBroker):
             container, def_object = self._get_container_and_def_object(smell.node.name)
             ports_to_expose = generate_ports_for_container_nodeport(def_object, container, def_object.host_network)
             expose_svc = self._search_for_existing_svc(def_object, ports_to_expose)

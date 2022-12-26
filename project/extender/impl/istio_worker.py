@@ -14,7 +14,7 @@ from project.kmodel.kube_networking import KubeService
 
 
 def _check_gateway_virtualservice_match(gateway: KubeIstioGateway, virtual_service: KubeVirtualService):
-    gateway_check = gateway.fullname in virtual_service.gateways #TODO se è definito solo con name aggiungo .default?
+    gateway_check = gateway.fullname in virtual_service.gateways
 
     # New check
     for host in gateway.hosts_exposed:
