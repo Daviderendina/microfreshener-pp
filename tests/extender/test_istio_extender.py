@@ -268,7 +268,7 @@ class TestIstioExtender(TestCase):
         k_gateway.data["spec"]["servers"][0]["hosts"] = [gateway_vs_host]
 
         k_virtualservice.data["spec"]["hosts"] = [gateway_vs_host.replace("*", "wildcard.test")]
-        k_virtualservice.data["spec"]["gateways"] = [k_gateway.fullname]
+        k_virtualservice.data["spec"]["gateways"] = [k_gateway.name]
         k_virtualservice.data["spec"]["http"][0]["route"][0]["destination"][
             "host"] = k_service.fullname
 

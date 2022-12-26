@@ -1,3 +1,4 @@
+import re
 from typing import List, Dict
 
 from project.kmodel.kube_object import KubeObject
@@ -40,7 +41,11 @@ class KubeVirtualService(KubeIstio):
 
     @property
     def gateways(self):
-        return self.data.get("spec", {}).get("gateways", [])
+        res = []
+        for g in self.data.get("spec", {}).get("gateways", []):
+            match = re.match(r"([-\w]+)[.]([-\w]+)", g)
+            res.append(g if match and match.string == g else f"{g}.{self.namespace}")
+        return res
 
     @property
     def hosts(self):
