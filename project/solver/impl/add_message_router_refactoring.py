@@ -7,7 +7,7 @@ from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.report.report_msg import cannot_find_container_msg, cannot_apply_refactoring_on_node_msg, \
-    change_call_to_service_msg
+    change_call_to_service_msg, cannot_refactor_model_msg
 from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 from project.utils.utils import check_ports_match
@@ -34,29 +34,40 @@ class AddMessageRouterRefactoring(Refactoring):
             exposing_svc = self._find_compatible_exposing_service(workload_object, smell_container)
 
             if exposing_svc:
-                container_ports = generate_ports_for_container(
-                    container=smell_container,
-                    defining_obj=workload_object)
-                exposing_svc.data["spec"]["ports"] += container_ports
+                model_result = self._refactor_model(smell.node, exposing_svc.fullname, smell.links_cause, svc_exists=True)
+                if model_result:
+                    container_ports = generate_ports_for_container(
+                        container=smell_container,
+                        defining_obj=workload_object)
+                    exposing_svc.data["spec"]["ports"] += container_ports
 
-                self._refactor_model(smell.node, exposing_svc.fullname, smell.links_cause, svc_exists=True)
-
-                self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED,
-                                     change_call_to_service_msg(smell.node.name, exposing_svc.fullname))
-                return True
+                    self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED,
+                                         change_call_to_service_msg(smell.node.name, exposing_svc.fullname))
+                    return True
+                else:
+                    self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, cannot_refactor_model_msg())
+                    return False
 
             else:
                 #TODO se arrivo qui (se non trovo porte compatibili per il pod durante la ricerca) le porte non sono compatibili, ma devo capire una cosa: la porta che già espone
                 # è di quel pod oppure di altro? Questo va fatto nell'extender - forse vedendo i file vecchi si capisce meglio cosa intendo
+
                 generated_service = generate_svc_clusterIP_for_container(container=smell_container, defining_obj=workload_object)
-                self.cluster.add_object(generated_service)
-                self.cluster.add_export_object(ExportObject(generated_service, None))
+                model_result = self._refactor_model(smell.node, generated_service.typed_fullname, smell.links_cause, svc_exists=False)
 
-                self._refactor_model(smell.node, generated_service.typed_fullname, smell.links_cause, svc_exists=False)
+                if model_result:
+                    self.cluster.add_object(generated_service)
+                    self.cluster.add_export_object(ExportObject(generated_service, None))
 
-                self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED,
-                                     change_call_to_service_msg(smell.node.name, generated_service.fullname))
-                return True
+                    self._refactor_model(smell.node, generated_service.typed_fullname, smell.links_cause, svc_exists=False)
+
+                    self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED,
+                                         change_call_to_service_msg(smell.node.name, generated_service.fullname))
+                    return True
+                else:
+                    self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, cannot_refactor_model_msg())
+                    return False
+
         else:
             self._add_report_row(smell, RefactoringStatus.NOT_APPLIED,
                                  cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node))
@@ -95,7 +106,7 @@ class AddMessageRouterRefactoring(Refactoring):
 
             return True
 
-        return False #TODO se ritorno false non succede nulla!! sistemare!!
+        return False
 
 
 

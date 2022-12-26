@@ -20,3 +20,6 @@ def compute_object_not_found_msg(compute_node_name):
 def change_call_to_service_msg(svc_name, k8s_service_name):
     return f"Direct call to Service {svc_name} must be changed for passing through the K8s Service {k8s_service_name}"
     #TODO rivedere
+
+def cannot_refactor_model_msg():
+    return f"Is impossible to apply refactor on model"
