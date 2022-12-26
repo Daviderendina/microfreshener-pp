@@ -6,6 +6,9 @@ from k8s_template.kobject_generators import generate_ports_for_container, genera
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
+from project.report.report_msg import cannot_find_container_msg, cannot_apply_refactoring_on_node_msg, \
+    change_call_to_service_msg
+from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 from project.utils.utils import check_ports_match
 
@@ -18,17 +21,16 @@ class AddMessageRouterRefactoring(Refactoring):
     def apply(self, smell: Smell):
 
         if not isinstance(smell, EndpointBasedServiceInteractionSmell):
-            raise RefactoringNotSupportedError
+            raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
 
         if isinstance(smell.node, Service):
             smell_container: KubeContainer = self.cluster.get_object_by_name(smell.node.name)
 
             if smell_container is None:
+                self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, cannot_find_container_msg(smell.node.name))
                 return False
 
-            workload_fullname: str = smell.node.name[len(smell_container.name) + 1:]
-            workload_object = self.cluster.get_object_by_name(workload_fullname)
-
+            workload_object = self.cluster.get_object_by_name(smell.node.name[len(smell_container.name) + 1:])
             exposing_svc = self._find_compatible_exposing_service(workload_object, smell_container)
 
             if exposing_svc:
@@ -39,6 +41,8 @@ class AddMessageRouterRefactoring(Refactoring):
 
                 self._refactor_model(smell.node, exposing_svc.fullname, smell.links_cause, svc_exists=True)
 
+                self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED,
+                                     change_call_to_service_msg(smell.node.name, exposing_svc.fullname))
                 return True
 
             else:
@@ -50,12 +54,13 @@ class AddMessageRouterRefactoring(Refactoring):
 
                 self._refactor_model(smell.node, generated_service.typed_fullname, smell.links_cause, svc_exists=False)
 
+                self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED,
+                                     change_call_to_service_msg(smell.node.name, generated_service.fullname))
                 return True
-
-        return False
-
-        # Lo sviluppatore deve in qualche modo confermare di aver cambiato le chiamate, dall'IP al nome del svc
-        # (il nome lo prendo direttamente dal pod/deploy/etc..) TODO Report impl
+        else:
+            self._add_report_row(smell, RefactoringStatus.NOT_APPLIED,
+                                 cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node))
+            return False
 
     def _find_compatible_exposing_service(self, workload, container):
         selected_service = None

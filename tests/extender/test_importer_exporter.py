@@ -4,6 +4,7 @@ from unittest import TestCase
 
 from microfreshener.core.importer import YMLImporter
 
+from project.context_vars import output_folder
 from project.exporter.yamlkexporter import YamlKExporter
 from project.importer.yamlkimporter import YamlKImporter
 
@@ -34,7 +35,7 @@ class TestImporterExporter(TestCase):
 
         # Read files in order to find modification
         check_importer = YamlKImporter()
-        cluster = check_importer.Import(f"{exporter.output_folder}{exporter.KUBE_DEPLOY_FOLDER}")
+        cluster = check_importer.Import(exporter.kube_folder)#f"{exporter.output_folder}{exporter.KUBE_DEPLOY_FOLDER}")
 
         # Check that cluster had been exported properly
         self.assertEqual(len(cluster.cluster_objects), 7)
@@ -45,7 +46,7 @@ class TestImporterExporter(TestCase):
             self.assertTrue(obj.name.startswith(self.NEW_NAME_STR))
 
         # Check folder structure
-        dirs = os.listdir(exporter.output_folder)
+        dirs = os.listdir(output_folder)
         self.assertEqual(len(dirs), 2)
         self.assertTrue(exporter.KUBE_DEPLOY_FOLDER.replace("/", "") in dirs)
         self.assertTrue(exporter.MICRO_TOSCA_MODEL.replace("/", "") in dirs)

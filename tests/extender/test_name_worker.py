@@ -42,7 +42,8 @@ class TestNameWorker(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        self.assertEqual(list(model.nodes)[0].name, f"{pod.fullname}.{KUBE_POD}")
+        self.assertEqual(svc.name, f"{pod.fullname}.{KUBE_POD}")
+        self.assertEqual(svc_2.name, pod_2.typed_fullname)
 
     def test_service_name_with_type(self):
         model = MicroToscaModel("test_service")
@@ -72,7 +73,8 @@ class TestNameWorker(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        self.assertEqual(list(model.nodes)[0].name, f"{pod.fullname}.{KUBE_POD}")
+        self.assertEqual(svc.name, f"{pod.fullname}.{KUBE_POD}")
+        self.assertEqual(svc_2.name, pod_2.typed_fullname)
 
     def test_service_deployment(self):
         model = MicroToscaModel("test_service")
@@ -101,8 +103,8 @@ class TestNameWorker(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        self.assertEqual(list(model.nodes)[0].name, f"{deploy.fullname}.{KUBE_DEPLOYMENT}")
-        self.assertEqual(list(model.nodes)[1].name, pod_2.typed_fullname)
+        self.assertEqual(svc.name, f"{deploy.fullname}.{KUBE_DEPLOYMENT}")
+        self.assertEqual(svc_2.name, pod_2.typed_fullname)
 
     def test_message_routers(self):
         model = MicroToscaModel("test_message_routers")

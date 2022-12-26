@@ -5,6 +5,8 @@ from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 from k8s_template.kobject_generators import generate_timeout_virtualsvc_for_svc
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
+from project.report.report_msg import cannot_apply_refactoring_on_node_msg
+from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
@@ -16,7 +18,7 @@ class UseTimeoutRefactoring(Refactoring):
 
     def apply(self, smell: Smell):
         if not isinstance(smell, WobblyServiceInteractionSmell):
-            raise RefactoringNotSupportedError()
+            raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
 
         if isinstance(smell.node, Service):
             for link in smell.links_cause:
@@ -36,9 +38,12 @@ class UseTimeoutRefactoring(Refactoring):
 
                     link.set_timeout(True)
 
+                    self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED)
                     return True
 
                 # TODO devo assicurarmi che non ci siano già VService definiti? Potrei vedere se ci sono VService che hanno
                 # l'host come destinazione e capire in base agli hosts cosa fare. Se però funziona così è meglio
-
-        return False
+        else:
+            self._add_report_row(smell, RefactoringStatus.NOT_APPLIED,
+                                 cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node))
+            return False

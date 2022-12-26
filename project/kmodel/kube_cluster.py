@@ -89,33 +89,20 @@ class KubeCluster:
         objects_found = []
         for obj in self.cluster_objects:
 
-            # Case: name is FQDN
-            result = re.match(obj.fullname + r"[.][a-zA-Z]*[.]cluster[.]local", object_name)
-            if result and result.string == object_name:
-                if not obj in objects_found:
-                    objects_found.append(obj)
-
             # Case: name is <name>.<namespace>.<svc> (or instead of svc something else)
-            result = re.match(obj.fullname + r"[.][a-zA-Z]*", object_name)
-            if result and result.string == object_name:
-                if not obj in objects_found:
-                    objects_found.append(obj)
-
-            # Case: name is <name>.<namespace>.<svc>.<cluster> (or instead of svc.cluster something else)
-            result = re.match(obj.fullname + r"[.][a-zA-Z]*[.][a-zA-Z]*", object_name)
-            if result and result.string == object_name:
+            if obj.typed_fullname == object_name:
                 if not obj in objects_found:
                     objects_found.append(obj)
 
             # Case: name is <name>.<namespace>
-            if obj.fullname == object_name:
-                if not obj in objects_found:
-                    objects_found.append(obj)
+            #if obj.fullname == object_name:
+            #    if not obj in objects_found:
+            #        objects_found.append(obj)
 
             # Case: name is only <name>
-            if obj.name == object_name:
-                if not obj in objects_found:
-                    objects_found.append(obj)
+            #if obj.name == object_name:
+            #    if not obj in objects_found:
+            #        objects_found.append(obj)
 
             # Case: name is a container name
             if isinstance(obj, KubeWorkload):

@@ -1,13 +1,18 @@
 ### Generale
--  Modificate la definizione di **microTOSCA**
--  Fare il push del _core_
 -  Pensare alla validazione
 -  Gennaio presentazione: demo + slide
--  Il nome da solo non identifica, serve anche il tipo!! Per ora c'è il metodo _get_node_by_name_ con il tipo, però forse è meglio avere il tipo direttamente nel nome (tipo nei vari controlli senza passare da quel metodo il tipo non viene checked!! e so per certo in alcuni casi di aver preso il primo disponibile)
--  Fare il report del refactoring
+
+### Develop
+-  Modificate la definizione di **microTOSCA**
+-  Fare il push del _core_
 -  Attenzione: name.ns.svc **.cluster.local** ma la parte in grassetto ME LA SONO INVENTATA IO!! C'È SOLO SVC PER APPUNTO I SERVICE.
 -  Fare i vari TODO
 - ~~In MicroToscaModel.get_node_by_name devo fare che se passo un type None, prende in automatico tutti i nodi! Poi vedo di sistemare il next(iter(..)) mancante~~
+- Ripristinare i nomi dei nodi originali dopo che il worker li modifica
+- Attenzione alla _get_obj_by_name_
+-  Fare il report del refactoring
+- ~~Il nome da solo non identifica, serve anche il tipo!! Per ora c'è il metodo _get_node_by_name_ con il tipo, però forse è meglio avere il tipo direttamente nel nome (tipo nei vari controlli senza passare da quel metodo il tipo non viene checked!! e so per certo in alcuni casi di aver preso il primo disponibile)~~
+- Controllare che tutto viene effettuato nel modo giusto, aiutandosi col report
 
 ### microFreshener
 -  Estenderlo per garantire la compatibilità con i nuovi nodi

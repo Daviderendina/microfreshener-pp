@@ -11,7 +11,9 @@ from project.constants import IGNORE_CONFIG_SCHEMA
 from project.exporter.yamlkexporter import YamlKExporter
 from project.extender.extender import KubeExtender
 from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
+from project.ignorer.ignore_nothing import IgnoreNothing
 from project.importer.yamlkimporter import YamlKImporter
+from project.report.report import RefactoringReport
 
 from project.solver.solver import Solver, KubeSolver
 
@@ -40,7 +42,7 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
     if not os.path.exists(microtoscamodel):
         raise ValueError(f"File passed as MicroTosca model ({microtoscamodel}) not found")
 
-    if ignore_config_path is None or not os.path.exists(microtoscamodel):
+    if not os.path.exists(microtoscamodel):
         raise ValueError(f"File passed as ignore config ({ignore_config_path}) not found")
 
     if not os.path.exists(output):
@@ -55,7 +57,7 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
     cluster = importer.Import(kubedeploy)
 
     # Read ignore config from disk
-    ignore_config = IgnoreConfig(ignore_config_path, IGNORE_CONFIG_SCHEMA)
+    ignore_config = IgnoreConfig(ignore_config_path, IGNORE_CONFIG_SCHEMA) if ignore_config_path else IgnoreNothing()
 
     # Run extender
     extender = KubeExtender()
@@ -76,6 +78,9 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
         # Export files
         exporter = YamlKExporter()
         exporter.export(cluster, model, tosca_model_filename=microtoscamodel)
+
+    # Export report
+    RefactoringReport().export()
 
 
 def build_analyser(model, ignore_config):
@@ -116,7 +121,6 @@ if __name__ == '__main__':
         microtoscamodel='./tests/data/robot-shop-v2/microTOSCA.yml',
         kubedeploy='./tests/data/robot-shop-v2/deployment',
         output="./out",
-        refactoring=["all"]
+        refactoring=["all"],
+        ignore_config_path=None
     )
-
-

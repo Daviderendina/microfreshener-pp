@@ -69,7 +69,7 @@ class ServiceWorker(KubeWorker):
         if len(exposed_containers) == 0:
             return
 
-        mr_node = MessageRouter(k_service.fullname)
+        mr_node = MessageRouter(k_service.typed_fullname)
         self.model.add_node(mr_node)
 
         for container in exposed_containers:
@@ -93,7 +93,7 @@ class ServiceWorker(KubeWorker):
         interactions = message_router_node.interactions.copy()
 
         self.model.delete_node(message_router_node)
-        message_router_node = MessageRouter(k_service.fullname)
+        message_router_node = MessageRouter(k_service.typed_fullname)
         self.model.add_node(message_router_node)
 
         self._relink_relations(new_target=message_router_node, relations=list(incoming_interactions))

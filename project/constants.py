@@ -4,7 +4,7 @@ class ImportExportConstants:
     export_directory_new_files = "microFreshener"
 
 
-class WorkerNames:
+class WorkerNames: #TODO spostare di qui
     COMPUTE_NODE_WORKER = "compute-node",
     CONTAINER_WORKER = "container",
     DATABASE_WORKER = "database",

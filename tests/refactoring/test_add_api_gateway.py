@@ -4,6 +4,7 @@ from unittest import TestCase
 from microfreshener.core.analyser.smell import NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Edge, Service, MessageRouter
 
+from project.report.report import RefactoringReport
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH_ONE_CONTAINER, POD_WITH_TWO_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_workload import KubePod, KubeDeployment
@@ -290,7 +291,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         cluster = KubeCluster()
 
         # Cluster
-        host_ports = [80,81]
+        host_ports = [80, 81]
         k_pod = KubePod(copy.deepcopy(POD_WITH_TWO_CONTAINER))
         k_pod.containers[1].ports[0]['containerPort'] = 8001
         k_pod.containers[0].ports[0]['hostPort'] = host_ports[0]
@@ -554,3 +555,5 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         for port in k_pod_port_strings:
             self.assertTrue(port in k_svc_port_strings)
+
+        RefactoringReport().export()

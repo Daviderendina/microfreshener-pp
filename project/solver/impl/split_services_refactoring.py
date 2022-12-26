@@ -7,6 +7,8 @@ from microfreshener.core.model.nodes import Compute, Service
 
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
+from project.report.report_msg import compute_object_not_found_msg
+from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
@@ -17,7 +19,7 @@ class SplitServicesRefactoring(Refactoring):
 
     def apply(self, smell: Smell):
         if not isinstance(smell, MultipleServicesInOneContainerSmell):
-            raise RefactoringNotSupportedError
+            raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
 
         compute_node: Compute = smell.node
         compute_object = self.cluster.get_object_by_name(compute_node.name)
@@ -44,8 +46,10 @@ class SplitServicesRefactoring(Refactoring):
                 self.model.add_node(compute_node)
                 self.model.add_deployed_on(source_node=service_node, target_node=compute_node)
 
+            self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED)
             return True
         else:
+            self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, compute_object_not_found_msg(compute_node.name))
             return False
 
 

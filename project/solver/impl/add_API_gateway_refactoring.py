@@ -1,8 +1,8 @@
 from typing import List
 
 from microfreshener.core.analyser.costants import REFACTORING_ADD_API_GATEWAY
-from microfreshener.core.analyser.smell import Smell, NoApiGatewaySmell
-from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, MessageBroker
+from microfreshener.core.analyser.smell import NoApiGatewaySmell
+from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_ports_for_container_nodeport
 from project.exporter.export_object import ExportObject
@@ -10,6 +10,8 @@ from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubeWorkload
+from project.report.report_msg import cannot_apply_refactoring_on_node_msg
+from project.report.report_row import RefactoringStatus
 from project.solver.pending_ops import PENDING_OPS
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -31,7 +33,7 @@ class AddAPIGatewayRefactoring(Refactoring):
         result = False
 
         if not isinstance(smell, NoApiGatewaySmell):
-            raise RefactoringNotSupportedError
+            raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
 
         # Handle Message Broker case
             #TODO Mi aspetto di avere un pod che implementi il MB, quindi il caso è analogo a quello del Service
@@ -47,6 +49,7 @@ class AddAPIGatewayRefactoring(Refactoring):
                 self._refactor_model_service_exists(expose_svc, smell_node=smell.node)
 
                 result = True
+                self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, "")
 
             # Case: need to create a new Service
             else:
@@ -61,9 +64,13 @@ class AddAPIGatewayRefactoring(Refactoring):
                 self._refactor_model_service_added(node_port_service, service_node=smell.node)
 
                 result = True
+                self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, "")
 
             # Remove exposing parameters from Workload
             self._remove_exposing_attributes(def_object, container)
+        else:
+            msg = cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node)
+            self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, msg)
 
         return result
 
@@ -108,7 +115,7 @@ class AddAPIGatewayRefactoring(Refactoring):
         return True
 
     def _refactor_model_service_exists(self, expose_svc: KubeService, smell_node: Service):
-        message_router_node = self.model.get_node_by_name(expose_svc.fullname, MessageRouter)
+        message_router_node = self.model.get_node_by_name(expose_svc.typed_fullname)
 
         if message_router_node:
             self.model.edge.remove_member(smell_node)

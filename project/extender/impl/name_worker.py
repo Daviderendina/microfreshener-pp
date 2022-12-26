@@ -14,7 +14,7 @@ class NameWorker(KubeWorker):
         super().__init__(WorkerNames.NAME_WORKER)
 
     def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster, ignore: IgnoreConfig) -> MicroToscaModel:
-        for node in model.nodes:
+        for node in list(model.nodes):
             if not ignore.is_node_ignored(node, IgnoreType.WORKER, self.name):
 
                 if node.name.split(".")[-1] in ALL_SHORTNAMES:
@@ -27,16 +27,24 @@ class NameWorker(KubeWorker):
                         workloads = [w for w in kube_cluster.workloads if w.fullname == node.name]
 
                         if len(workloads) == 1:
-                            node.name = workloads[0].typed_fullname
+                            #node.name = workloads[0].typed_fullname
+                            model.rename_node(node, workloads[0].typed_fullname)
                         elif len(workloads) > 1:
                             raise ValueError(f"Found correspondence with {len(workloads)} object in the cluster with name {node.name}. Please specify shortname in the toscaMODEL")
-                        # Se non lo trovo amen, lo lascio lì e non lo considero #TODO TESTARE
+                        else:
+                            # Check for containers
+                            for workload in kube_cluster.workloads:
+                                for container in workload.containers:
+                                    if container.fullname == node.name:
+                                        model.rename_node(node, container.typed_fullname)
 
                     if isinstance(node, MessageRouter):
                         networkings = [n for n in kube_cluster.networkings if n.fullname == node.name]
                         if len(networkings) == 1:
-                            node.name = networkings[0].typed_fullname
+                            #node.name = networkings[0].typed_fullname
+                            model.rename_node(node, networkings[0].typed_fullname)
                         elif len(networkings) > 1:
                             raise ValueError(f"Found correspondence with {len(networkings)} object in the cluster with name {node.name}. Please specify shortname in the toscaMODEL")
+
 
         return model
