@@ -1,7 +1,7 @@
-from microfreshener.core.model import MicroToscaModel, Service, Datastore, MessageRouter, MessageBroker, Compute, Root
+from microfreshener.core.model import MicroToscaModel, Service, Datastore, MessageRouter, MessageBroker, Compute
 
-from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
+from project.extender.worker_names import NAME_WORKER
 from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignorer import IgnoreType
 from project.kmodel.kube_cluster import KubeCluster
@@ -11,7 +11,7 @@ from project.kmodel.shortnames import ALL_SHORTNAMES
 class NameWorker(KubeWorker):
 
     def __init__(self):
-        super().__init__(WorkerNames.NAME_WORKER)
+        super().__init__(NAME_WORKER)
 
     def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster, ignore: IgnoreConfig) -> MicroToscaModel:
         for node in list(model.nodes):

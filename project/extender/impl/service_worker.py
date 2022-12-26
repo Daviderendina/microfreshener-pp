@@ -2,8 +2,8 @@
 from microfreshener.core.model import MicroToscaModel, InteractsWith
 from microfreshener.core.model.nodes import Service, MessageRouter
 
-from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
+from project.extender.worker_names import SERVICE_WORKER
 from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignore_nothing import IgnoreNothing
 from project.ignorer.ignorer import Ignorer, IgnoreType
@@ -19,7 +19,7 @@ class ServiceWorker(KubeWorker):
     # che tutto quello esposto sotto sia compatibile in termini di porte
 
     def __init__(self):
-        super().__init__(WorkerNames.SERVICE_WORKER)
+        super().__init__(SERVICE_WORKER)
         self.model = None
         self.cluster = None
 

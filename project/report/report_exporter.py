@@ -1,6 +1,6 @@
 from microfreshener.core.analyser.smell import NodeSmell, GroupSmell
 
-from project.context_vars import output_folder
+from project.constants import REPORT_OUTPUT_FOLDER
 from project.utils.utils import create_folder
 
 
@@ -11,7 +11,7 @@ class ReportExporter:
 
     def __init__(self, filename):
         self.report = ""
-        self.export_file = f"{output_folder}/report/{filename}"
+        self.export_file = f"{REPORT_OUTPUT_FOLDER}/{filename}"
 
     @staticmethod
     def export(self, report):

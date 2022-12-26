@@ -1,7 +1,7 @@
 from microfreshener.core.model import MicroToscaModel, Service, Datastore
 
-from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
+from project.extender.worker_names import DATABASE_WORKER
 from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
@@ -15,7 +15,7 @@ class DatabaseWorker(KubeWorker):
                       "snowflake", "cassandra", "splunk", "dynamodb", "hive", "influxdb", "neo4j"]
 
     def __init__(self):
-        super().__init__(WorkerNames.DATABASE_WORKER)
+        super().__init__(DATABASE_WORKER)
         self.cluster = None
         self.model = None
 

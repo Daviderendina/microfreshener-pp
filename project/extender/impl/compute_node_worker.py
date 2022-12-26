@@ -1,7 +1,7 @@
 from microfreshener.core.model.nodes import Compute
 
-from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
+from project.extender.worker_names import COMPUTE_NODE_WORKER
 from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
 from project.ignorer.ignore_nothing import IgnoreNothing
 from project.utils.utils import check_kobject_node_name_match
@@ -10,7 +10,7 @@ from project.utils.utils import check_kobject_node_name_match
 class ComputeNodeWorker(KubeWorker):
 
     def __init__(self):
-        super().__init__(WorkerNames.COMPUTE_NODE_WORKER)
+        super().__init__(COMPUTE_NODE_WORKER)
         self.cluster = None
         self.model = None
 

@@ -1,8 +1,7 @@
-from microfreshener.core.model import MicroToscaModel, MessageRouter, Edge
-from microfreshener.core.model.type import MICROTOSCA_NODES_MESSAGE_ROUTER
+from microfreshener.core.model import MicroToscaModel, MessageRouter
 
-from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
+from project.extender.worker_names import INGRESS_WORKER
 from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignore_nothing import IgnoreNothing
 from project.ignorer.ignorer import IgnoreType
@@ -14,7 +13,7 @@ from project.utils.utils import check_kobject_node_name_match
 class IngressWorker(KubeWorker):
 
     def __init__(self):
-        super().__init__(WorkerNames.INGRESS_WORKER)
+        super().__init__(INGRESS_WORKER)
         self.model = None
         self.cluster = None
 

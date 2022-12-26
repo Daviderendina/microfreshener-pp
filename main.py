@@ -7,7 +7,7 @@ from microfreshener.core.analyser.costants import REFACTORING_NAMES, REFACTORING
     REFACTORING_SPLIT_SERVICES, SMELLS_NAME
 from microfreshener.core.importer import YMLImporter
 
-from project.constants import IGNORE_CONFIG_SCHEMA
+from project.constants import IGNORE_CONFIG_SCHEMA_FILE
 from project.exporter.yamlkexporter import YamlKExporter
 from project.extender.extender import KubeExtender
 from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
@@ -57,7 +57,7 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
     cluster = importer.Import(kubedeploy)
 
     # Read ignore config from disk
-    ignore_config = IgnoreConfig(ignore_config_path, IGNORE_CONFIG_SCHEMA) if ignore_config_path else IgnoreNothing()
+    ignore_config = IgnoreConfig(ignore_config_path, IGNORE_CONFIG_SCHEMA_FILE) if ignore_config_path else IgnoreNothing()
 
     # Run extender
     extender = KubeExtender()

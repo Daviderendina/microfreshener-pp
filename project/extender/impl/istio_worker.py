@@ -1,11 +1,11 @@
 import re
 from typing import List
 
-from microfreshener.core.model import MicroToscaModel, MessageRouter, InteractsWith, Service
+from microfreshener.core.model import MicroToscaModel, MessageRouter, InteractsWith
 
-from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
 from project.extender.impl.service_worker import ServiceWorker
+from project.extender.worker_names import ISTIO_WORKER
 from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
@@ -45,7 +45,7 @@ class IstioWorker(KubeWorker):
     GATEWAY_NODE_GENERIC_NAME = "istio-ingress-gateway"
 
     def __init__(self):
-        super().__init__(WorkerNames.ISTIO_WORKER)
+        super().__init__(ISTIO_WORKER)
         self.model = None
         self.cluster: KubeCluster = None
         self.ignore = None

@@ -1,7 +1,7 @@
 from microfreshener.core.model import MicroToscaModel
 
-from project.constants import WorkerNames
 from project.extender.kubeworker import KubeWorker
+from project.extender.worker_names import CONTAINER_WORKER
 from project.ignorer.ignore_config import IgnoreConfig
 from project.kmodel.kube_cluster import KubeCluster
 from project.utils.utils import check_kobject_node_name_match
@@ -10,7 +10,7 @@ from project.utils.utils import check_kobject_node_name_match
 class ContainerWorker(KubeWorker):
 
     def __init__(self):
-        super().__init__(WorkerNames.CONTAINER_WORKER)
+        super().__init__(CONTAINER_WORKER)
         self.model: MicroToscaModel = None
         self.cluster: KubeCluster = None
 

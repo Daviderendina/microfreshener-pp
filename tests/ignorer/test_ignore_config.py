@@ -7,10 +7,10 @@ from microfreshener.core.analyser.smell import NoApiGatewaySmell, WobblyServiceI
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, Edge, Compute
 from microfreshener.core.model.type import MICROTOSCA_NODES_SERVICE
 
-from project.constants import WorkerNames
 from project.extender.extender import KubeExtender
 from project.extender.impl.compute_node_worker import ComputeNodeWorker
 from project.extender.impl.database_worker import DatabaseWorker
+from project.extender.worker_names import COMPUTE_NODE_WORKER
 from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
 from project.ignorer.manual_ignore_config import ManualIgnoreConfig
 from project.kmodel.kube_cluster import KubeCluster
@@ -195,7 +195,7 @@ class TestIgnoreConfig(TestCase):
 
         # Ignore config
         ignore_config = ManualIgnoreConfig()
-        ignore_config.add_rule(service_node.name, MICROTOSCA_NODES_SERVICE, IgnoreType.WORKER, WorkerNames.COMPUTE_NODE_WORKER)
+        ignore_config.add_rule(service_node.name, MICROTOSCA_NODES_SERVICE, IgnoreType.WORKER, COMPUTE_NODE_WORKER)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
         self.assertEqual(len(list(model.services)), 1)

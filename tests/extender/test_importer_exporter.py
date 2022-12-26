@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from microfreshener.core.importer import YMLImporter
 
-from project.context_vars import output_folder
+from project.constants import OUTPUT_FOLDER, DEPLOY_OUTPUT_FOLDER, TOSCA_OUTPUT_FOLDER
 from project.exporter.yamlkexporter import YamlKExporter
 from project.importer.yamlkimporter import YamlKImporter
 
@@ -35,7 +35,7 @@ class TestImporterExporter(TestCase):
 
         # Read files in order to find modification
         check_importer = YamlKImporter()
-        cluster = check_importer.Import(exporter.kube_folder)#f"{exporter.output_folder}{exporter.KUBE_DEPLOY_FOLDER}")
+        cluster = check_importer.Import(DEPLOY_OUTPUT_FOLDER)#f"{exporter.output_folder}{exporter.KUBE_DEPLOY_FOLDER}")
 
         # Check that cluster had been exported properly
         self.assertEqual(len(cluster.cluster_objects), 7)
@@ -46,20 +46,18 @@ class TestImporterExporter(TestCase):
             self.assertTrue(obj.name.startswith(self.NEW_NAME_STR))
 
         # Check folder structure
-        dirs = os.listdir(output_folder)
+        dirs = os.listdir(OUTPUT_FOLDER)
         self.assertEqual(len(dirs), 2)
-        self.assertTrue(exporter.KUBE_DEPLOY_FOLDER.replace("/", "") in dirs)
-        self.assertTrue(exporter.MICRO_TOSCA_MODEL.replace("/", "") in dirs)
+        self.assertTrue(DEPLOY_OUTPUT_FOLDER.replace(OUTPUT_FOLDER+"/", "") in dirs)
+        self.assertTrue(TOSCA_OUTPUT_FOLDER.replace(OUTPUT_FOLDER+"/", "") in dirs)
 
         # Controllo che il file TOSCA sia al suo posto
-
-
         files = []
         for folder, _, fnames in os.walk(self.TEST_FILES_PATH_KUBE):
             for file in fnames:
                 files.append(file)
 
-        for folder, _, fnames in os.walk(exporter.kube_folder):
+        for folder, _, fnames in os.walk(DEPLOY_OUTPUT_FOLDER):
             for file in fnames:
                 files.remove(file)
 

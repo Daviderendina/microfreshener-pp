@@ -146,7 +146,7 @@ class TestIstioExtender(TestCase):
         k_pod_2.data["metadata"]["name"] = k_pod_2.data["metadata"]["name"] + "_2"
 
         k_destinationrule = KubeDestinationRule(DESTINATION_RULE_TIMEOUT)
-        k_destinationrule.data["spec"]["host"] = k_service.fullname + ".svc.cluster.local"
+        k_destinationrule.data["spec"]["host"] = k_service.typed_fullname
 
         cluster.add_object(k_service)
         cluster.add_object(k_pod_1)
