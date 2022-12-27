@@ -99,7 +99,7 @@ class KubePodDefiner(KubeWorkload):
 
     @property
     def labels(self):
-        return self.pod_template.get("metadata", {}).get("labels", {}) #TODO attenzione che ritorna quelli del POD!
+        return self.pod_template.get("metadata", {}).get("labels", {})
 
     @property
     def host_network(self) -> bool:

@@ -43,7 +43,7 @@ class AddMessageRouterRefactoring(Refactoring):
                     exposing_svc.data["spec"]["ports"] += container_ports
 
                     self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED,
-                                         change_call_to_service_msg(smell.node.name, exposing_svc.fullname))
+                                         change_call_to_service_msg(smell.node.name, exposing_svc.typed_fullname))
                     return True
                 else:
                     self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, cannot_refactor_model_msg())

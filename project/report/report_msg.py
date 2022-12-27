@@ -10,7 +10,7 @@ def cannot_find_container_msg(service_node_name):
 
 
 def found_wrong_type_object_msg(object_fullname, desired_class):
-    return f"Found K8s object {object_fullname} which is not of type {desired_class}" #TODO migliorare msg
+    return f"Found K8s object {object_fullname} which is not of type {desired_class}"
 
 
 def compute_object_not_found_msg(compute_node_name):
@@ -18,8 +18,8 @@ def compute_object_not_found_msg(compute_node_name):
 
 
 def change_call_to_service_msg(svc_name, k8s_service_name):
-    return f"Direct call to Service {svc_name} must be changed for passing through the K8s Service {k8s_service_name}"
-    #TODO rivedere
+    return f"Direct call to Service {svc_name} must be changed for passing through the K8s generated Service:" \
+           f" convert calls to hostname {k8s_service_name}"
 
 def cannot_refactor_model_msg():
     return f"Is impossible to apply refactor on model"
