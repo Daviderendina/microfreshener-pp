@@ -2,7 +2,7 @@ from microfreshener.core.model.nodes import Compute
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import COMPUTE_NODE_WORKER
-from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
+from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignore_nothing import IgnoreNothing
 from project.utils.utils import check_kobject_node_name_match
 
@@ -38,6 +38,3 @@ class ComputeNodeWorker(KubeWorker):
     def _add_compute_node_if_not_present(self, compute_node: Compute):
         if compute_node not in self.model.computes:
             self.model.add_node(compute_node)
-
-
-

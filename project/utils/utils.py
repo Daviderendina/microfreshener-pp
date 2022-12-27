@@ -22,6 +22,7 @@ def get_dict_key_by_value(dictionary: dict, search_value: str):
 
 
 def check_kobject_node_name_match(kobject, tosca_node: Root):
+    #TODO fuorse questa si può togliere
     # Case: tosca_node.name is <name>.<ns> or tosca_node.name is <container>.<name>.<ns>
     if tosca_node.name == kobject.typed_fullname: #TODO or tosca_node.name == kobject.fullname:
         return True

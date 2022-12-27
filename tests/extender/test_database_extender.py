@@ -71,9 +71,9 @@ class TestDatabaseExtender(TestCase):
         cluster.add_object(pod)
 
         database_node = Service(pod.containers[0].name + "." + pod.typed_fullname)
-        model.add_node(database_node)
         svc_uses_db1 = Service("svcUses1")
         svc_uses_db2 = Service("svcUses2")
+        model.add_node(database_node)
         model.add_node(svc_uses_db1)
         model.add_node(svc_uses_db2)
         model.add_interaction(source_node=svc_uses_db1, target_node=database_node)

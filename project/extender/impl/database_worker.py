@@ -35,8 +35,7 @@ class DatabaseWorker(KubeWorker):
                 self._update_datastore_incoming_interactions(service_node, datastore_node)
 
                 model.delete_node([n for n in model.nodes if n.name == service_node.name][0])
-                datastore_node.name = service_node.name
-                #TODO rivedere qui
+                model.rename_node(datastore_node, service_node.name)
 
     def _update_datastore_incoming_interactions(self, service_node: Service, datastore_node: Datastore):
         for relation in list(service_node.incoming_interactions):

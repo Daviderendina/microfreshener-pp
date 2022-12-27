@@ -24,10 +24,9 @@ class UseTimeoutRefactoring(Refactoring):
             for link in smell.links_cause:
 
                 if isinstance(link.target, Service):
-                    pass  # Tra Service e Service
-                    # Con Istio non posso mettere direttamente il timeout tra due pod, devo mettere almeno un svc davanti al
-                    # target per impostare poi il timeout per quel servizio - SICURAMENTE QUESTO E' MEGLIO ESEGUIRLO PER ULTIMO,
-                    # COSÌ DA AGGIUNGERE TUTTI I SVC MANCANTI!! QUESTO CASO IN TEORIA COSÌ NON ESISTE (O QUASI) #TODO
+                    pass
+                    # This tool execute the whole process of finding smell ad refactoring multiple times, so this case
+                    # will be solved when AddMessageRouter will add a MR in front of the smell node
 
                 if isinstance(link.target, MessageRouter):
                     k_service = self.cluster.get_object_by_name(link.target.name)
