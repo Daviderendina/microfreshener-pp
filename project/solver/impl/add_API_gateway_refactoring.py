@@ -9,6 +9,7 @@ from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeService
+from project.kmodel.kube_utils import does_selectors_labels_match
 from project.kmodel.kube_workload import KubeWorkload
 from project.report.report_msg import cannot_apply_refactoring_on_node_msg
 from project.report.report_row import RefactoringStatus
@@ -91,10 +92,12 @@ class AddAPIGatewayRefactoring(Refactoring):
 
         return container, def_object
 
-    def _search_for_existing_svc(self, defining_obj, ports_to_open: List[int]):
+    def _search_for_existing_svc(self, workload, ports_to_open):
         port_numbers = [p.get('node_port', p.get('port')) for p in ports_to_open]
-        services = [s for s in self.cluster.find_svc_exposing_workload(defining_obj)
-                    if self._check_ports(s, port_numbers)]
+
+        services = [s for s in self.cluster.services
+                    if does_selectors_labels_match(s.selectors, workload.labels)
+                    and self._check_ports(s, port_numbers)]
 
         if len(services) == 0:
             return None

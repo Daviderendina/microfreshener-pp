@@ -29,12 +29,12 @@ POD_WITH_ONE_CONTAINER = {
                 'name': 'container-a',
                 'ports': [
                     {
-                        'containerPort': 8000
+                        'containerPort': 8000,
+                        'protocol': 'UDP'
                     },
                     {
                         'name': 'ottanta',
-                        'containerPort': 80,
-                        'protocol': 'UDP'
+                        'containerPort': 80
                     }
                 ]
             }

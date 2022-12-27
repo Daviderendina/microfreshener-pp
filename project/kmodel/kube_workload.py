@@ -4,7 +4,7 @@ from typing import List
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_object import KubeObject
 from project.kmodel.shortnames import KUBE_POD, KUBE_DEPLOYMENT, KUBE_REPLICASET, KUBE_STATEFULSET
-from project.kmodel.utils import cast_container_list
+from project.kmodel.kube_utils import cast_container_list
 
 
 def container_to_dict(container_list: list):
@@ -66,6 +66,10 @@ class KubePod(KubeWorkload):
         return self.data.get("metadata", {}).get("labels", {})
 
     @property
+    def pod_labels(self):
+        return self.data.get("metadata", {}).get("labels", {})
+
+    @property
     def host_network(self) -> bool:
         return self.data.get("spec", {}).get("hostNetwork", False)
 
@@ -95,7 +99,7 @@ class KubePodDefiner(KubeWorkload):
 
     @property
     def labels(self):
-        return self.pod_template.get("metadata", {}).get("labels", {})
+        return self.pod_template.get("metadata", {}).get("labels", {}) #TODO attenzione che ritorna quelli del POD!
 
     @property
     def host_network(self) -> bool:

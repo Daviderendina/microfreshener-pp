@@ -42,17 +42,20 @@ class ServiceWorker(KubeWorker):
                 self.model.edge.remove_member(mr_node)
 
     def _check_message_router_does_not_expose(self, ignore):
-        for k_service, defining_obj in self._get_svc_with_object_exposed():
+        for k_service, workload in self._get_svc_with_object_exposed():
 
             not_ignored_nodes = self._get_nodes_not_ignored(self.model.nodes, ignore)
-            mr_node = next(iter([mr for mr in not_ignored_nodes if check_kobject_node_name_match(k_service, mr)]), None)
+            mr_node = self.model.get_node_by_name(k_service.typed_fullname, MessageRouter)
 
-            if mr_node is None:
-                self._handle_mr_node_not_found(k_service, defining_obj)
-            elif not isinstance(mr_node, MessageRouter):
-                self._handle_found_not_message_router(k_service, mr_node)
+            if mr_node:
+                if mr_node in not_ignored_nodes:
+                    self._handle_mr_node_found(mr_node)
             else:
-                self._handle_mr_node_found(mr_node)
+                generic_node = self.model.get_node_by_name(k_service.typed_fullname)
+                if generic_node is None:
+                    self._handle_mr_node_not_found(k_service, workload)
+                else:
+                    self._handle_found_not_message_router(k_service, generic_node)
 
     def _handle_mr_node_found(self, mr_node: MessageRouter):
         # TODO in questo caso non so se è giusto quello che ho fatto, non ho capito bene se:
@@ -109,8 +112,8 @@ class ServiceWorker(KubeWorker):
     def _get_svc_with_object_exposed(self):
         result = []
         for k_service in self.cluster.services:
-            for workload in self.cluster.find_workload_exposed_by_svc(k_service):
-                result.append((k_service, workload))
+            for workload_list in self.cluster.find_workload_exposed_by_svc(k_service):
+                result.append((k_service, workload_list))
 
         return result
 

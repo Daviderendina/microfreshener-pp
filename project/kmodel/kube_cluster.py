@@ -58,26 +58,13 @@ class KubeCluster:
         self.cluster_export_info.append(export_object)
 
     def find_workload_exposed_by_svc(self, service: KubeService) -> List[KubeWorkload]:
-        exposed = []
-        for workload in self.workloads:
-            service_selectors = [f"{k}:{v}" for k, v in service.selectors.items()]
-            pod_labels = [f"{k}:{v}" for k, v in workload.labels.items()]
-            if len([value for value in pod_labels if value in service_selectors]) > 0:
-                exposed.append(workload)
-        return exposed
+        return [w for w in self.workloads if service.does_expose_workload(w)]
 
-    def find_svc_exposing_workload(self, kube_object: KubeWorkload):
-        exposing_svc = []
-        object_labels = kube_object.labels
-
-        for svc in self.services:
-            matching_labels = [l for l in object_labels.items() if l in svc.selectors.items()]
-            if len(matching_labels) > 0:
-                exposing_svc.append(svc)
-
-        return exposing_svc
+    def find_svc_exposing_workload(self, workload: KubeWorkload):
+        return [s for s in self.services if s.does_expose_workload(workload)]
 
     def find_workload_defining_container(self, container_fullname: str):
+        #TODO nel container ho già il fullname del workload!!
         for workload in self.workloads:
             for container in workload.containers:
                 search_container_fullname = f"{container.name}.{workload.typed_fullname}"

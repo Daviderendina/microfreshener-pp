@@ -6,6 +6,7 @@ from k8s_template.kobject_generators import generate_ports_for_container, genera
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
+from project.kmodel.kube_utils import does_selectors_labels_match
 from project.report.report_msg import cannot_find_container_msg, cannot_apply_refactoring_on_node_msg, \
     change_call_to_service_msg, cannot_refactor_model_msg
 from project.report.report_row import RefactoringStatus
@@ -76,7 +77,7 @@ class AddMessageRouterRefactoring(Refactoring):
     def _find_compatible_exposing_service(self, workload, container):
         selected_service = None
 
-        exposing_service = self.cluster.find_svc_exposing_workload(workload)
+        exposing_service = [s for s in self.cluster.services if does_selectors_labels_match(s.selectors, workload.labels)]
 
         if len(exposing_service) > 0:
             port_compatible_services = [s for s in exposing_service if check_ports_match(s, container)]
