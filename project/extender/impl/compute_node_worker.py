@@ -1,10 +1,9 @@
-from microfreshener.core.model.nodes import Compute
+from microfreshener.core.model.nodes import Compute, Service
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import COMPUTE_NODE_WORKER
 from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignore_nothing import IgnoreNothing
-from project.utils.utils import check_kobject_node_name_match
 
 
 class ComputeNodeWorker(KubeWorker):
@@ -18,22 +17,25 @@ class ComputeNodeWorker(KubeWorker):
         self.model = model
         self.cluster = kube_cluster
 
-        if not ignore:
-            ignore = IgnoreNothing()
+        not_ignored = self._get_nodes_not_ignored(list(self.model.services), ignore if ignore else IgnoreNothing)
 
-        for container in self.cluster.containers:
-            compute_node = self._get_or_create_compute(container.defining_workload_fullname)
+        for workload in self.cluster.workloads:
+            compute_node = self._get_or_create_compute(workload.typed_fullname)
 
-            not_ignored_services = self._get_nodes_not_ignored(list(self.model.services), ignore)
-            service_nodes = [s for s in not_ignored_services if check_kobject_node_name_match(container, s)]
+            for container in workload.containers:
+                container_node = self.model.get_node_by_name(container.typed_fullname, Service)
 
-            if len(service_nodes) > 0:
-                self._add_compute_node_if_not_present(compute_node)
-                model.add_deployed_on(source_node=service_nodes[0], target_node=compute_node)
+                if container_node and container_node in not_ignored:
+                    model.add_deployed_on(container_node, compute_node)
 
     def _get_or_create_compute(self, compute_name):
-        compute_node = self.model.get_node_by_name(compute_name)
-        return compute_node if compute_node else Compute(compute_name)
+        compute_node = self.model.get_node_by_name(compute_name, Compute)
+
+        if compute_node is None:
+            compute_node = Compute(compute_name)
+            self.model.add_node(compute_node)
+
+        return compute_node
 
     def _add_compute_node_if_not_present(self, compute_node: Compute):
         if compute_node not in self.model.computes:
