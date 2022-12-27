@@ -7,7 +7,6 @@ from project.ignorer.ignore_nothing import IgnoreNothing
 from project.ignorer.ignorer import IgnoreType
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService, KubeIngress
-from project.utils.utils import check_kobject_node_name_match
 
 
 class IngressWorker(KubeWorker):
@@ -34,17 +33,14 @@ class IngressWorker(KubeWorker):
                 self._handle_ingress_not_in_model(ingress, ignore)
 
     def _handle_ingress_not_in_model(self, ingress: KubeIngress, ignore):
+        not_ignored_nodes = self._get_nodes_not_ignored(list(self.model.nodes), ignore)
+
         for k_service_name in ingress.get_exposed_svc_names():
+            k_service = self.cluster.get_object_by_name(k_service_name, KubeService)
 
-            k_services = [s for s in self.cluster.services if
-                          s.fullname == k_service_name + "." + ingress.namespace]
-
-            if len(k_services) > 0:
-                not_ignored_nodes = self._get_nodes_not_ignored(list(self.model.nodes), ignore)
-                mr_nodes = [n for n in not_ignored_nodes if check_kobject_node_name_match(k_services[0], n)]
-
-                if len(mr_nodes) > 0:
-                    mr_node = mr_nodes[0]
+            if k_service:
+                mr_node = self.model.get_node_by_name(k_service.typed_fullname)
+                if mr_node in not_ignored_nodes:
                     kube_service: KubeService = self.cluster.get_object_by_name(mr_node.name)
                     if kube_service and not kube_service.is_reachable_from_outside():
                         self.model.edge.remove_member(mr_node)
@@ -59,6 +55,5 @@ class IngressWorker(KubeWorker):
             mr_node = self.model.get_node_by_name(exposed_svc, MessageRouter)
             if mr_node not in [r.target for r in ingress_node.interactions]:
                 if not ignore.is_node_ignored(mr_node, IgnoreType.WORKER, self.name):
-
                     self.model.add_interaction(source_node=ingress_node, target_node=mr_node)
 

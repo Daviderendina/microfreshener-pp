@@ -1,3 +1,5 @@
+import re
+
 from project.kmodel.kube_container import KubeContainer
 
 
@@ -13,3 +15,8 @@ def does_selectors_labels_match(selectors: dict, labels: dict):
     labels_str = [f"{k}:{v}" for k, v in labels.items()]
 
     return len([value for value in labels_str if value in selectors_str]) > 0
+
+
+def name_has_namespace(name: str):
+    match = re.match(r"([-\w]+)[.]([-\w]+)", name)
+    return match and match.string == name

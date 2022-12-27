@@ -1,5 +1,5 @@
 from project.kmodel.kube_object import KubeObject
-from project.kmodel.kube_utils import does_selectors_labels_match
+from project.kmodel.kube_utils import does_selectors_labels_match, name_has_namespace
 from project.kmodel.kube_workload import KubeWorkload
 from project.kmodel.shortnames import KUBE_INGRESS, KUBE_SERVICE
 
@@ -62,5 +62,10 @@ class KubeIngress(KubeNetworking):
                 svc_name = path.get("backend", {}).get("service", {}).get("name", None)
                 if svc_name:
                     result.append(svc_name)
+
+        for svc in result:
+            if not name_has_namespace(svc):
+                result.remove(svc)
+                result.append(f"{svc}.{self.namespace}")
 
         return result

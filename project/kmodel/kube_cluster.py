@@ -71,7 +71,7 @@ class KubeCluster:
                 if container_fullname == search_container_fullname:
                     return workload
 
-    def get_object_by_name(self, object_name: str):
+    def get_object_by_name(self, object_name: str, type: type = None):
         objects_found = []
         for obj in self.cluster_objects:
 
@@ -81,9 +81,9 @@ class KubeCluster:
                     objects_found.append(obj)
 
             # Case: name is <name>.<namespace>
-            #if obj.fullname == object_name:
-            #    if not obj in objects_found:
-            #        objects_found.append(obj)
+            if obj.fullname == object_name:
+                if not obj in objects_found:
+                    objects_found.append(obj)
 
             # Case: name is only <name>
             #if obj.name == object_name:
@@ -96,6 +96,9 @@ class KubeCluster:
                     if container.typed_fullname == object_name:
                         if not obj in objects_found:
                             objects_found.append(container)
+
+        if type is not None:
+            objects_found = [o for o in objects_found if isinstance(o, type)]
 
         if len(objects_found) > 1:
             raise AttributeError(f"More than one object found with name: {object_name}")

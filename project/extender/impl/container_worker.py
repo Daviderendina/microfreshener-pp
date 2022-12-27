@@ -1,10 +1,9 @@
-from microfreshener.core.model import MicroToscaModel
+from microfreshener.core.model import MicroToscaModel, Service
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import CONTAINER_WORKER
 from project.ignorer.ignore_config import IgnoreConfig
 from project.kmodel.kube_cluster import KubeCluster
-from project.utils.utils import check_kobject_node_name_match
 
 
 class ContainerWorker(KubeWorker):
@@ -22,13 +21,12 @@ class ContainerWorker(KubeWorker):
 
     def _check_for_edge_services(self, ignore):
         for workload in self.cluster.workloads:
+            not_ignored_services = self._get_nodes_not_ignored(self.model.services, ignore)
 
             for container in workload.containers:
-                not_ignored_services = self._get_nodes_not_ignored(self.model.services, ignore)
-                service_nodes = [s for s in not_ignored_services if check_kobject_node_name_match(container, s)]
+                service_node = self.model.get_node_by_name(container.typed_fullname, Service)
 
-                if len(service_nodes) > 0:
-                    service_node = service_nodes[0]
+                if service_node in not_ignored_services:
                     if workload.host_network:
                         self.model.edge.add_member(service_node)
                     else:

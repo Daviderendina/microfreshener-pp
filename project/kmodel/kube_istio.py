@@ -2,6 +2,7 @@ import re
 from typing import List, Dict
 
 from project.kmodel.kube_object import KubeObject
+from project.kmodel.kube_utils import name_has_namespace
 from project.kmodel.shortnames import ISTIO_VIRTUAL_SERVICE, ISTIO_DESTINATION_RULE, ISTIO_GATEWAY
 
 
@@ -43,8 +44,7 @@ class KubeVirtualService(KubeIstio):
     def gateways(self):
         res = []
         for g in self.data.get("spec", {}).get("gateways", []):
-            match = re.match(r"([-\w]+)[.]([-\w]+)", g)
-            res.append(g if match and match.string == g else f"{g}.{self.namespace}")
+            res.append(g if name_has_namespace(g) else f"{g}.{self.namespace}")
         return res
 
     @property

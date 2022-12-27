@@ -10,7 +10,6 @@ from project.ignorer.ignorer import Ignorer, IgnoreType
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubeWorkload
-from project.utils.utils import check_kobject_node_name_match
 
 
 class ServiceWorker(KubeWorker):
@@ -63,17 +62,15 @@ class ServiceWorker(KubeWorker):
                 self.model.add_interaction(source_node=interaction.source, target_node=mr_node)
                 self.model.delete_relationship(interaction)
 
-    def _handle_mr_node_not_found(self, k_service: Service, workload_obj: KubeWorkload):
-        exposed_containers = workload_obj.containers
-
-        if len(exposed_containers) == 0:
+    def _handle_mr_node_not_found(self, k_service: Service, workload: KubeWorkload):
+        if len(workload.containers) == 0:
             return
 
         mr_node = MessageRouter(k_service.typed_fullname)
         self.model.add_node(mr_node)
 
-        for container in exposed_containers:
-            service_node = next(iter([s for s in self.model.services if check_kobject_node_name_match(container, s)]), None)
+        for container in workload.containers:
+            service_node = self.model.get_node_by_name(container.typed_fullname)
             if service_node is not None:
 
                 if k_service.is_reachable_from_outside() and service_node in self.model.edge:
