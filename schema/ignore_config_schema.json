@@ -60,7 +60,10 @@
                                 "Database",
                                 "Ingress",
                                 "Istio",
-                                "Service"
+                                "Service",
+                                "Istio-timeout",
+                                "Istio-circuit-breaker",
+                                "Istio-gateway"
                             ]
                         }
                     },
