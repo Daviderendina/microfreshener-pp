@@ -27,6 +27,8 @@ class KubeVirtualService(KubeIstio):
                     if timeout is not None:
                         destination = route.get('destination', {}).get('host', None)
                         if destination is not None:
+                            host = host if name_has_namespace(host) else f"{host}.{self.namespace}"
+                            destination = destination if name_has_namespace(destination) else f"{destination}.{self.namespace}"
                             result.append((host, destination, timeout))
         return result
 
@@ -37,7 +39,7 @@ class KubeVirtualService(KubeIstio):
             for destination_route in http_route.get('route', []):
                 destination = destination_route.get('destination', {}).get('host', None)
                 if destination is not None:
-                    result.append(destination)
+                    result.append(destination if name_has_namespace(destination) else f"{destination}.{self.namespace}")
         return result
 
     @property
@@ -73,7 +75,8 @@ class KubeDestinationRule(KubeIstio):
 
     @property
     def host(self):
-        return self.data.get("spec", {}).get("host", None)
+        host = self.data.get("spec", {}).get("host", None)
+        return host if name_has_namespace(host) else f"{host}.{self.namespace}"
 
     @property
     def timeout(self) -> str:
@@ -95,5 +98,5 @@ class KubeIstioGateway(KubeIstio):
         return result
 
     @property
-    def selectors(self) -> list:
-        return self.data.get("spec", {}).get("selector", [])
+    def selectors(self) -> dict:
+        return self.data.get("spec", {}).get("selector", {})

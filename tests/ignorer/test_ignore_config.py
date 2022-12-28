@@ -38,14 +38,14 @@ class TestIgnoreConfig(TestCase):
         ig.import_config()
 
         # Check
-        self.assertTrue(ig.is_node_ignored(svc, IgnoreType.WORKER, "Database"))
-        self.assertFalse(ig.is_node_ignored(svc, IgnoreType.WORKER, "Compute-node"))
+        self.assertTrue(ig.is_ignored(svc, IgnoreType.WORKER, "Database"))
+        self.assertFalse(ig.is_ignored(svc, IgnoreType.WORKER, "Compute-node"))
 
-        self.assertFalse(ig.is_node_ignored(svc, IgnoreType.REFACTORING, "Use-timeout"))
-        self.assertTrue(ig.is_node_ignored(mr, IgnoreType.REFACTORING, "Add-circuit-breaker"))
+        self.assertFalse(ig.is_ignored(svc, IgnoreType.REFACTORING, "Use-timeout"))
+        self.assertTrue(ig.is_ignored(mr, IgnoreType.REFACTORING, "Add-circuit-breaker"))
 
-        self.assertTrue(ig.is_node_ignored(mr, IgnoreType.SMELLS, "all"))
-        self.assertTrue(ig.is_node_ignored(mr, IgnoreType.SMELLS, "No-api-gateway"))
+        self.assertTrue(ig.is_ignored(mr, IgnoreType.SMELLS, "all"))
+        self.assertTrue(ig.is_ignored(mr, IgnoreType.SMELLS, "No-api-gateway"))
 
     def test_ignore_config_with_error(self):
         ignore_config = os.getcwd().split("tests")[0] + "/tests/data/ignore_config/ignore_config_error.json"

@@ -39,7 +39,7 @@ class IgnoreConfig(Ignorer):
         if not validate_json(self.config, self.schema):
             raise ValueError(f"Json config ({self.config}) is not valid")
 
-    def is_node_ignored(self, node, check_type: IgnoreType, item_to_ignore: str):
+    def is_ignored(self, node, check_type: IgnoreType, item_to_ignore: str):
         mapping = {
             MICROTOSCA_NODES_SERVICE: Service,
             MICROTOSCA_NODES_COMPUTE: Compute,

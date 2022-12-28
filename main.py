@@ -88,7 +88,7 @@ def build_analyser(model, ignore_config):
 
     for node in model.nodes:
         for smell in SMELLS_NAME:
-            if ignore_config.is_node_ignored(node, IgnoreType.SMELLS, smell):
+            if ignore_config.is_ignored(node, IgnoreType.SMELLS, smell):
                 analyser.ignore_smell_for_node(node, smell)
 
     return analyser

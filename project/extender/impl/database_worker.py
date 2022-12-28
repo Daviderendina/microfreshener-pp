@@ -1,10 +1,8 @@
-from microfreshener.core.model import MicroToscaModel, Service, Datastore
+from microfreshener.core.model import Service, Datastore
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import DATABASE_WORKER
-from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignore_nothing import IgnoreNothing
-from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 
 
@@ -16,42 +14,37 @@ class DatabaseWorker(KubeWorker):
 
     def __init__(self):
         super().__init__(DATABASE_WORKER)
-        self.cluster = None
-        self.model = None
 
-    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster, ignore: IgnoreConfig):
-        self.model = model
-        self.cluster = kube_cluster
+    def refine(self, model, cluster, ignorer=IgnoreNothing()):
+        self._search_datastores(model, cluster, ignorer)
 
-        if not ignore:
-            ignore = IgnoreNothing()
-        not_ignored_services = self._get_nodes_not_ignored(self.model.services, ignore)
+        return model
+
+    def _search_datastores(self, model, cluster, ignorer):
+        not_ignored_services = self._get_nodes_not_ignored(model.services, ignorer)
 
         for service_node in [s for s in not_ignored_services if len(s.interactions) == 0]:
-            container = kube_cluster.get_object_by_name(service_node.name)
+            container = cluster.get_object_by_name(service_node.name)
 
-            if container and isinstance(container, KubeContainer) and self._is_database(container):
-                datastore_node = self._create_datastore_node("TEMPORARY_DATASTORE_NAME")
-                self._update_datastore_incoming_interactions(service_node, datastore_node)
+            if container and self._is_database(container):
+                datastore_node = Datastore("TEMPORARY_DATASTORE_NAME")
+                model.add_node(datastore_node)
 
-                model.delete_node([n for n in model.nodes if n.name == service_node.name][0])
+                self._update_datastore_incoming_interactions(model, service_node, datastore_node)
+
+                model.delete_node(service_node)
                 model.rename_node(datastore_node, service_node.name)
 
-    def _update_datastore_incoming_interactions(self, service_node: Service, datastore_node: Datastore):
+    def _update_datastore_incoming_interactions(self, model, service_node: Service, datastore_node: Datastore):
         for relation in list(service_node.incoming_interactions):
-            self.model.add_interaction(
+            model.add_interaction(
                 source_node=relation.source,
                 target_node=datastore_node,
                 with_timeout=relation.timeout,
                 with_circuit_breaker=relation.circuit_breaker,
                 with_dynamic_discovery=relation.dynamic_discovery
             )
-            self.model.delete_relationship(relation)
-
-    def _create_datastore_node(self, name: str) -> Datastore:
-        datastore_node = Datastore(name)
-        self.model.add_node(datastore_node)
-        return datastore_node
+            model.delete_relationship(relation)
 
     def _is_database(self, container: KubeContainer):
         ports_check = len([v for v in container.get_container_ports_numbers() if v in self.DATABASE_PORTS]) > 0

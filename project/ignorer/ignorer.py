@@ -10,5 +10,5 @@ class IgnoreType(Enum):
 class Ignorer:
 
     @abstractmethod
-    def is_node_ignored(self, node, check_type: IgnoreType, item_to_ignore: str):
+    def is_ignored(self, node, check_type: IgnoreType, item_to_ignore: str):
         pass

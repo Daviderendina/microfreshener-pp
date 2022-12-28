@@ -15,11 +15,11 @@ class KubeWorker:
         self.name = name
 
     @abstractmethod
-    def refine(self, model: MicroToscaModel, kube_cluster: KubeCluster, ignore: IgnoreConfig) -> MicroToscaModel:
+    def refine(self, model: MicroToscaModel, cluster: KubeCluster, ignorer: Ignorer = IgnoreNothing()) -> MicroToscaModel:
         pass
 
-    def _get_nodes_not_ignored(self, nodes, ignore: Ignorer):
+    def _get_nodes_not_ignored(self, nodes, ignore):
         if ignore is None:
             ignore = IgnoreNothing()
 
-        return [n for n in nodes if not ignore.is_node_ignored(n, IgnoreType.WORKER, self.name)]
+        return [n for n in nodes if not ignore.is_ignored(n, IgnoreType.WORKER, self.name)]

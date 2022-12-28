@@ -3,13 +3,15 @@ from abc import abstractmethod
 from microfreshener.core.model.microtosca import MicroToscaModel
 from typing import List
 
+from project.extender.impl.istio_circuit_breaker_worker import IstioCircuitBreakerWorker
+from project.extender.impl.istio_gateway_worker import IstioGatewayWorker
+from project.extender.impl.istio_timeout_worker import IstioTimeoutWorker
 from project.extender.impl.name_worker import NameWorker
 from project.extender.kubeworker import KubeWorker
 from project.extender.impl.compute_node_worker import ComputeNodeWorker
 from project.extender.impl.container_worker import ContainerWorker
 from project.extender.impl.database_worker import DatabaseWorker
 from project.extender.impl.ingress_worker import IngressWorker
-from project.extender.impl.istio_worker import IstioWorker
 from project.extender.impl.service_worker import ServiceWorker
 from project.ignorer.ignore_config import IgnoreConfig
 from project.ignorer.ignore_nothing import IgnoreNothing
@@ -20,7 +22,7 @@ from project.kmodel.kube_cluster import KubeCluster
 class Extender:
 
     @abstractmethod
-    def extend(self, model: MicroToscaModel, kube_cluster: KubeCluster, ignore_config: Ignorer) -> MicroToscaModel:
+    def extend(self, model: MicroToscaModel, cluster: KubeCluster, ignore: Ignorer) -> MicroToscaModel:
         pass
 
 
@@ -44,14 +46,15 @@ class KubeExtender(Extender):
     def add_worker(self, worker: KubeWorker):
         self.worker_list.append(worker)
 
-    def extend(self, model: MicroToscaModel, kube_cluster: KubeCluster, ignore_config: IgnoreConfig = IgnoreNothing()) -> MicroToscaModel:
+    def extend(self, model: MicroToscaModel, cluster: KubeCluster, ignore: IgnoreConfig = IgnoreNothing()) -> MicroToscaModel:
         extended_model = model
         for worker in self.worker_list:
-            extended_model = worker.refine(model, kube_cluster, ignore_config)
+            extended_model = worker.refine(model, cluster, ignore)
         return extended_model
 
     def set_all_workers(self):
         self.worker_list = [NameWorker(), ContainerWorker(), ServiceWorker(), IngressWorker(),
-                            IstioWorker(), ComputeNodeWorker(), DatabaseWorker()]
+                            IstioGatewayWorker(), IstioTimeoutWorker(), IstioCircuitBreakerWorker(),
+                            ComputeNodeWorker(), DatabaseWorker()]
 
 

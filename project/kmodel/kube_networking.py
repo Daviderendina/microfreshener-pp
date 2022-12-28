@@ -50,9 +50,4 @@ class KubeIngress(KubeNetworking):
                 if svc_name:
                     result.append(svc_name)
 
-        for svc in result:
-            if not name_has_namespace(svc):
-                result.remove(svc)
-                result.append(f"{svc}.{self.namespace}")
-
-        return result
+        return [s if name_has_namespace(s) else f"{s}.{self.namespace}" for s in result]

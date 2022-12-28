@@ -75,12 +75,12 @@ class KubeSolver(Solver):
 
         for refactoring in available_refactoring:
             if isinstance(smell, NodeSmell):
-                if self.ignore.is_node_ignored(smell.node, IgnoreType.REFACTORING, refactoring.name):
+                if self.ignore.is_ignored(smell.node, IgnoreType.REFACTORING, refactoring.name):
                     available_refactoring.remove(refactoring)
 
             elif isinstance(smell, GroupSmell):
                 for node in smell.group.members:
-                    if self.ignore.is_node_ignored(node, IgnoreType.REFACTORING, smell.name):
+                    if self.ignore.is_ignored(node, IgnoreType.REFACTORING, smell.name):
                         available_refactoring.remove(refactoring)
 
         return available_refactoring
