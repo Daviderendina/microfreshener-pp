@@ -15,6 +15,7 @@ class IstioTimeoutWorker(KubeWorker):
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._search_for_timeouts_with_virtual_service(model, cluster, ignorer)
         self._search_for_timeouts_with_destination_rule(model, cluster, ignorer)
+        return model
 
     def _search_for_timeouts_with_virtual_service(self, model, cluster, ignorer):
         not_ignored_nodes = self._get_nodes_not_ignored(model.message_routers, ignorer)

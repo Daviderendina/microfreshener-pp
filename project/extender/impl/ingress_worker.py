@@ -23,6 +23,8 @@ class IngressWorker(KubeWorker):
             else:
                 self._handle_ingress_not_in_model(model, cluster, ingress, ignorer)
 
+        return model
+
     def _handle_ingress_in_model(self, model, cluster, ingress, ingress_node, not_ignored_mr):
         for exposed_svc in ingress.get_exposed_svc_names():
             mr_node = model.get_node_by_name(exposed_svc, MessageRouter)

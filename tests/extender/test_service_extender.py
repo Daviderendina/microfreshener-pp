@@ -4,6 +4,7 @@ from unittest import TestCase
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, Edge
 
 from project.extender.extender import KubeExtender
+from project.extender.impl.message_router_edge_worker import MessageRouterEdgeWorker
 from project.extender.impl.service_worker import ServiceWorker
 from tests.data.kube_objects_dict import DEFAULT_SVC, POD_WITH_ONE_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
@@ -103,11 +104,7 @@ class TestServiceExtender(TestCase):
         extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
         extender.extend(model, cluster)
 
-        count = 0
-        for node in model.nodes:
-            if isinstance(node, MessageRouter):
-                count += 1
-        self.assertEqual(count, 0)
+        self.assertEqual(len(list(model.message_routers)), 0)
 
         self.assertEqual(len(svc1.interactions), 1)
         self.assertEqual(len(svc1.incoming_interactions), 0)
@@ -337,7 +334,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(list(model.edge.members)), 1)
 
         # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender: KubeExtender = KubeExtender(worker_list=[MessageRouterEdgeWorker()])
         extender.extend(model, cluster)
 
         # Check results
@@ -369,7 +366,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(list(model.edge.members)), 1)
 
         # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender: KubeExtender = KubeExtender(worker_list=[MessageRouterEdgeWorker()])
         extender.extend(model, cluster)
 
         # Check results

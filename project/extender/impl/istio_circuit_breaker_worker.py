@@ -10,6 +10,7 @@ class IstioCircuitBreakerWorker(KubeWorker):
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._search_for_circuit_breaker(model, cluster, ignorer)
+        return model
 
     def _search_for_circuit_breaker(self, model, cluster, ignorer):
         not_ignored_nodes = self._get_nodes_not_ignored(model.nodes, ignorer)

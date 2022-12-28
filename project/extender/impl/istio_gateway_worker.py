@@ -21,6 +21,7 @@ class IstioGatewayWorker(KubeWorker):
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._search_for_gateways(model, cluster, ignorer)
+        return model
 
     def _search_for_gateways(self, model, cluster, ignorer):
         not_ignored_nodes = self._get_nodes_not_ignored(model.message_routers, ignorer)

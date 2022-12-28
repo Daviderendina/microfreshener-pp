@@ -6,6 +6,7 @@ from typing import List
 from project.extender.impl.istio_circuit_breaker_worker import IstioCircuitBreakerWorker
 from project.extender.impl.istio_gateway_worker import IstioGatewayWorker
 from project.extender.impl.istio_timeout_worker import IstioTimeoutWorker
+from project.extender.impl.message_router_edge_worker import MessageRouterEdgeWorker
 from project.extender.impl.name_worker import NameWorker
 from project.extender.kubeworker import KubeWorker
 from project.extender.impl.compute_node_worker import ComputeNodeWorker
@@ -53,7 +54,7 @@ class KubeExtender(Extender):
         return extended_model
 
     def set_all_workers(self):
-        self.worker_list = [NameWorker(), ContainerWorker(), ServiceWorker(), IngressWorker(),
+        self.worker_list = [NameWorker(), ContainerWorker(), ServiceWorker(), MessageRouterEdgeWorker(), IngressWorker(),
                             IstioGatewayWorker(), IstioTimeoutWorker(), IstioCircuitBreakerWorker(),
                             ComputeNodeWorker(), DatabaseWorker()]
 

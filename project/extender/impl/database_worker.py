@@ -17,7 +17,6 @@ class DatabaseWorker(KubeWorker):
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._search_datastores(model, cluster, ignorer)
-
         return model
 
     def _search_datastores(self, model, cluster, ignorer):

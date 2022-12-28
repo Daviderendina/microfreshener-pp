@@ -6,4 +6,5 @@ ISTIO_TIMEOUT_WORKER = "Istio-timeout",
 ISTIO_CIRCUIT_BREAKER = "Istio-circuit-breaker",
 ISTIO_GATEWAY_WORKER = "Istio-gateway",
 SERVICE_WORKER = "Service",
+MESSAGE_ROUTER_EDGE_WORKER = "Message-router-edge",
 NAME_WORKER = "Name"

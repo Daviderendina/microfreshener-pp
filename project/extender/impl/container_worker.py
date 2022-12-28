@@ -12,7 +12,6 @@ class ContainerWorker(KubeWorker):
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._check_for_edge_services(model, cluster, ignorer)
-
         return model
 
     def _check_for_edge_services(self, model, cluster, ignorer):

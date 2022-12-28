@@ -61,6 +61,7 @@
                                 "Ingress",
                                 "Istio",
                                 "Service",
+                                "Message-router-edge",
                                 "Istio-timeout",
                                 "Istio-circuit-breaker",
                                 "Istio-gateway"

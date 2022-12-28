@@ -3,7 +3,6 @@ from microfreshener.core.model.nodes import Compute, Service
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import COMPUTE_NODE_WORKER
 from project.ignorer.ignore_nothing import IgnoreNothing
-from project.ignorer.ignorer import IgnoreType
 
 
 class ComputeNodeWorker(KubeWorker):
@@ -13,7 +12,6 @@ class ComputeNodeWorker(KubeWorker):
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._add_compute_nodes(model, cluster, ignorer)
-
         return model
 
     def _add_compute_nodes(self, model, cluster, ignorer):
