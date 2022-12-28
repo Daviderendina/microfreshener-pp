@@ -5,7 +5,7 @@ from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 from k8s_template.kobject_generators import generate_timeout_virtualsvc_for_svc
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
-from project.report.report_msg import cannot_apply_refactoring_on_node_msg
+from project.report.report_msg import cannot_apply_refactoring_on_node_msg, created_new_resource_msg
 from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -32,12 +32,14 @@ class UseTimeoutRefactoring(Refactoring):
                     k_service = self.cluster.get_object_by_name(link.target.name)
                     virtual_service = generate_timeout_virtualsvc_for_svc(k_service, self.DEFAULT_TIMEOUT_SEC)
 
+                    exp_object = ExportObject(virtual_service, None)
                     self.cluster.add_object(virtual_service)
-                    self.cluster.add_export_object(ExportObject(virtual_service, None))
+                    self.cluster.add_export_object(exp_object)
 
                     link.set_timeout(True)
 
-                    self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED)
+                    msg = created_new_resource_msg(virtual_service.fullname, exp_object.out_fullname)
+                    self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, msg)
                     return True
 
                 # TODO devo assicurarmi che non ci siano già VService definiti? Potrei vedere se ci sono VService che hanno

@@ -23,8 +23,16 @@ class Refactoring:
     def set_solver_pending_ops(self, solver_pending_ops):
         self.solver_pending_ops = solver_pending_ops
 
-    def _add_report_row(self, smell: Smell, status: RefactoringStatus, message: str = ""):
-        RefactoringReport().add_row(self.name, smell, status, message)
+    def _add_report_row(self, smell: Smell, status: RefactoringStatus, message_item):
+        row = RefactoringReport().add_row(self.name, smell, status)
+
+        if message_item:
+            if isinstance(message_item, str):
+                message_item = [message_item]
+
+            for message in message_item:
+                row.add_message(message)
+
 
 
 class RefactoringNotSupportedError(Exception):

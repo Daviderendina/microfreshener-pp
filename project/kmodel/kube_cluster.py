@@ -104,3 +104,8 @@ class KubeCluster:
             raise AttributeError(f"More than one object found with name: {object_name}")
 
         return objects_found[0] if objects_found else None
+
+    def get_exp_object(self, kube_object):
+        for obj in self.cluster_export_info:
+            if obj.kube_object == kube_object:
+                return obj

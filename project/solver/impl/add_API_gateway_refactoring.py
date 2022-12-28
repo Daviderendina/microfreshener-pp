@@ -11,7 +11,8 @@ from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_utils import does_selectors_labels_match
 from project.kmodel.kube_workload import KubeWorkload
-from project.report.report_msg import cannot_apply_refactoring_on_node_msg
+from project.report.report_msg import cannot_apply_refactoring_on_node_msg, created_new_resource_msg, \
+    existing_resource_modified_msg, removed_exposing_params_msg
 from project.report.report_row import RefactoringStatus
 from project.solver.pending_ops import PENDING_OPS
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
@@ -32,6 +33,7 @@ class AddAPIGatewayRefactoring(Refactoring):
     '''
     def apply(self, smell: NoApiGatewaySmell):
         result = False
+        refactoring_status, report_messages = None, []
 
         if not isinstance(smell, NoApiGatewaySmell):
             raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
@@ -40,9 +42,9 @@ class AddAPIGatewayRefactoring(Refactoring):
             # The message broker is implemented through a Pod, so this case is the same as Service
 
         if isinstance(smell.node, Service) or isinstance(smell.node, MessageBroker):
-            container, def_object = self._get_container_and_def_object(smell.node.name)
-            ports_to_expose = generate_ports_for_container_nodeport(def_object, container, def_object.host_network)
-            expose_svc = self._search_for_existing_svc(def_object, ports_to_expose)
+            container, workload = self._get_container_and_def_object(smell.node.name)
+            ports_to_expose = generate_ports_for_container_nodeport(workload, container, workload.host_network)
+            expose_svc = self._search_for_existing_svc(workload, ports_to_expose)
 
             # Case: exists a Service that can expose this object
             if expose_svc and expose_svc.is_reachable_from_outside():
@@ -50,28 +52,36 @@ class AddAPIGatewayRefactoring(Refactoring):
                 self._refactor_model_service_exists(expose_svc, smell_node=smell.node)
 
                 result = True
-                self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, "")
+                report_messages.append(existing_resource_modified_msg(expose_svc.fullname, self.cluster.get_exp_object(expose_svc).out_fullname))
+                refactoring_status = RefactoringStatus.SUCCESSFULLY_APPLIED
 
             # Case: need to create a new Service
             else:
                 node_port_service = generate_svc_NodePort_for_container(
-                    defining_obj=def_object,
+                    defining_obj=workload,
                     container=container,
-                    is_host_network=def_object.host_network
+                    is_host_network=workload.host_network
                 )
+
+                exp = ExportObject(node_port_service, None)
                 self.cluster.add_object(node_port_service)
-                self.cluster.add_export_object(ExportObject(node_port_service, None))
+                self.cluster.add_export_object(exp)
 
                 self._refactor_model_service_added(node_port_service, service_node=smell.node)
 
                 result = True
-                self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, "")
+                report_messages.append(created_new_resource_msg(node_port_service.fullname, exp.out_fullname))
+                refactoring_status = RefactoringStatus.SUCCESSFULLY_APPLIED
 
             # Remove exposing parameters from Workload
-            self._remove_exposing_attributes(def_object, container)
+            self._remove_exposing_attributes(workload, container)
+            report_messages.append(removed_exposing_params_msg(workload.fullname, self.cluster.get_exp_object(workload).out_fullname))
         else:
-            msg = cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node)
-            self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, msg)
+            result = False
+            report_messages.append(cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node))
+            refactoring_status = RefactoringStatus.NOT_APPLIED
+
+        self._add_report_row(smell, refactoring_status, report_messages)
 
         return result
 

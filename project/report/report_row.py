@@ -15,11 +15,13 @@ class ReportRow:
 
 class RefactoringReportRow(ReportRow):
 
-    def __init__(self, refactoring_name, smell: Smell, status: RefactoringStatus, message: str):
+    def __init__(self, refactoring_name, smell: Smell, status: RefactoringStatus):
         self.refactoring_name = refactoring_name
         self.smell = smell
         self.status = status
-        self.message = message
+        self.message_list = []
 
+    def add_message(self, message: str):
+        self.message_list.append(message)
 
 

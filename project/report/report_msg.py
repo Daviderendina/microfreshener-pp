@@ -1,3 +1,4 @@
+import os
 
 
 def cannot_apply_refactoring_on_node_msg(refactoring_name, smell_name, node):
@@ -21,5 +22,22 @@ def change_call_to_service_msg(svc_name, k8s_service_name):
     return f"Direct call to Service {svc_name} must be changed for passing through the K8s generated Service:" \
            f" convert calls to hostname {k8s_service_name}"
 
+
 def cannot_refactor_model_msg():
     return f"Is impossible to apply refactor on model"
+
+
+def created_new_resource_msg(resource_fullname, resource_outfile):
+    return f"Created K8s resource named '{resource_fullname}' ({resource_outfile})"
+
+
+def existing_resource_modified_msg(resource_fullname, resource_outfile):
+    return f"Modified K8s resource named '{resource_fullname}' ({resource_outfile})"
+
+
+def removed_exposing_params_msg(workload_fullname, resource_outfile):
+    return f"Removed exposing attributed (hostNetworks and hostPorts) from object {workload_fullname} ({resource_outfile})"
+
+
+def deleted_object_from_cluster(workload_fullname):
+    return f"Deleted object {workload_fullname} from cluster"

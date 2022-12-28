@@ -7,13 +7,13 @@ from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.report.report_msg import cannot_find_container_msg, cannot_apply_refactoring_on_node_msg, \
-    change_call_to_service_msg
+    change_call_to_service_msg, created_new_resource_msg
 from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
 class AddMessageRouterRefactoring(Refactoring):
-    #TODO manca da fare il caso in cui il servizio ci sia già per il workload, ma forse è meglio prima pensare a un refactoring generale
+    # TODO manca da fare il caso in cui il servizio ci sia già per il workload, ma forse è meglio prima pensare a un refactoring generale
     # Attenzione alle porte! Io già nell'extender controllo che le porte esposte siano corrette, perciò se non c'è la
     # freccia significa che le porte NON SONO ESPOSTE DAL SERVIZIO
 
@@ -37,15 +37,14 @@ class AddMessageRouterRefactoring(Refactoring):
 
             self._refactor_model(smell.node, generated_service.typed_fullname, smell.links_cause)
 
+            exp = ExportObject(generated_service, None)
             self.cluster.add_object(generated_service)
-            self.cluster.add_export_object(ExportObject(generated_service, None))
+            self.cluster.add_export_object(exp)
 
-            report_msg = change_call_to_service_msg(smell.node.name, generated_service.fullname)
-            self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED, report_msg)
+            msgs = [change_call_to_service_msg(smell.node.name, generated_service.fullname),
+                    created_new_resource_msg(generated_service.fullname, exp.out_fullname)]
+            self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED, msgs)
             return True
-            # else:
-            #     report_msg = cannot_refactor_model_msg()
-            #     refactoring_status, result = RefactoringStatus.NOT_APPLIED, False
         else:
             report_msg = cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node)
             self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, report_msg)

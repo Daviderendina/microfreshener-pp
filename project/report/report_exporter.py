@@ -37,7 +37,7 @@ class RefactoringCSVReportExporter(ReportExporter):
         for row in report.rows:
             node = self._get_node_csv(row.smell)
             cause_nodes = self._get_cause_nodes_csv(row.smell)
-            message = row.message if "\n" not in row.message else row.message.replace("\n", "\"\n\"")
+            message = f"\"" + '\n'.join(row.message_list) + "\""
 
             self.report += f"{row.refactoring_name};{row.smell.name};{row.status.name};{node};{cause_nodes};{message};\n"
 

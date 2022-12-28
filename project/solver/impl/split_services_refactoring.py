@@ -7,7 +7,8 @@ from microfreshener.core.model.nodes import Compute, Service
 
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
-from project.report.report_msg import compute_object_not_found_msg, cannot_refactor_model_msg
+from project.report.report_msg import compute_object_not_found_msg, cannot_refactor_model_msg, created_new_resource_msg, \
+    deleted_object_from_cluster
 from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -30,6 +31,8 @@ class SplitServicesRefactoring(Refactoring):
 
         if workload:
             name_count = 1
+            report_msgs = []
+
             for container in workload.containers.copy():
 
                 object_copy = copy.deepcopy(workload)
@@ -37,8 +40,11 @@ class SplitServicesRefactoring(Refactoring):
                 object_copy.data["metadata"]["name"] += f"_{name_count}"
 
                 if self._refactor_model(container, object_copy):
+                    exp = ExportObject(object_copy, None)
                     object_to_add.append(object_copy)
-                    export_object_to_add.append(ExportObject(object_copy, None))
+                    export_object_to_add.append(exp)
+
+                    report_msgs.append(created_new_resource_msg(object_copy.fullname, exp.out_fullname))
                 else:
                     abort = True
 
@@ -47,12 +53,14 @@ class SplitServicesRefactoring(Refactoring):
             if not abort:
                 self.cluster.remove_object(workload)
                 self.model.delete_node(compute_node)
+                report_msgs.append(deleted_object_from_cluster(workload.fullname))
+
                 for object in object_to_add:
                     self.cluster.add_object(object)
                 for exp_object in export_object_to_add:
                     self.cluster.add_export_object(exp_object)
 
-                self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED)
+                self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, report_msgs)
                 return True
             else:
                 self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, cannot_refactor_model_msg())
