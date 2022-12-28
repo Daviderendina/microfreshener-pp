@@ -17,6 +17,21 @@ def does_selectors_labels_match(selectors: dict, labels: dict):
     return len([value for value in labels_str if value in selectors_str]) > 0
 
 
+def does_svc_workload_ports_match(service, workload):
+    workload_ports = [item for sublist in [c.ports for c in workload.containers] for item in sublist]
+    for svc_port in service.ports:
+        for w_port in workload_ports:
+            target_port_match = \
+                svc_port.get("targetPort", None) == w_port.get("name", "") or \
+                svc_port.get("targetPort", None) == w_port.get("containerPort", "")
+            protocol_match = svc_port.get("protocol", "TCP") == w_port.get("protocol", "TCP")
+
+            if target_port_match and protocol_match:
+                return True
+
+    return False
+
+
 def name_has_namespace(name: str):
     match = re.match(r"([-\w]+)[.]([-\w]+)", name)
     return match and match.string == name
