@@ -3,16 +3,15 @@ from microfreshener.core.model import MicroToscaModel, InteractsWith
 from microfreshener.core.model.nodes import Service, MessageRouter
 
 from project.extender.kubeworker import KubeWorker
-from project.extender.worker_names import SERVICE_WORKER
+from project.extender.worker_names import SERVICE_WORKER, NAME_WORKER
 from project.ignorer.ignore_nothing import IgnoreNothing
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_workload import KubeWorkload
 
 
 class ServiceWorker(KubeWorker):
 
     def __init__(self):
         super().__init__(SERVICE_WORKER)
+        self.executed_only_after_workers.append(NAME_WORKER)
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()) -> MicroToscaModel:
         self._check_message_router_does_not_expose(model, cluster, ignorer)

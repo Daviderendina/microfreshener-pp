@@ -1,7 +1,7 @@
 from microfreshener.core.model import MicroToscaModel
 
 from project.extender.kubeworker import KubeWorker
-from project.extender.worker_names import MESSAGE_ROUTER_EDGE_WORKER
+from project.extender.worker_names import MESSAGE_ROUTER_EDGE_WORKER, NAME_WORKER
 from project.ignorer.ignore_nothing import IgnoreNothing
 
 
@@ -9,6 +9,7 @@ class MessageRouterEdgeWorker(KubeWorker):
 
     def __init__(self):
         super(MessageRouterEdgeWorker, self).__init__(MESSAGE_ROUTER_EDGE_WORKER)
+        self.executed_only_after_workers.append(NAME_WORKER)
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()) -> MicroToscaModel:
         self._check_services_at_edge(model, cluster, ignorer)

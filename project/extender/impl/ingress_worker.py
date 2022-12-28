@@ -1,7 +1,7 @@
 from microfreshener.core.model import MessageRouter
 
 from project.extender.kubeworker import KubeWorker
-from project.extender.worker_names import INGRESS_WORKER
+from project.extender.worker_names import INGRESS_WORKER, NAME_WORKER
 from project.ignorer.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_networking import KubeService
 
@@ -10,6 +10,7 @@ class IngressWorker(KubeWorker):
 
     def __init__(self):
         super().__init__(INGRESS_WORKER)
+        self.executed_only_after_workers.append(NAME_WORKER)
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         not_ignored_mr = self._get_nodes_not_ignored(model.message_routers, ignorer)

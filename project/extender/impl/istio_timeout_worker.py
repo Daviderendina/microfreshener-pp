@@ -3,7 +3,7 @@ from typing import List
 from microfreshener.core.model import MessageRouter, InteractsWith
 
 from project.extender.kubeworker import KubeWorker
-from project.extender.worker_names import ISTIO_TIMEOUT_WORKER
+from project.extender.worker_names import ISTIO_TIMEOUT_WORKER, NAME_WORKER
 from project.ignorer.ignore_nothing import IgnoreNothing
 
 
@@ -11,6 +11,7 @@ class IstioTimeoutWorker(KubeWorker):
 
     def __init__(self):
         super().__init__(ISTIO_TIMEOUT_WORKER)
+        self.executed_only_after_workers.append(NAME_WORKER)
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._search_for_timeouts_with_virtual_service(model, cluster, ignorer)

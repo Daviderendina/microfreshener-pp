@@ -1,7 +1,7 @@
 from microfreshener.core.model import Service, Datastore
 
 from project.extender.kubeworker import KubeWorker
-from project.extender.worker_names import DATABASE_WORKER
+from project.extender.worker_names import DATABASE_WORKER, NAME_WORKER
 from project.ignorer.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_container import KubeContainer
 
@@ -14,6 +14,7 @@ class DatabaseWorker(KubeWorker):
 
     def __init__(self):
         super().__init__(DATABASE_WORKER)
+        self.executed_only_after_workers.append(NAME_WORKER)
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._search_datastores(model, cluster, ignorer)

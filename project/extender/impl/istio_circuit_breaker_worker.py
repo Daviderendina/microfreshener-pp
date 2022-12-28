@@ -1,5 +1,5 @@
 from project.extender.kubeworker import KubeWorker
-from project.extender.worker_names import ISTIO_CIRCUIT_BREAKER
+from project.extender.worker_names import ISTIO_CIRCUIT_BREAKER, NAME_WORKER
 from project.ignorer.ignore_nothing import IgnoreNothing
 
 
@@ -7,6 +7,7 @@ class IstioCircuitBreakerWorker(KubeWorker):
 
     def __init__(self):
         super(IstioCircuitBreakerWorker, self).__init__(ISTIO_CIRCUIT_BREAKER)
+        self.executed_only_after_workers.append(NAME_WORKER)
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._search_for_circuit_breaker(model, cluster, ignorer)

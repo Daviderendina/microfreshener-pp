@@ -13,8 +13,9 @@
 - ~~Fare il report del refactoring~~
 - ~~Il nome da solo non identifica, serve anche il tipo!! Per ora c'è il metodo _get_node_by_name_ con il tipo, però forse è meglio avere il tipo direttamente nel nome (tipo nei vari controlli senza passare da quel metodo il tipo non viene checked!! e so per certo in alcuni casi di aver preso il primo disponibile)~~
 - Controllare che tutto viene effettuato nel modo giusto, aiutandosi col report
-- Uso i cotruttori per inizializzare Worker
+- ~~Uso i cotruttori per inizializzare Worker: NO! Non hanno stato, sono solo esecutori one-shot~~
 - Tutti i worker devono avere la dipendenza dal name
+- Fare refactoring totale dei Refactoring (csì da sistemare anche tutte le questioni di nomi, metodi, etc..)
 
 ### microFreshener
 -  Estenderlo per garantire la compatibilità con i nuovi nodi

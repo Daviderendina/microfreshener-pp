@@ -4,7 +4,7 @@ from microfreshener.core.model import MessageRouter
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.impl.service_worker import ServiceWorker
-from project.extender.worker_names import ISTIO_GATEWAY_WORKER
+from project.extender.worker_names import ISTIO_GATEWAY_WORKER, NAME_WORKER, SERVICE_WORKER
 from project.ignorer.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_istio import KubeIstioGateway, KubeVirtualService
 from project.kmodel.kube_networking import KubeService
@@ -17,7 +17,8 @@ class IstioGatewayWorker(KubeWorker):
 
     def __init__(self):
         super().__init__(ISTIO_GATEWAY_WORKER)
-        self.executed_only_after_workers.append(ServiceWorker)
+        self.executed_only_after_workers.append(NAME_WORKER)
+        self.executed_only_after_workers.append(SERVICE_WORKER)
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()):
         self._search_for_gateways(model, cluster, ignorer)

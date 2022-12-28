@@ -40,9 +40,9 @@ class KubeExtender(Extender):
         for i in range(0, len(self.worker_list)):
             worker = self.worker_list[i]
             for next_worker in self.worker_list[i+1:]:
-                for worker_class in worker.executed_only_after_workers:
-                    if isinstance(next_worker, worker_class):
-                        raise AttributeError("Worker order does not respect execution constraints")
+                for worker_name in worker.executed_only_after_workers:
+                    if worker_name == next_worker.name:
+                        raise AttributeError(f"Worker order does not respect execution constraints: executing worker '{worker.name}' before worker '{worker_name}'")
 
     def add_worker(self, worker: KubeWorker):
         self.worker_list.append(worker)
