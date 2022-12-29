@@ -4,12 +4,12 @@ from microfreshener.core.analyser.costants import REFACTORING_ADD_API_GATEWAY
 from microfreshener.core.analyser.smell import NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, MessageBroker
 
-from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_ports_for_container_nodeport
+from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_ports_for_container_nodeport, \
+    select_ports_for_node_port
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeService
-from project.kmodel.kube_utils import does_selectors_labels_match
 from project.kmodel.kube_workload import KubeWorkload
 from project.report.report import RefactoringReport
 from project.report.report_msg import cannot_apply_refactoring_on_node_msg, created_resource_msg, \
@@ -36,7 +36,8 @@ class AddAPIGatewayRefactoring(Refactoring):
 
             if container and workload:
                 ports_to_expose = generate_ports_for_container_nodeport(container, workload.host_network)
-                expose_svc = self._search_for_existing_svc(workload, ports_to_expose) #TODO RICERCA_SERVICE_DISPONIBILE
+                ports_considered = select_ports_for_node_port(container, workload.host_network)
+                expose_svc = self._search_for_existing_svc(workload, ports_considered)
 
                 # Case: exists a Service that can expose this object
                 if expose_svc and expose_svc.is_reachable_from_outside():
@@ -110,15 +111,8 @@ class AddAPIGatewayRefactoring(Refactoring):
             self.model.edge.remove_member(node)
             self.model.add_interaction(source_node=mr_node, target_node=node)
 
-
-
-#TODO RIVEDERE!!!
-    def _search_for_existing_svc(self, workload, ports_to_open):
-        port_numbers = [p.get('node_port', p.get('port')) for p in ports_to_open]
-
-        services = [s for s in self.cluster.services
-                    if does_selectors_labels_match(s.selectors, workload.labels)
-                    and self._check_ports(s, port_numbers)]
+    def _search_for_existing_svc(self, workload, ports_considered):
+        services = [s for s in self.cluster.services if s.can_expose_workload(workload, ports_considered)]
 
         if len(services) == 0:
             return None
@@ -129,11 +123,5 @@ class AddAPIGatewayRefactoring(Refactoring):
             expose_svc = services[0]
 
         return expose_svc
-    def _check_ports(self, svc, ports_to_check: List[int]):
-        for svcport in svc.ports:
-            exposed_port = svcport.get('node_port', svcport.get('port', None))
-            if exposed_port and exposed_port in ports_to_check:
-                return False
 
-        return True
 

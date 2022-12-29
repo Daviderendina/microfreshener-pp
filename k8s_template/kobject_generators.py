@@ -14,6 +14,7 @@ MF_NAME_SUFFIX = "mf"
 MF_VIRTUALSERVICE_TIMEOUT_NAME = "vs-timeout"
 MF_CIRCUITBREAKER_NAME = "circuitbreaker"
 
+
 def generate_ports_for_container(defining_obj: KubeObject, container: KubeContainer):
     container_ports = []
     for port in container.ports:
@@ -37,11 +38,16 @@ def generate_ports_for_container(defining_obj: KubeObject, container: KubeContai
     return container_ports
 
 
-def generate_ports_for_container_nodeport(container: KubeContainer, is_host_network: bool):
+'''
+Returns (list of converted ports, list of ports that had been considered)
+'''
+
+
+def generate_ports_for_container_nodeport(container: KubeContainer, is_host_network: bool) -> (list, list):
     # Extract ports from container
     service_ports = []
 
-    container_ports = container.ports if is_host_network else [p for p in container.ports if p.get("hostPort")]
+    container_ports = select_ports_for_node_port(container, is_host_network)
     for port in container_ports:
         default_port_name = f"{container.name}.{container.workload_fullname}-port-{port['containerPort']}-mf"
 
@@ -69,6 +75,10 @@ def generate_ports_for_container_nodeport(container: KubeContainer, is_host_netw
     return service_ports
 
 
+def select_ports_for_node_port(container: KubeContainer, is_host_network):
+    return container.ports if is_host_network else [p for p in container.ports if p.get("hostPort")]
+
+
 def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: KubeContainer) -> KubeService:
     # Extract ports from container
     container_ports = generate_ports_for_container(defining_obj, container)
@@ -93,7 +103,8 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
     return service
 
 
-def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: KubeContainer, is_host_network: bool) -> KubeService:
+def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: KubeContainer,
+                                        is_host_network: bool) -> KubeService:
     # Generate ports
     service_ports = generate_ports_for_container_nodeport(container, is_host_network)
 
@@ -142,9 +153,11 @@ def generate_circuit_breaker_for_svc(service: KubeService):
     if CB.MAX_CONNECTIONS:
         template["spec"]["trafficPolicy"]["connectionPool"]["tcp"]["maxConnections"] = CB.MAX_CONNECTIONS
     if CB.HTTP_1_MAX_PENDING_REQUESTS:
-        template["spec"]["trafficPolicy"]["connectionPool"]["http"]["http1MaxPendingRequests"] = CB.HTTP_1_MAX_PENDING_REQUESTS
+        template["spec"]["trafficPolicy"]["connectionPool"]["http"][
+            "http1MaxPendingRequests"] = CB.HTTP_1_MAX_PENDING_REQUESTS
     if CB.MAX_REQUESTS_PER_CONNECTION:
-        template["spec"]["trafficPolicy"]["connectionPool"]["http"]["maxRequestsPerConnection"] = CB.MAX_REQUESTS_PER_CONNECTION
+        template["spec"]["trafficPolicy"]["connectionPool"]["http"][
+            "maxRequestsPerConnection"] = CB.MAX_REQUESTS_PER_CONNECTION
     if CB.CONSECUTIVE_5XX_ERRORS:
         template["spec"]["trafficPolicy"]["outlierDetection"]["consecutive5xxErrors"] = CB.CONSECUTIVE_5XX_ERRORS
     if CB.INTERVAL:

@@ -47,6 +47,10 @@ class KubeWorkload(KubeObject):
     def pod_spec(self):
         pass
 
+    @property
+    def all_defined_ports(self):
+        return [item for sublist in [c.ports for c in self.containers] for item in sublist]
+
 
 class KubePod(KubeWorkload):
 

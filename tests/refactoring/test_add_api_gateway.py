@@ -366,9 +366,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertEqual(len(list(model.message_routers)[0].interactions), 2)
 
     '''
-    Test case: the pod defines two container and has hostNetwork = True, but expose the same port
-    This case is not feasible in reality, but simulate when two different pods are exposed by the same SVC and the sw
-    need to add the ports to the message router
+    Test case: two pod are defined with hostNetwork = True, but expose the same port. 
     '''
     def test_pod_with_two_container_hostnetwork_equal_ports(self):
         model = MicroToscaModel("model")

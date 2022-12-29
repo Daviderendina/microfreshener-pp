@@ -17,10 +17,9 @@ def does_selectors_labels_match(selectors: dict, labels: dict):
     return len([value for value in labels_str if value in selectors_str]) > 0
 
 
-def does_svc_workload_ports_match(service, workload):
-    workload_ports = [item for sublist in [c.ports for c in workload.containers] for item in sublist]
+def does_svc_match_ports(service, ports):
     for svc_port in service.ports:
-        for w_port in workload_ports:
+        for w_port in ports:
             target_port_match = \
                 svc_port.get("targetPort", None) == w_port.get("name", "") or \
                 svc_port.get("targetPort", None) == w_port.get("containerPort", "")
