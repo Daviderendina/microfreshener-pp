@@ -3,7 +3,6 @@ from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell, Sm
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from k8s_template.kobject_generators import generate_circuit_breaker_for_svc
-from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
 from project.report.report_msg import cannot_apply_refactoring_on_node_msg, found_wrong_type_object_msg, \
@@ -38,10 +37,7 @@ class AddCircuitBreakerRefactoring(Refactoring):
                         return False
 
                     circuit_breaker = generate_circuit_breaker_for_svc(kube_service)
-
-                    exp = ExportObject(circuit_breaker, None)
-                    self.cluster.add_object(circuit_breaker)
-                    self.cluster.add_export_object(exp)
+                    exp = self._add_to_cluster(circuit_breaker)
 
                     # Refactor model
                     self._refactor_model(link.target)

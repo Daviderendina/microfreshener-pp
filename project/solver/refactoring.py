@@ -3,6 +3,7 @@ from abc import abstractmethod
 from microfreshener.core.analyser.smell import Smell
 from microfreshener.core.model import MicroToscaModel
 
+from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.report.report import RefactoringReport
 from project.report.report_row import RefactoringStatus
@@ -32,6 +33,13 @@ class Refactoring:
 
             for message in message_item:
                 row.add_message(message)
+
+    def _add_to_cluster(self, object) -> ExportObject:
+        exp = ExportObject(object, None)
+        self.cluster.add_object(object)
+        self.cluster.add_export_object(exp)
+
+        return exp
 
 
 

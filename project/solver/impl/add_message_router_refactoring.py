@@ -3,7 +3,6 @@ from microfreshener.core.analyser.smell import Smell, EndpointBasedServiceIntera
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from k8s_template.kobject_generators import generate_svc_clusterIP_for_container
-from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.report.report_msg import cannot_find_container_msg, cannot_apply_refactoring_on_node_msg, \
@@ -34,12 +33,9 @@ class AddMessageRouterRefactoring(Refactoring):
 
             workload = self.cluster.get_object_by_name(smell_container.workload_typed_fullname)
             generated_service = generate_svc_clusterIP_for_container(container=smell_container, defining_obj=workload)
+            exp = self._add_to_cluster(generated_service)
 
             self._refactor_model(smell.node, generated_service.typed_fullname, smell.links_cause)
-
-            exp = ExportObject(generated_service, None)
-            self.cluster.add_object(generated_service)
-            self.cluster.add_export_object(exp)
 
             msgs = [change_call_to_service_msg(smell.node.name, generated_service.fullname),
                     created_resource_msg(generated_service.fullname, exp.out_fullname)]

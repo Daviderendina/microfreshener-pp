@@ -6,7 +6,6 @@ from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, M
 
 from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_ports_for_container_nodeport, \
     select_ports_for_node_port
-from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeService
@@ -92,13 +91,6 @@ class AddAPIGatewayRefactoring(Refactoring):
             for port in container.ports:
                 if port.get("hostPort"):
                     del port["hostPort"]
-
-    def _add_to_cluster(self, object) -> ExportObject:
-        exp = ExportObject(object, None)
-        self.cluster.add_object(object)
-        self.cluster.add_export_object(exp)
-
-        return exp
 
     def _refactor_model(self, k_service: KubeService, node, service_exists: bool):
         mr_node = self.model.get_node_by_name(k_service.typed_fullname) if service_exists else MessageRouter(k_service.typed_fullname)
