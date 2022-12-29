@@ -15,7 +15,7 @@
 - Controllare che tutto viene effettuato nel modo giusto, aiutandosi col report
 - ~~Uso i cotruttori per inizializzare Worker: NO! Non hanno stato, sono solo esecutori one-shot~~
 - ~~Tutti i worker devono avere la dipendenza dal name~~
-- Fare refactoring totale dei Refactoring (csì da sistemare anche tutte le questioni di nomi, metodi, etc..)
+- ~~Fare refactoring totale dei Refactoring (csì da sistemare anche tutte le questioni di nomi, metodi, etc..)~~
 
 ## microFreshener
 -  Estenderlo per garantire la compatibilità con i nuovi nodi

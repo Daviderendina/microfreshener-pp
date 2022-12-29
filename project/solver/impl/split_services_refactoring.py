@@ -61,7 +61,7 @@ class SplitServicesRefactoring(Refactoring):
                 for exp_object in export_object_to_add:
                     self.cluster.add_export_object(exp_object)
 
-                report_row.add_message.status = RefactoringStatus.SUCCESSFULLY_APPLIED
+                report_row.status = RefactoringStatus.SUCCESSFULLY_APPLIED
                 return True
             else:
                 report_row.add_message(cannot_refactor_model_msg())
