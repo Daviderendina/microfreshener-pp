@@ -27,11 +27,11 @@ def cannot_refactor_model_msg():
     return f"Is impossible to apply refactor on model"
 
 
-def created_new_resource_msg(resource_fullname, resource_outfile):
+def created_resource_msg(resource_fullname, resource_outfile):
     return f"Created K8s resource named '{resource_fullname}' ({resource_outfile})"
 
 
-def existing_resource_modified_msg(resource_fullname, resource_outfile):
+def resource_modified_msg(resource_fullname, resource_outfile):
     return f"Modified K8s resource named '{resource_fullname}' ({resource_outfile})"
 
 
@@ -41,3 +41,6 @@ def removed_exposing_params_msg(workload_fullname, resource_outfile):
 
 def deleted_object_from_cluster(workload_fullname):
     return f"Deleted object {workload_fullname} from cluster"
+
+def cannot_find_nodes_msg(node_names: list):
+    return "Cannot find cluster object related to nodes: " + ''.join(node_names)

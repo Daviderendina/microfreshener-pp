@@ -21,8 +21,9 @@ class Report(object):
 
 class RefactoringReport(Report):
 
-    def add_row(self, refactoring_name, smell: Smell, status: RefactoringStatus):
+    def add_row(self, refactoring_name = None, smell: Smell = None, status: RefactoringStatus = None):
         row = RefactoringReportRow(refactoring_name, smell, status)
         self.rows.append(row)
         return row
+
 

@@ -7,7 +7,7 @@ from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.report.report_msg import cannot_find_container_msg, cannot_apply_refactoring_on_node_msg, \
-    change_call_to_service_msg, created_new_resource_msg
+    change_call_to_service_msg, created_resource_msg
 from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -32,7 +32,7 @@ class AddMessageRouterRefactoring(Refactoring):
                 self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, cannot_find_container_msg(smell.node.name))
                 return False
 
-            workload = self.cluster.get_object_by_name(smell_container.defining_workload_fullname)
+            workload = self.cluster.get_object_by_name(smell_container.workload_typed_fullname)
             generated_service = generate_svc_clusterIP_for_container(container=smell_container, defining_obj=workload)
 
             self._refactor_model(smell.node, generated_service.typed_fullname, smell.links_cause)
@@ -42,7 +42,7 @@ class AddMessageRouterRefactoring(Refactoring):
             self.cluster.add_export_object(exp)
 
             msgs = [change_call_to_service_msg(smell.node.name, generated_service.fullname),
-                    created_new_resource_msg(generated_service.fullname, exp.out_fullname)]
+                    created_resource_msg(generated_service.fullname, exp.out_fullname)]
             self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED, msgs)
             return True
         else:

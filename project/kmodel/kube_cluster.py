@@ -63,14 +63,6 @@ class KubeCluster:
     def find_svc_exposing_workload(self, workload: KubeWorkload):
         return [s for s in self.services if s.does_expose_workload(workload)]
 
-    def find_workload_defining_container(self, container_fullname: str):
-        #TODO nel container ho già il fullname del workload!!
-        for workload in self.workloads:
-            for container in workload.containers:
-                search_container_fullname = f"{container.name}.{workload.typed_fullname}"
-                if container_fullname == search_container_fullname:
-                    return workload
-
     def get_object_by_name(self, object_name: str, type: type = None):
         objects_found = []
         for obj in self.cluster_objects:

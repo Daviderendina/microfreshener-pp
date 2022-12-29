@@ -25,7 +25,7 @@ class KubeContainer(KubeObject):
         return f"{self.name}.{self.workload_fullname}.{self.workload_shortname}"
 
     @property
-    def defining_workload_fullname(self):
+    def workload_typed_fullname(self):
         return f"{self.workload_fullname}.{self.workload_shortname}"
 
     def get_container_ports_numbers(self):

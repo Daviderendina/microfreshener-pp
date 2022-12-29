@@ -37,13 +37,13 @@ def generate_ports_for_container(defining_obj: KubeObject, container: KubeContai
     return container_ports
 
 
-def generate_ports_for_container_nodeport(defining_obj: KubeObject, container: KubeContainer, is_host_network: bool):
+def generate_ports_for_container_nodeport(container: KubeContainer, is_host_network: bool):
     # Extract ports from container
     service_ports = []
 
     container_ports = container.ports if is_host_network else [p for p in container.ports if p.get("hostPort")]
     for port in container_ports:
-        default_port_name = f"{container.name}.{defining_obj.fullname}-port-{port['containerPort']}-mf"
+        default_port_name = f"{container.name}.{container.workload_fullname}-port-{port['containerPort']}-mf"
 
         new_port = {
             'name': port.get("name", default_port_name),
@@ -95,7 +95,7 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
 
 def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: KubeContainer, is_host_network: bool) -> KubeService:
     # Generate ports
-    service_ports = generate_ports_for_container_nodeport(defining_obj, container, is_host_network)
+    service_ports = generate_ports_for_container_nodeport(container, is_host_network)
 
     # Generate label
     service_selector = generate_random_label(defining_obj.fullname)

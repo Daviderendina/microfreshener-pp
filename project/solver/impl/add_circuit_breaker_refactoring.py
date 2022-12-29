@@ -7,7 +7,7 @@ from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
 from project.report.report_msg import cannot_apply_refactoring_on_node_msg, found_wrong_type_object_msg, \
-    created_new_resource_msg
+    created_resource_msg
 from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -46,7 +46,7 @@ class AddCircuitBreakerRefactoring(Refactoring):
                     # Refactor model
                     self._refactor_model(link.target)
 
-                    msg = created_new_resource_msg(circuit_breaker.fullname, exp.out_fullname)
+                    msg = created_resource_msg(circuit_breaker.fullname, exp.out_fullname)
                     self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, msg)
                     return True
         else:

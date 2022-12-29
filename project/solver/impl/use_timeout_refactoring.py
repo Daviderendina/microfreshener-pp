@@ -5,7 +5,7 @@ from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 from k8s_template.kobject_generators import generate_timeout_virtualsvc_for_svc
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
-from project.report.report_msg import cannot_apply_refactoring_on_node_msg, created_new_resource_msg
+from project.report.report_msg import cannot_apply_refactoring_on_node_msg, created_resource_msg
 from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -38,7 +38,7 @@ class UseTimeoutRefactoring(Refactoring):
 
                     link.set_timeout(True)
 
-                    msg = created_new_resource_msg(virtual_service.fullname, exp_object.out_fullname)
+                    msg = created_resource_msg(virtual_service.fullname, exp_object.out_fullname)
                     self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, msg)
                     return True
 

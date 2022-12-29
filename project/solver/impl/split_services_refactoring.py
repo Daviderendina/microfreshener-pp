@@ -7,7 +7,7 @@ from microfreshener.core.model.nodes import Compute, Service
 
 from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
-from project.report.report_msg import compute_object_not_found_msg, cannot_refactor_model_msg, created_new_resource_msg, \
+from project.report.report_msg import compute_object_not_found_msg, cannot_refactor_model_msg, created_resource_msg, \
     deleted_object_from_cluster
 from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
@@ -44,7 +44,7 @@ class SplitServicesRefactoring(Refactoring):
                     object_to_add.append(object_copy)
                     export_object_to_add.append(exp)
 
-                    report_msgs.append(created_new_resource_msg(object_copy.fullname, exp.out_fullname))
+                    report_msgs.append(created_resource_msg(object_copy.fullname, exp.out_fullname))
                 else:
                     abort = True
 

@@ -1,8 +1,8 @@
-### Generale
+## Generale
 -  Pensare alla validazione
 -  Gennaio presentazione: demo + slide
 
-### Develop
+## Develop
 -  Modificate la definizione di **microTOSCA**
 -  Fare il push del _core_
 - ~~Attenzione: name.ns.svc.cluster.local ma la parte in grassetto ME LA SONO INVENTATA IO!! C'È SOLO SVC PER APPUNTO I SERVICE.~~
@@ -17,15 +17,20 @@
 - ~~Tutti i worker devono avere la dipendenza dal name~~
 - Fare refactoring totale dei Refactoring (csì da sistemare anche tutte le questioni di nomi, metodi, etc..)
 
-### microFreshener
+## microFreshener
 -  Estenderlo per garantire la compatibilità con i nuovi nodi
 
-### Testing
+## Testing
 -  Testare il solver
 -  Testare lo sniffer nuovo
 -  Testare il core con le nuove modifiche
 
-### Garantire compatibilità con microTosca
+## Aggiunte successive
+-  Penso che se viene dato il nome in automatico ad es. usando generate name, si spacchi tutto!
+- Se tutto quello definito con istio non ha il ns, devo aggiungere al nome il ns dell'oggetto che lo definisce
+- Compatibilità con MicroTosca
+
+#### Garantire compatibilità con microTosca
 microTOSCA genera:
 - un nodo Service con nome NAME.SERVICE per tutti i Pod e PodDefiner
 - mette .svc per ogni nodo di tipo svc
@@ -36,8 +41,3 @@ Per garantire questa compatibilità dovrei discuterne con Jacopo. Il problema de
 Comunque l'idea iniziale era fare un worker che mi sistemasse tutto.
 
 Altro problema: il microMiner mi genera un nodo per POD (assunzione), da me è diversa l'assunzione: posso cancellare il nuovo nodo e aggiungere quelli giusti per il mio tool, ma come faccio per le relazioni?
-
-### Aggiunte successive
--  Penso che se viene dato il nome in automatico ad es. usando generate name, si spacchi tutto!
-- Se tutto quello definito con istio non ha il ns, devo aggiungere al nome il ns dell'oggetto che lo definisce
-- Report: includo anche i files? Direi di sì!!
