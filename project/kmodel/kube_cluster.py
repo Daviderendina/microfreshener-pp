@@ -1,4 +1,4 @@
-import re
+
 from typing import List
 
 from project.exporter.export_object import ExportObject
@@ -76,11 +76,6 @@ class KubeCluster:
             if obj.fullname == object_name:
                 if not obj in objects_found:
                     objects_found.append(obj)
-
-            # Case: name is only <name>
-            #if obj.name == object_name:
-            #    if not obj in objects_found:
-            #        objects_found.append(obj)
 
             # Case: name is a container name
             if isinstance(obj, KubeWorkload):
