@@ -1,10 +1,8 @@
-from typing import List
-
 from microfreshener.core.analyser.costants import REFACTORING_ADD_API_GATEWAY
 from microfreshener.core.analyser.smell import NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, MessageBroker
 
-from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_ports_for_container_nodeport, \
+from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_svc_ports_for_container, \
     select_ports_for_node_port
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
@@ -34,7 +32,7 @@ class AddAPIGatewayRefactoring(Refactoring):
             workload = self.cluster.get_object_by_name(container.workload_typed_fullname) if container else None
 
             if container and workload:
-                ports_to_expose = generate_ports_for_container_nodeport(container, workload.host_network)
+                ports_to_expose = generate_svc_ports_for_container(container, is_node_port=True, is_host_network=workload.host_network)
                 ports_considered = select_ports_for_node_port(container, workload.host_network)
                 expose_svc = self._search_for_existing_svc(workload, ports_considered)
 

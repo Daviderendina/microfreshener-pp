@@ -6,7 +6,6 @@ from k8s_template.kubernetes_templates import SERVICE_CLUSTERIP_TEMPLATE, SERVIC
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule
 from project.kmodel.kube_networking import KubeService
-from project.kmodel.kube_object import KubeObject
 from project.kmodel.kube_workload import KubePod, KubeWorkload
 from config.kube_config import CIRCUIT_BREAKER_CONFIG as CB
 
@@ -15,52 +14,25 @@ MF_VIRTUALSERVICE_TIMEOUT_NAME = "vs-timeout"
 MF_CIRCUITBREAKER_NAME = "circuitbreaker"
 
 
-def generate_ports_for_container(defining_obj: KubeObject, container: KubeContainer):
-    container_ports = []
-    for port in container.ports:
-        default_port_name = f"{defining_obj.fullname}-port-{port['containerPort']}-mf"
+def generate_svc_ports_for_container(container: KubeContainer, is_host_network=False, is_node_port=False):
+    ports_generated = []
+
+    container_ports = select_ports_for_node_port(container, is_host_network) if is_node_port else container.ports
+    for port in container_ports:
+        default_port_name = f"{container.fullname}-port-{port['containerPort']}-mf"
 
         new_port = {
             'name': port.get("name", default_port_name),
             'port': port.get("containerPort"),
         }
 
-        protocol = port.get("protocol", None)
-        if protocol:
-            new_port['protocol'] = protocol
-
-        target_port = port.get("targetPort", None)
-        if target_port:
-            new_port['target_port'] = target_port
-
-        container_ports.append(new_port)
-
-    return container_ports
-
-
-'''
-Returns (list of converted ports, list of ports that had been considered)
-'''
-
-
-def generate_ports_for_container_nodeport(container: KubeContainer, is_host_network: bool) -> (list, list):
-    # Extract ports from container
-    service_ports = []
-
-    container_ports = select_ports_for_node_port(container, is_host_network)
-    for port in container_ports:
-        default_port_name = f"{container.name}.{container.workload_fullname}-port-{port['containerPort']}-mf"
-
-        new_port = {
-            'name': port.get("name", default_port_name),
-            'port': port.get("containerPort")}
-
-        if is_host_network:
-            new_port['node_port'] = port.get("containerPort")
-        else:
-            node_port = port.get("hostPort", None)
-            if node_port:
-                new_port['node_port'] = node_port
+        if is_node_port:
+            if is_host_network:
+                new_port['node_port'] = port.get("containerPort")
+            else:
+                node_port = port.get("hostPort", None)
+                if node_port:
+                    new_port['node_port'] = node_port
 
         protocol = port.get("protocol", None)
         if protocol:
@@ -70,9 +42,9 @@ def generate_ports_for_container_nodeport(container: KubeContainer, is_host_netw
         if target_port:
             new_port['target_port'] = target_port
 
-        service_ports.append(new_port)
+        ports_generated.append(new_port)
 
-    return service_ports
+    return ports_generated
 
 
 def select_ports_for_node_port(container: KubeContainer, is_host_network):
@@ -81,7 +53,7 @@ def select_ports_for_node_port(container: KubeContainer, is_host_network):
 
 def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: KubeContainer) -> KubeService:
     # Extract ports from container
-    container_ports = generate_ports_for_container(defining_obj, container)
+    container_ports = generate_svc_ports_for_container(container, is_node_port=False)
 
     # Generate label
     service_selector = generate_random_label(defining_obj.fullname)
@@ -106,7 +78,7 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
 def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: KubeContainer,
                                         is_host_network: bool) -> KubeService:
     # Generate ports
-    service_ports = generate_ports_for_container_nodeport(container, is_host_network)
+    service_ports = generate_svc_ports_for_container(container, is_node_port=True, is_host_network=is_host_network)
 
     # Generate label
     service_selector = generate_random_label(defining_obj.fullname)
