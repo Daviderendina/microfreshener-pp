@@ -1,10 +1,8 @@
-from typing import List
-
 from microfreshener.core.model import MessageRouter, InteractsWith
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import ISTIO_TIMEOUT_WORKER, NAME_WORKER
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 
 
 class IstioTimeoutWorker(KubeWorker):

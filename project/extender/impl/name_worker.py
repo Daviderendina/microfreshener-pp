@@ -2,7 +2,7 @@ from microfreshener.core.model import MicroToscaModel, Service, Datastore, Messa
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import NAME_WORKER
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.ignorer.ignorer import IgnoreType
 from project.kmodel.shortnames import ALL_SHORTNAMES
 

@@ -3,10 +3,9 @@ from project.kmodel.kube_object import KubeObject
 
 class KubeContainer(KubeObject):
 
-    def __init__(self, data: dict, workload_fullname: str, workload_shortname: str):
+    def __init__(self, data: dict, workload):
         super().__init__(data)
-        self.workload_fullname = workload_fullname
-        self.workload_shortname = workload_shortname
+        self.defining_workload = workload
 
     @property
     def name(self):
@@ -18,15 +17,11 @@ class KubeContainer(KubeObject):
 
     @property
     def fullname(self):
-        return f"{self.name}.{self.workload_fullname}"
+        return f"{self.name}.{self.defining_workload.fullname}"
 
     @property
     def typed_fullname(self):
-        return f"{self.name}.{self.workload_fullname}.{self.workload_shortname}"
-
-    @property
-    def workload_typed_fullname(self):
-        return f"{self.workload_fullname}.{self.workload_shortname}"
+        return f"{self.name}.{self.defining_workload.typed_fullname}"
 
     def get_container_ports_numbers(self):
         result = [p.get("containerPort", None) for p in self.ports]

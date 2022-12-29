@@ -2,8 +2,8 @@ from abc import abstractmethod
 
 from microfreshener.core.model import MicroToscaModel
 
-from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_config import IgnoreType
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.ignorer.ignorer import Ignorer
 from project.kmodel.kube_cluster import KubeCluster
 

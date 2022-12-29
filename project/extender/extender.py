@@ -14,8 +14,8 @@ from project.extender.impl.container_worker import ContainerWorker
 from project.extender.impl.database_worker import DatabaseWorker
 from project.extender.impl.ingress_worker import IngressWorker
 from project.extender.impl.service_worker import ServiceWorker
-from project.ignorer.ignore_config import IgnoreConfig
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_config import IgnoreConfig
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.ignorer.ignorer import Ignorer
 from project.kmodel.kube_cluster import KubeCluster
 

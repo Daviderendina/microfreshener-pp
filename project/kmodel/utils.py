@@ -5,7 +5,14 @@ from project.kmodel.kube_container import KubeContainer
 
 def cast_container_list(container_list, workload):
     return list(map(
-        lambda c: KubeContainer(c, workload.fullname, workload.shortname),
+        lambda c: KubeContainer(c, workload),
+        container_list
+    ))
+
+
+def container_to_dict(container_list: list):
+    return list(map(
+        lambda c: c.data if isinstance(c, KubeContainer) else c,
         container_list
     ))
 

@@ -2,7 +2,7 @@ import re
 from typing import List, Dict
 
 from project.kmodel.kube_object import KubeObject
-from project.kmodel.kube_utils import name_has_namespace
+from project.kmodel.utils import name_has_namespace
 from project.kmodel.shortnames import ISTIO_VIRTUAL_SERVICE, ISTIO_DESTINATION_RULE, ISTIO_GATEWAY
 
 
@@ -56,10 +56,6 @@ class KubeVirtualService(KubeIstio):
     @property
     def selectors(self) -> Dict[str, str]:
         return self.data.get("spec", {}).get("selector", None)
-
-    def get_destinations_with_namespace(self):
-        d = self.destinations
-        return list(map(lambda x: x + "." + self.namespace, d))
 
 
 class KubeDestinationRule(KubeIstio):

@@ -1,27 +1,10 @@
-from typing import Tuple, List
-
-import yaml
-from yaml.loader import SafeLoader
 from microfreshener.core.logging import MyLogger
 
 from project.kmodel.kube_object_factory import KubeObjectFactory
-from .kimporter import KImporter, get_filenames_from_directory
+from .kimporter import KImporter
 from ..exporter.export_object import ExportObject
 from ..kmodel.kube_cluster import KubeCluster
-
-
-def is_yaml(filename):
-    return filename.lower().endswith(".yaml") or filename.lower().endswith(".yml")
-
-
-def read_data_from_file(filename) -> list:
-    read_data = list()
-    with open(filename) as f:
-        try:
-            read_data = list(yaml.load_all(f, Loader=SafeLoader))
-        except yaml.YAMLError as err:
-            print("Exception while reading file: {} (error: {})".format(filename, err))
-    return [i for i in read_data if i is not None]
+from ..utils.utils import get_filenames_from_directory, is_yaml, read_data_from_file
 
 
 class YamlKImporter(KImporter):
@@ -29,7 +12,6 @@ class YamlKImporter(KImporter):
     def __init__(self):
         super().__init__()
         self.cluster = KubeCluster()
-        self.export_objects: list[ExportObject] = []
 
     def Import(self, path: str) -> KubeCluster:
         filename_list = get_filenames_from_directory(path=path)
@@ -54,3 +36,4 @@ class YamlKImporter(KImporter):
                 self.cluster.add_export_object(ExportObject(None, file))
 
         return self.cluster
+

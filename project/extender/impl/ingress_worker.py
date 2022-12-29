@@ -2,7 +2,7 @@ from microfreshener.core.model import MessageRouter
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import INGRESS_WORKER, NAME_WORKER
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_networking import KubeService
 
 

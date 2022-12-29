@@ -42,5 +42,6 @@ def removed_exposing_params_msg(workload_fullname, resource_outfile):
 def deleted_object_from_cluster(workload_fullname):
     return f"Deleted object {workload_fullname} from cluster"
 
+
 def cannot_find_nodes_msg(node_names: list):
     return "Cannot find cluster object related to nodes: " + ''.join(node_names)

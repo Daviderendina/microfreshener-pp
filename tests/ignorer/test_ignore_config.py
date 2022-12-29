@@ -11,8 +11,8 @@ from project.extender.extender import KubeExtender
 from project.extender.impl.compute_node_worker import ComputeNodeWorker
 from project.extender.impl.database_worker import DatabaseWorker
 from project.extender.worker_names import COMPUTE_NODE_WORKER
-from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
-from project.ignorer.manual_ignore_config import ManualIgnoreConfig
+from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
+from project.ignorer.impl.manual_ignore_config import ManualIgnoreConfig
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_workload import KubePod, KubeDeployment
 from project.solver.solver import KubeSolver

@@ -7,6 +7,7 @@ class IgnoreType(Enum):
     WORKER = "ignore_worker"
     REFACTORING = "ignore_refactoring"
 
+
 class Ignorer:
 
     @abstractmethod

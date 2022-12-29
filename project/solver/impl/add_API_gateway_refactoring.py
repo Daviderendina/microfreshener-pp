@@ -29,9 +29,10 @@ class AddAPIGatewayRefactoring(Refactoring):
 
         if isinstance(smell.node, Service) or isinstance(smell.node, MessageBroker):
             container = self.cluster.get_object_by_name(smell.node.name)
-            workload = self.cluster.get_object_by_name(container.workload_typed_fullname) if container else None
 
-            if container and workload:
+            if container:
+                workload = container.defining_workload
+
                 ports_to_expose = generate_svc_ports_for_container(container, is_node_port=True, is_host_network=workload.host_network)
                 ports_considered = select_ports_for_node_port(container, workload.host_network)
                 expose_svc = self._search_for_existing_svc(workload, ports_considered)
@@ -81,10 +82,10 @@ class AddAPIGatewayRefactoring(Refactoring):
 
     def _remove_exposing_attributes(self, workload: KubeWorkload, container: KubeContainer):
         if workload.host_network:
-            if self.solver_pending_ops is not None:
+            if self.solver_pending_ops_ref is not None:
                 pending_action = (PENDING_OPS.REMOVE_WORKLOAD_HOST_NETWORK, workload)
-                if not pending_action in self.solver_pending_ops:
-                    self.solver_pending_ops.append(pending_action)
+                if not pending_action in self.solver_pending_ops_ref:
+                    self.solver_pending_ops_ref.append(pending_action)
         else:
             for port in container.ports:
                 if port.get("hostPort"):

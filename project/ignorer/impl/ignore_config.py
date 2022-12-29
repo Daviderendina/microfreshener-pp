@@ -10,14 +10,6 @@ from microfreshener.core.model.type import MICROTOSCA_NODES_SERVICE, MICROTOSCA_
 from project.ignorer.ignorer import Ignorer, IgnoreType
 
 
-def validate_json(data, schema):
-    try:
-        validate(instance=data, schema=schema)
-    except jsonschema.exceptions.ValidationError as err:
-        return False
-    return True
-
-
 class IgnoreConfig(Ignorer):
 
     def __init__(self, config_filepath: str, schema_filepath: str):
@@ -36,7 +28,7 @@ class IgnoreConfig(Ignorer):
 
     def import_config(self):
 
-        if not validate_json(self.config, self.schema):
+        if not self.validate_json(self.config, self.schema):
             raise ValueError(f"Json config ({self.config}) is not valid")
 
     def is_ignored(self, node, check_type: IgnoreType, item_to_ignore: str):
@@ -59,4 +51,11 @@ class IgnoreConfig(Ignorer):
                     return True
 
         return False
+
+    def validate_json(self, data, schema):
+        try:
+            validate(instance=data, schema=schema)
+        except jsonschema.exceptions.ValidationError as err:
+            return False
+        return True
 

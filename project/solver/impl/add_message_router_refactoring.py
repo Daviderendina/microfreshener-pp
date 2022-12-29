@@ -31,7 +31,7 @@ class AddMessageRouterRefactoring(Refactoring):
                 self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, cannot_find_container_msg(smell.node.name))
                 return False
 
-            workload = self.cluster.get_object_by_name(smell_container.workload_typed_fullname)
+            workload = smell_container.defining_workload
             generated_service = generate_svc_clusterIP_for_container(container=smell_container, defining_obj=workload)
             exp = self._add_to_cluster(generated_service)
 

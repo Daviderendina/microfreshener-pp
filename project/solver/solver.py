@@ -9,8 +9,8 @@ from typing import List
 from microfreshener.core.analyser.smell import Smell, NodeSmell, GroupSmell
 from microfreshener.core.model import MicroToscaModel
 
-from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_object import KubeObject
 from project.solver.impl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
@@ -65,8 +65,8 @@ class KubeSolver(Solver):
                 if result:
                     smell_solved += 1
 
-        for ops, obj in self.pending_ops:
-            ops(obj)
+        for pending_operation, obj in self.pending_ops:
+            pending_operation(obj)
 
         return smell_solved
 

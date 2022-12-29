@@ -2,7 +2,7 @@ from microfreshener.core.model import Service, Datastore
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import DATABASE_WORKER, NAME_WORKER
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_container import KubeContainer
 
 

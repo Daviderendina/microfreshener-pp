@@ -1,12 +1,6 @@
-from enum import Enum
+from microfreshener.core.analyser.smell import Smell
 
-from microfreshener.core.analyser.smell import Smell, NodeSmell, GroupSmell
-
-
-class RefactoringStatus(Enum):
-    SUCCESSFULLY_APPLIED = "SUCCESSFULLY_APPLIED",  # "Refactoring performed correctly",
-    PARTIALLY_APPLIED = "PARTIALLY_APPLIED",  # "Actions required to finish refactoring application",
-    NOT_APPLIED = "NOT_APPLIED"  # "Refactoring not applied"
+from project.report.costants import RefactoringStatus
 
 
 class ReportRow:

@@ -10,8 +10,8 @@ from microfreshener.core.importer import YMLImporter
 from project.constants import IGNORE_CONFIG_SCHEMA_FILE
 from project.exporter.yamlkexporter import YamlKExporter
 from project.extender.extender import KubeExtender
-from project.ignorer.ignore_config import IgnoreConfig, IgnoreType
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.importer.yamlkimporter import YamlKImporter
 from project.report.report import RefactoringReport
 

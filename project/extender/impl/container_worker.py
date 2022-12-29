@@ -1,8 +1,8 @@
-from microfreshener.core.model import MicroToscaModel, Service
+from microfreshener.core.model import Service
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import CONTAINER_WORKER, NAME_WORKER
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 
 
 class ContainerWorker(KubeWorker):

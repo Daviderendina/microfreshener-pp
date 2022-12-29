@@ -4,7 +4,7 @@ from microfreshener.core.model.nodes import Service, MessageRouter
 
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import SERVICE_WORKER, NAME_WORKER
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 
 
 class ServiceWorker(KubeWorker):

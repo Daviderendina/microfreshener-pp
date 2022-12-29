@@ -1,4 +1,4 @@
-from project.ignorer.ignore_config import IgnoreConfig
+from project.ignorer.impl.ignore_config import IgnoreConfig
 
 
 class ManualIgnoreConfig(IgnoreConfig):

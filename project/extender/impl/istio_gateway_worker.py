@@ -3,12 +3,11 @@ import re
 from microfreshener.core.model import MessageRouter
 
 from project.extender.kubeworker import KubeWorker
-from project.extender.impl.service_worker import ServiceWorker
 from project.extender.worker_names import ISTIO_GATEWAY_WORKER, NAME_WORKER, SERVICE_WORKER
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_istio import KubeIstioGateway, KubeVirtualService
 from project.kmodel.kube_networking import KubeService
-from project.kmodel.kube_utils import does_selectors_labels_match
+from project.kmodel.utils import does_selectors_labels_match
 
 
 class IstioGatewayWorker(KubeWorker):

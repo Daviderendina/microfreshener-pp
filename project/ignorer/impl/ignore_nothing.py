@@ -1,4 +1,4 @@
-from project.ignorer.ignore_config import IgnoreType
+from project.ignorer.impl.ignore_config import IgnoreType
 from project.ignorer.ignorer import Ignorer
 
 

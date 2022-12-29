@@ -1,5 +1,5 @@
 from project.kmodel.kube_object import KubeObject
-from project.kmodel.kube_utils import does_selectors_labels_match, name_has_namespace, does_svc_match_ports
+from project.kmodel.utils import does_selectors_labels_match, name_has_namespace, does_svc_match_ports
 from project.kmodel.kube_workload import KubeWorkload
 from project.kmodel.shortnames import KUBE_INGRESS, KUBE_SERVICE
 

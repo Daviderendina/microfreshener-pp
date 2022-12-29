@@ -4,14 +4,7 @@ from typing import List
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_object import KubeObject
 from project.kmodel.shortnames import KUBE_POD, KUBE_DEPLOYMENT, KUBE_REPLICASET, KUBE_STATEFULSET
-from project.kmodel.kube_utils import cast_container_list
-
-
-def container_to_dict(container_list: list):
-    return list(map(
-        lambda c: c.data if isinstance(c, KubeContainer) else c,
-        container_list
-    ))
+from project.kmodel.utils import cast_container_list, container_to_dict
 
 
 class KubeWorkload(KubeObject):

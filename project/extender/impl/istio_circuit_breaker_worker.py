@@ -1,6 +1,6 @@
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import ISTIO_CIRCUIT_BREAKER, NAME_WORKER
-from project.ignorer.ignore_nothing import IgnoreNothing
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 
 
 class IstioCircuitBreakerWorker(KubeWorker):
