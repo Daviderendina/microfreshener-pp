@@ -16,7 +16,7 @@ class ExportObject:
         self.out_fullname = self._get_output_fullname()
 
     def export(self):
-        create_folder(self._get_output_fullname())
+        create_folder(self.out_fullname)
 
         if self.kube_object is None:
             shutil.copy(self.filename, self.out_fullname)

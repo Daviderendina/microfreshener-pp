@@ -5,6 +5,7 @@ from microfreshener.core.model.nodes import Service, MessageRouter
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import SERVICE_WORKER, NAME_WORKER
 from project.ignorer.impl.ignore_nothing import IgnoreNothing
+from project.kmodel.kube_networking import KubeService
 
 
 class ServiceWorker(KubeWorker):
@@ -19,25 +20,40 @@ class ServiceWorker(KubeWorker):
 
     def _check_message_router_does_not_expose(self, model, cluster, ignorer):
         not_ignored_nodes = self._get_nodes_not_ignored(model.nodes, ignorer)
+        found = []
 
         for k_service in cluster.services:
             mr_node = model.get_node_by_name(k_service.typed_fullname, MessageRouter)
 
-            if mr_node:
-                if mr_node in not_ignored_nodes:
-                    self._handle_mr_node_found(model, mr_node)
-            else:
+            if mr_node is None:
                 generic_node = model.get_node_by_name(k_service.typed_fullname)
+
                 if generic_node is None:
                     self._handle_mr_node_not_found(model, cluster, k_service)
                 else:
-                    self._handle_found_not_message_router(model, k_service, generic_node)
+                    if generic_node in not_ignored_nodes:
+                        self._handle_found_not_message_router(model, k_service, generic_node)
+            else:
+                if mr_node in not_ignored_nodes:
+                    found.append(mr_node)
 
-    def _handle_mr_node_found(self, model, mr_node: MessageRouter):
-        for service_node in [i.target for i in mr_node.interactions if isinstance(i.target, Service)]:
-            for interaction in [i for i in service_node.incoming_interactions if isinstance(i.source, Service)]:
-                model.add_interaction(source_node=interaction.source, target_node=mr_node)
-                model.delete_relationship(interaction)
+        for mr_node in found:
+            self._handle_mr_node_found(model, cluster, mr_node, k_service)
+
+    def _handle_mr_node_found(self, model, cluster, mr_node: MessageRouter, k_service: KubeService):
+        for workload in cluster.workloads:
+            if k_service.can_expose_workload(workload):
+                for container in workload.containers:
+                    service_node = model.get_node_by_name(container.typed_fullname, Service)
+
+                    if service_node:
+                        model.add_interaction(mr_node, service_node)
+
+
+        # for service_node in [i.target for i in mr_node.interactions if isinstance(i.target, Service)]:
+        #     for interaction in [i for i in service_node.incoming_interactions if isinstance(i.source, Service)]:
+        #         model.add_interaction(source_node=interaction.source, target_node=mr_node)
+        #         model.delete_relationship(interaction)
 
     def _handle_mr_node_not_found(self, model, cluster, k_service):
         mr_node = MessageRouter(k_service.typed_fullname)
@@ -54,7 +70,9 @@ class ServiceWorker(KubeWorker):
                         model.edge.add_member(mr_node)
                         model.edge.remove_member(service_node)
 
-                    to_relink = [r for r in service_node.incoming_interactions if isinstance(r, InteractsWith)]
+                    # Relink direct Service interactions
+                    to_relink = [r for r in service_node.incoming_interactions
+                                 if isinstance(r, InteractsWith) and isinstance(r.source, Service)]
                     self._relink_relations(model, new_target=mr_node, relations=to_relink)
 
                     model.add_interaction(source_node=mr_node, target_node=service_node)
@@ -72,6 +90,7 @@ class ServiceWorker(KubeWorker):
 
         self._relink_relations(model, new_target=message_router_node, relations=list(incoming_interactions))
         self._relink_relations(model, new_source=message_router_node, relations=list(interactions))
+        #TODO anche qui rivedere bene
 
         #TODO eventualmente qui posso chiamare handle_mr_node_not_found
 

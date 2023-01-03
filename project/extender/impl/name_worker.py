@@ -20,7 +20,7 @@ class NameWorker(KubeWorker):
             if not ignorer.is_ignored(node, IgnoreType.WORKER, self.name):
 
                 if node.name.split(".")[-1] in ALL_SHORTNAMES:
-                    if len([n for n in cluster.cluster_objects if n.typed_fullname == node.name]) == 0:
+                    if len([n for n in cluster.cluster_objects + cluster.containers if n.typed_fullname == node.name]) == 0:
                         raise ValueError(self.ERROR_NOT_FOUND.format(name=node.name))
 
                 else:

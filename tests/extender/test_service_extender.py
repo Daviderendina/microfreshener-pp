@@ -209,11 +209,7 @@ class TestServiceExtender(TestCase):
         extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
         extender.extend(model, cluster)
 
-        count = 0
-        for node in model.nodes:
-            if isinstance(node, MessageRouter):
-                count += 1
-        self.assertEqual(count, 1)
+        self.assertEqual(len([m for m in model.message_routers]), 1)
 
         self.assertEqual(len(svc1.interactions), 1)
         self.assertEqual(len(svc1.incoming_interactions), 0)
