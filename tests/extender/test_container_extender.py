@@ -84,3 +84,27 @@ class TestContainerExtender(TestCase):
         self.assertTrue(len([n for n in model.nodes]), 1)
         self.assertTrue(len(cluster.cluster_objects), 1)
         self.assertTrue(svc_node in model.edge)
+
+    def test_edge_but_nothing_set(self):
+        model = MicroToscaModel(name="container-test-model")
+        model.add_group(Edge("edge"))
+        cluster = KubeCluster()
+
+        pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+
+        cluster.add_object(pod)
+
+        svc_node = Service(pod.containers[0].name + "." + pod.typed_fullname)
+        model.add_node(svc_node)
+        model.edge.add_member(svc_node)
+
+        self.assertTrue(len([n for n in model.nodes]), 1)
+        self.assertTrue(len(cluster.cluster_objects), 1)
+        self.assertEqual(len([n for n in model.edge.members]), 1)
+
+        extender: KubeExtender = KubeExtender(worker_list=[ContainerWorker()])
+        extender.extend(model, cluster)
+
+        self.assertTrue(len([n for n in model.nodes]), 1)
+        self.assertTrue(len(cluster.cluster_objects), 1)
+        self.assertEqual(len([n for n in model.edge.members]), 0)

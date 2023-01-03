@@ -23,10 +23,16 @@ class ContainerWorker(KubeWorker):
                 service_node = model.get_node_by_name(container.typed_fullname, Service)
 
                 if service_node and service_node in not_ignored_services:
+                    to_expose = False
+
                     if workload.host_network:
-                        model.edge.add_member(service_node)
+                        to_expose = True
                     else:
                         for port in container.ports:
                             if port.get("host_port", None):
-                                model.edge.add_member(service_node)
+                                to_expose = True
 
+                    if to_expose:
+                        model.edge.add_member(service_node)
+                    elif not to_expose and service_node in model.edge.members:
+                        model.edge.remove_member(service_node)
