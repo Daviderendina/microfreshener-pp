@@ -11,6 +11,8 @@ topology_template:
       type: micro.nodes.Service
       requirements:
         - {interaction: mysql-catalogue.catalogue.default.sts}
+        - {interaction: warehouse.default.svc}
+        - {interaction: users.default.svc}
     users.users.default:
       type: micro.nodes.Service
     warehouse.warehouse-rs.default:
