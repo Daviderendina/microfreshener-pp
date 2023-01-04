@@ -54,6 +54,10 @@ class KubeCluster:
         if kube_object in self.cluster_objects:
             self.cluster_objects.remove(kube_object)
 
+        for exp in self.cluster_export_info:
+            if exp.kube_object == kube_object:
+                self.cluster_export_info.remove(exp)
+
     def add_export_object(self, export_object: ExportObject):
         self.cluster_export_info.append(export_object)
 

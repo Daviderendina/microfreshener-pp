@@ -22,23 +22,25 @@ class UseTimeoutRefactoring(Refactoring):
         if isinstance(smell.node, Service):
             for link in smell.links_cause:
 
-                if isinstance(link.target, Service):
-                    pass
-                    # This tool execute the whole process of finding smell ad refactoring multiple times, so this case
-                    # will be solved when AddMessageRouter will add a MR in front of the smell node
+                if not link.timeout:
+                    if isinstance(link.target, Service):
+                        pass
+                        # This tool execute the whole process of finding smell ad refactoring multiple times, so this case
+                        # will be solved when AddMessageRouter will add a MR in front of the smell node
 
-                if isinstance(link.target, MessageRouter):
-                    k_service = self.cluster.get_object_by_name(link.target.name)
+                    if isinstance(link.target, MessageRouter):
+                        k_service = self.cluster.get_object_by_name(link.target.name)
 
-                    virtual_service = generate_timeout_virtualsvc_for_svc(k_service, self.DEFAULT_TIMEOUT_SEC)
-                    exp = self._add_to_cluster(virtual_service)
+                        virtual_service = generate_timeout_virtualsvc_for_svc(k_service, self.DEFAULT_TIMEOUT_SEC)
+                        exp = self._add_to_cluster(virtual_service)
 
-                    # Refactor model
-                    link.set_timeout(True)
+                        # Refactor model
+                        for up_interaction in link.target.incoming_interactions:
+                            up_interaction.set_timeout(True)
 
-                    msg = created_resource_msg(virtual_service, exp.out_fullname)
-                    self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, msg)
-                    return True
+                        msg = created_resource_msg(virtual_service, exp.out_fullname)
+                        self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, msg)
+                        return True
 
                 # TODO devo assicurarmi che non ci siano già VService definiti? Potrei vedere se ci sono VService che hanno
                 # l'host come destinazione e capire in base agli hosts cosa fare. Se però funziona così è meglio
