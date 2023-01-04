@@ -27,7 +27,7 @@ class SplitServicesRefactoring(Refactoring):
         if not isinstance(smell, MultipleServicesInOneContainerSmell):
             raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
 
-        report_row = RefactoringReport().add_row(smell=smell)
+        report_row = RefactoringReport().add_row(smell=smell, refactoring_name=self.name)
 
         compute_node: Compute = smell.node
         workload = self.cluster.get_object_by_name(compute_node.name)

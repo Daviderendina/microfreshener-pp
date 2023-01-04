@@ -9,7 +9,7 @@ class ReportRow:
 
 class RefactoringReportRow(ReportRow):
 
-    def __init__(self, refactoring_name = None, smell: Smell = None, status: RefactoringStatus = None):
+    def __init__(self, refactoring_name=None, smell: Smell = None, status: RefactoringStatus = None):
         self.refactoring_name = refactoring_name
         self.smell = smell
         self.status = status

@@ -22,7 +22,7 @@ class AddAPIGatewayRefactoring(Refactoring):
         super().__init__(cluster, model, REFACTORING_ADD_API_GATEWAY)
 
     def apply(self, smell: NoApiGatewaySmell):
-        report_row: RefactoringReportRow = RefactoringReport().add_row(smell=smell)
+        report_row = RefactoringReport().add_row(smell=smell, refactoring_name=self.name)
 
         if not isinstance(smell, NoApiGatewaySmell):
             raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
