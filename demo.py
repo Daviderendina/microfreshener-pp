@@ -14,4 +14,4 @@ run(kubedeploy, microtoscamodel, output, refactoring, ignore_config_path)
 output = "./out/demo"
 refactoring = ["all"]
 print("[DEMO] Started second run without refactoring selected")
-#run(kubedeploy, microtoscamodel, output, refactoring, ignore_config_path)
+run(kubedeploy, microtoscamodel, output, refactoring, ignore_config_path)
