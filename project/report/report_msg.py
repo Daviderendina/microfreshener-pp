@@ -1,5 +1,7 @@
 import os
 
+from project.kmodel.kube_istio import KubeIstio
+
 
 def cannot_apply_refactoring_on_node_msg(refactoring_name, smell_name, node):
     return f"Cannot apply refactoring {refactoring_name} for smell {smell_name} on node '{node.name}': " \
@@ -48,4 +50,8 @@ def cannot_find_nodes_msg(node_names: list):
 
 
 def _extract_kubernetes_name(resource):
-    return resource.__class__.__name__[4:]
+    istio = ""
+    if isinstance(resource, KubeIstio):
+        istio = "Istio"
+
+    return f"{istio}{resource.__class__.__name__[4:]}"

@@ -10,6 +10,7 @@ from project.kmodel.kube_workload import KubePod, KubeWorkload
 from config.kube_config import CIRCUIT_BREAKER_CONFIG as CB
 
 MF_NAME_SUFFIX = "mf"
+MF_SERVICE_SUFFIX = f"service-{MF_NAME_SUFFIX}"
 MF_VIRTUALSERVICE_TIMEOUT_NAME = "vs-timeout"
 MF_CIRCUITBREAKER_NAME = "circuitbreaker"
 
@@ -60,7 +61,7 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
 
     # Generate service
     service_dict = copy.deepcopy(SERVICE_CLUSTERIP_TEMPLATE)
-    service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_NAME_SUFFIX}"
+    service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_SERVICE_SUFFIX}"
     service_dict["metadata"]["namespace"] = defining_obj.namespace
     service_dict["spec"]["ports"] = container_ports
     service_dict["spec"]["selector"] = service_selector
@@ -85,7 +86,7 @@ def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: K
 
     # Generate service
     service_dict = copy.deepcopy(SERVICE_NODEPORT_TEMPLATE)
-    service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_NAME_SUFFIX}"
+    service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_SERVICE_SUFFIX}"
     service_dict["metadata"]["namespace"] = defining_obj.namespace
     service_dict["spec"]["ports"] = service_ports
     service_dict["spec"]["selector"] = service_selector

@@ -1,6 +1,7 @@
 import re
 
 from project.kmodel.kube_container import KubeContainer
+from project.kmodel.shortnames import ALL_SHORTNAMES
 
 
 def cast_container_list(container_list, workload):
@@ -40,4 +41,10 @@ def does_svc_match_ports(service, ports):
 
 def name_has_namespace(name: str):
     match = re.match(r"([-\w]+)[.]([-\w]+)", name)
+    return match and match.string == name
+
+
+def name_is_FQDN(name: str):
+    regex = r"^[\w\-]+[.][\w\-]+[.](" + "|".join(ALL_SHORTNAMES) + ")[.]\w+[.]\w+"
+    match = re.match(regex, name)
     return match and match.string == name

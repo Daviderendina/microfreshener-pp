@@ -10,7 +10,7 @@
 - Fare i vari TODO
 - [Matebook] NodePort gestisce solamente il range  30000 to 32767 ?
 - Il parametro output che viene passato al main non viene utilizzato
-- In split services piuttosto che usare _1, _2, etc.. posso più elegantemente usare il nome del container per differenziarli!!
+- ~~In split services piuttosto che usare _1, _2, etc.. posso più elegantemente usare il nome del container per differenziarli!!~~
 - [Matebook] ComputeNode non viene esportato (e importato!), bisogna cambiare le classi di microfreshener-core !!!
 
 

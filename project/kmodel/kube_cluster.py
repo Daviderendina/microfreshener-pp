@@ -64,6 +64,7 @@ class KubeCluster:
         return [s for s in self.services if s.does_expose_workload(workload)]
 
     def get_object_by_name(self, object_name: str, type: type = None):
+        #TODO potrebbe arrivarmi anche un FQDN!! da _search_for_circuit_breaker
         objects_found = []
         for obj in self.cluster_objects:
 

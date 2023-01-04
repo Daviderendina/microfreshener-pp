@@ -1,3 +1,4 @@
+from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
 from project.kmodel.kube_networking import KubeService, KubeIngress
 from project.kmodel.kube_workload import KubePod, KubeDeployment, KubeReplicaSet, KubeStatefulSet
 
@@ -9,7 +10,10 @@ class KubeObjectFactory:
         "Deployment": KubeDeployment,
         "ReplicaSet": KubeReplicaSet,
         "StatefulSet": KubeStatefulSet,
-        "Ingress": KubeIngress
+        "Ingress": KubeIngress,
+        "VirtualService": KubeVirtualService,
+        "DestinationRule": KubeDestinationRule,
+        "Gateway": KubeIstioGateway
     }
 
     @staticmethod

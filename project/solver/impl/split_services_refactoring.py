@@ -33,13 +33,10 @@ class SplitServicesRefactoring(Refactoring):
         workload = self.cluster.get_object_by_name(compute_node.name)
 
         if workload:
-            name_count = 1
-
             for container in workload.containers.copy():
                 object_copy = copy.deepcopy(workload)
                 object_copy.set_containers([container])
-                object_copy.data["metadata"]["name"] += f"_{name_count}"
-                name_count += 1
+                object_copy.data["metadata"]["name"] = f"{container.name}-{object_copy.data['metadata']['name']}"
 
                 if self._refactor_model(container, object_copy):
                     exp = ExportObject(object_copy, None)

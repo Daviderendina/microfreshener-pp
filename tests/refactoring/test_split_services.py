@@ -55,9 +55,8 @@ class TestRefactoringSplitServices(TestCase):
         pods = [p for p in cluster.workloads if isinstance(p, KubePod)]
         for pod in pods:
             self.assertEqual(len(pod.containers), 1)
+            self.assertEqual(pod.fullname, f"{pod.containers[0].name}-{k_pod.fullname}")
 
-        self.assertTrue(pods[0].fullname.endswith("_1.default"))
-        self.assertTrue(pods[1].fullname.endswith("_2.default"))
         self.assertEqual(pods[0].containers[0].name, k_pod.containers[0].name)
         self.assertEqual(pods[1].containers[0].name, k_pod.containers[1].name)
 
@@ -104,8 +103,7 @@ class TestRefactoringSplitServices(TestCase):
 
         for deploy in deployments:
             self.assertEqual(len(deploy.containers), 1)
+            self.assertEqual(deploy.fullname, f"{deploy.containers[0].name}-{k_deploy.fullname}")
 
-        self.assertTrue(deployments[0].fullname.endswith("_1.default"))
-        self.assertTrue(deployments[1].fullname.endswith("_2.default"))
         self.assertEqual(deployments[0].containers[0].name, k_deploy.containers[0].name)
         self.assertEqual(deployments[1].containers[0].name, k_deploy.containers[1].name)

@@ -4,7 +4,7 @@ from unittest import TestCase
 from microfreshener.core.analyser.smell import NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Edge, Service, MessageRouter
 
-from project.exporter.export_object import ExportObject
+from k8s_template.kobject_generators import MF_SERVICE_SUFFIX
 from project.report.report import RefactoringReport
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH_ONE_CONTAINER, POD_WITH_TWO_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
@@ -22,6 +22,8 @@ def apply_solver(solver, smell):
 
 
 class TestAddAPIGatewayRefactoring(TestCase):
+
+    service_suffix = MF_SERVICE_SUFFIX
 
     '''
     Test case: Pod has hostNetwork set as True. Contains also deeper tests on MessageRouter created
@@ -66,7 +68,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         self.assertFalse(k_pod.data["spec"]["hostNetwork"])
 
-        self.assertEqual(k_service.fullname, f"{k_pod.name}-mf.{k_pod.namespace}")
+        self.assertEqual(k_service.fullname, f"{k_pod.name}-{self.service_suffix}.{k_pod.namespace}")
         self.assertTrue(f"{k_pod.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
@@ -132,7 +134,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         self.assertEqual(len(k_service.ports), 1)
 
-        self.assertEqual(k_service.fullname, f"{k_pod.name}-mf.{k_pod.namespace}")
+        self.assertEqual(k_service.fullname, f"{k_pod.name}-{self.service_suffix}.{k_pod.namespace}")
         self.assertTrue(f"{k_pod.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
@@ -197,7 +199,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertEquals(len(k_services), 1)
         k_service = k_services[0]
 
-        self.assertEqual(k_service.fullname, f"{k_deploy.name}-mf.{k_deploy.namespace}")
+        self.assertEqual(k_service.fullname, f"{k_deploy.name}-{self.service_suffix}.{k_deploy.namespace}")
         self.assertTrue(f"{k_deploy.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
@@ -258,7 +260,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         self.assertEqual(len(k_service.ports), 1)
 
-        self.assertEqual(k_service.fullname, f"{k_deploy.name}-mf.{k_deploy.namespace}")
+        self.assertEqual(k_service.fullname, f"{k_deploy.name}-{self.service_suffix}.{k_deploy.namespace}")
         self.assertTrue(f"{k_deploy.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
@@ -333,7 +335,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertEquals(len(k_services), 1)
         k_service = k_services[0]
 
-        self.assertEqual(k_service.fullname, f"{k_pod.name}-mf.{k_pod.namespace}")
+        self.assertEqual(k_service.fullname, f"{k_pod.name}-{self.service_suffix}.{k_pod.namespace}")
         self.assertTrue(f"{k_pod.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
@@ -439,7 +441,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         # Test service 1
         k_service = k_services[0]
 
-        self.assertEqual(k_service.fullname, f"{k_pod_1.name}-mf.{k_pod_1.namespace}")
+        self.assertEqual(k_service.fullname, f"{k_pod_1.name}-{self.service_suffix}.{k_pod_1.namespace}")
         self.assertTrue(f"{k_pod_1.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
         self.assertFalse(k_pod_1.data["spec"]["hostNetwork"])
@@ -464,7 +466,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
         # Test service 2
         k_service = k_services[1]
 
-        self.assertEqual(k_service.fullname, f"{k_pod_2.name}-mf.{k_pod_2.namespace}")
+        self.assertEqual(k_service.fullname, f"{k_pod_2.name}-{self.service_suffix}.{k_pod_2.namespace}")
         self.assertTrue(f"{k_pod_2.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
         self.assertFalse(k_pod_2.data["spec"]["hostNetwork"])
@@ -537,7 +539,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
 
         self.assertFalse(k_pod.data["spec"]["hostNetwork"])
 
-        self.assertEqual(k_service.fullname, f"{k_pod.name}-mf.{k_pod.namespace}")
+        self.assertEqual(k_service.fullname, f"{k_pod.name}-{self.service_suffix}.{k_pod.namespace}")
         self.assertTrue(f"{k_pod.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 

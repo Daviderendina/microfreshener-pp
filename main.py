@@ -5,9 +5,10 @@ from microfreshener.core.analyser import MicroToscaAnalyserBuilder
 from microfreshener.core.analyser.costants import REFACTORING_NAMES, REFACTORING_ADD_API_GATEWAY, \
     REFACTORING_ADD_CIRCUIT_BREAKER, REFACTORING_ADD_MESSAGE_ROUTER, REFACTORING_USE_TIMEOUT, \
     REFACTORING_SPLIT_SERVICES, SMELLS_NAME
+from microfreshener.core.exporter import YMLExporter
 from microfreshener.core.importer import YMLImporter
 
-from project.constants import IGNORE_CONFIG_SCHEMA_FILE
+from project.constants import IGNORE_CONFIG_SCHEMA_FILE, TOSCA_OUTPUT_FOLDER
 from project.exporter.yamlkexporter import YamlKExporter
 from project.extender.extender import KubeExtender
 from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
@@ -16,7 +17,7 @@ from project.importer.yamlkimporter import YamlKImporter
 from project.report.report import RefactoringReport
 
 from project.solver.solver import Solver, KubeSolver
-
+from project.utils.utils import create_folder
 
 SELECT_ALL = "all"
 
@@ -63,6 +64,7 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
     extender = KubeExtender()
     extender.set_all_workers()
     extender.extend(model, cluster)
+    export_extended_model(model)
 
     smell_solved = -1
     while smell_solved != 0:
@@ -81,6 +83,15 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
 
     # Export report
     RefactoringReport().export()
+
+
+def export_extended_model(model):
+    tosca_model_str = YMLExporter().Export(model)
+    tosca_output_filename = f"{TOSCA_OUTPUT_FOLDER}/tmp-extended-model.yml"
+
+    create_folder(tosca_output_filename)
+    with open(tosca_output_filename, "w") as f:
+        f.write(tosca_model_str)
 
 
 def build_analyser(model, ignore_config):
