@@ -25,9 +25,11 @@ class IstioGatewayWorker(KubeWorker):
 
     def _search_for_gateways(self, model, cluster, ignorer):
         not_ignored_nodes = self._get_nodes_not_ignored(model.message_routers, ignorer)
-        gateway_node = self._find_or_create_gateway(model)
 
         for gateway in cluster.istio_gateways:
+            gateway_node = MessageRouter(gateway.typed_fullname)
+            model.add_node(gateway_node)
+            model.edge.add_member(gateway_node)
 
             for virtual_service in cluster.virtual_services:
                 if self._check_gateway_virtualservice_match(gateway, virtual_service):
@@ -44,19 +46,8 @@ class IstioGatewayWorker(KubeWorker):
                                     model.edge.remove_member(kube_service_node)
                                     model.add_interaction(source_node=gateway_node, target_node=kube_service_node)
 
-        if len(gateway_node.interactions) + len(gateway_node.incoming_interactions) == 0:
-            model.delete_node(gateway_node)
-
-    def _find_or_create_gateway(self, model) -> MessageRouter:
-        gateway_node = model.get_node_by_name(self.GATEWAY_NODE_GENERIC_NAME, MessageRouter)
-
-        if gateway_node is None:
-            gateway_node = MessageRouter(self.GATEWAY_NODE_GENERIC_NAME)
-
-            model.edge.add_member(gateway_node)
-            model.add_node(gateway_node)
-
-        return gateway_node
+            #if len(gateway_node.interactions) + len(gateway_node.incoming_interactions) == 0:
+            #    model.delete_node(gateway_node)
 
     def _has_pod_exposed(self, service: KubeService, gateway: KubeIstioGateway, cluster):
         for workload in cluster.find_workload_exposed_by_svc(service):

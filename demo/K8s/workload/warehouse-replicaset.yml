@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: warehouse-rs
+  labels:
+    service: warehouse
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      service: warehouse
+  template:
+    metadata:
+      labels:
+        service: warehouse
+    spec:
+      containers:
+      - name: warehouse
+        image: generic-img
+        ports:
+        - containerPort: 8786

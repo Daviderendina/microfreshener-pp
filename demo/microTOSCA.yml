@@ -1,0 +1,82 @@
+description: robot-shop-v2
+imports:
+- {micro: 'https://di-unipi-socc.github.io/microTOSCA/1.1/microTOSCA.yaml'}
+topology_template:
+  groups:
+    edge:
+      members: [store.default.svc, orders.orders.default.deploy, login.login.default]
+      type: micro.groups.Edge
+  node_templates:
+    orders.orders.default.deploy:
+      type: micro.nodes.Service
+      requirements:
+        - {interaction: mysql-catalogue.catalogue.default.sts}
+    users.users.default:
+      type: micro.nodes.Service
+    warehouse.warehouse-rs.default:
+      type: micro.nodes.Service
+      requirements:
+        - {interaction: supplier.supplier.default.pod}
+    supplier.supplier.default.pod:
+      type: micro.nodes.Service
+    e-commerce.store.default.deploy:
+      type: micro.nodes.Service
+      requirements:
+        - {interaction: orders.default.svc}
+    shop.store.default:
+      type: micro.nodes.Service
+      requirements:
+        - {interaction: orders.default.svc}
+    login.login.default:
+      type: micro.nodes.Service
+      requirements:
+        - {interaction: users.default.svc}
+    mysql-catalogue.catalogue.default.sts:
+      type: micro.nodes.Service
+
+    orders.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: orders.orders.default.deploy}
+    users.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: users.users.default}
+    warehouse.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: warehouse.warehouse-rs.default}
+    store.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: e-commerce.store.default.deploy}
+        - {interaction: shop.store.default}
+    catalogue-edge.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: mysql-catalogue.catalogue.default.sts}
+
+  relationship_templates:
+    c:
+      properties: { circuit_breaker: true }
+      type: micro.relationships.InteractsWith
+    cd:
+      properties: { circuit_breaker: true, dynamic_discovery: true }
+      type: micro.relationships.InteractsWith
+    d:
+      properties: { dynamic_discovery: true }
+      type: micro.relationships.InteractsWith
+    t:
+      properties: { timeout: true }
+      type: micro.relationships.InteractsWith
+    tc:
+      properties: { circuit_breaker: true, timeout: true }
+      type: micro.relationships.InteractsWith
+    tcd:
+      properties: { circuit_breaker: true, dynamic_discovery: true, timeout: true }
+      type: micro.relationships.InteractsWith
+    td:
+      properties: { dynamic_discovery: true, timeout: true }
+      type: micro.relationships.InteractsWith
+
+tosca_definitions_version: micro_tosca_yaml_1.1

@@ -75,9 +75,9 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
         solver = build_solver(cluster, model, refactoring)
         smell_solved = solver.solve(smells)
 
-        # Export files
-        exporter = YamlKExporter()
-        exporter.export(cluster, model, tosca_model_filename=microtoscamodel)
+    # Export files
+    exporter = YamlKExporter()
+    exporter.export(cluster, model, tosca_model_filename=microtoscamodel)
 
     # Export report
     RefactoringReport().export()
@@ -114,6 +114,8 @@ def build_solver(cluster, model, refactoring) -> Solver:
 
         if r in ["split_services", "split_svcs"]:
             selected_refactoring.append(REFACTORING_SPLIT_SERVICES)
+
+    return KubeSolver(cluster, model, selected_refactoring)
 
 
 if __name__ == '__main__':

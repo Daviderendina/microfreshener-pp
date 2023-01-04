@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: login
+  labels:
+    service: login
+spec:
+  containers:
+  - name: login
+    image: generic-img
+    ports:
+    - containerPort: 8000

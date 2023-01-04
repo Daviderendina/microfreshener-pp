@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: store-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /store/shop
+        pathType: Prefix
+        backend:
+          service:
+            name: store
+            port:
+              number: 80
+      - path: /store/e-commerce
+        pathType: Prefix
+        backend:
+          service:
+            name: store
+            port:
+              number: 81

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: supplier
+  labels:
+    service: supplier
+spec:
+  containers:
+  - name: supplier
+    image: generic-img
+    ports:
+    - containerPort: 80

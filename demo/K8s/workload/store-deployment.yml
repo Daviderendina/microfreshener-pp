@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store
+  labels:
+    service: store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: store
+  template:
+    metadata:
+      labels:
+        service: store
+    spec:
+      containers:
+      - name: shop
+        image: generic-image
+        ports:
+        - containerPort: 80
+      - name: e-commerce
+        image: generic-image
+        ports:
+        - containerPort: 81

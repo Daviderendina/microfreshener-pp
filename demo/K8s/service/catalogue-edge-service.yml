@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalogue-edge
+spec:
+  type: NodePort
+  selector:
+    service: catalogue
+  ports:
+    - protocol: TCP
+      nodePort: 80
+      port: 3306
+      targetPort: 3306
