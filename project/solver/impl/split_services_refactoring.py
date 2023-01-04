@@ -9,7 +9,7 @@ from project.exporter.export_object import ExportObject
 from project.kmodel.kube_cluster import KubeCluster
 from project.report.report import RefactoringReport
 from project.report.report_msg import compute_object_not_found_msg, cannot_refactor_model_msg, created_resource_msg, \
-    deleted_object_from_cluster
+    resource_deleted_msg
 from project.report.report_row import RefactoringStatus
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -46,7 +46,7 @@ class SplitServicesRefactoring(Refactoring):
                     object_to_add.append(object_copy)
                     export_object_to_add.append(exp)
 
-                    report_row.add_message(created_resource_msg(object_copy.fullname, exp.out_fullname))
+                    report_row.add_message(created_resource_msg(object_copy, exp.out_fullname))
                 else:
                     report_row.message_list = []
                     abort = True
@@ -54,7 +54,7 @@ class SplitServicesRefactoring(Refactoring):
             if not abort:
                 self.cluster.remove_object(workload)
                 self.model.delete_node(compute_node)
-                report_row.add_message(deleted_object_from_cluster(workload.fullname))
+                report_row.add_message(resource_deleted_msg(workload))
 
                 for object in object_to_add:
                     self.cluster.add_object(object)

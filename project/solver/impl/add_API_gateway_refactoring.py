@@ -44,7 +44,7 @@ class AddAPIGatewayRefactoring(Refactoring):
 
                     # Update report row
                     export_object_fullname = self.cluster.get_exp_object(expose_svc).out_fullname
-                    report_row.add_message(resource_modified_msg(expose_svc.fullname, export_object_fullname))
+                    report_row.add_message(resource_modified_msg(expose_svc, export_object_fullname))
                     report_row.status = RefactoringStatus.SUCCESSFULLY_APPLIED
 
                     result = True
@@ -57,7 +57,7 @@ class AddAPIGatewayRefactoring(Refactoring):
                     self._refactor_model(node_port_service, smell.node, service_exists=False)
 
                     # Update report row
-                    report_row.add_message(created_resource_msg(node_port_service.fullname, exp.out_fullname))
+                    report_row.add_message(created_resource_msg(node_port_service, exp.out_fullname))
                     report_row.status = RefactoringStatus.SUCCESSFULLY_APPLIED
 
                     result = True

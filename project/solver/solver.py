@@ -60,7 +60,7 @@ class KubeSolver(Solver):
         for smell in [s for s in smells if s]:
             available_refactoring = self.get_available_refactoring(smell)
 
-            if available_refactoring is not None:
+            if available_refactoring:
                 result = self.apply_refactoring(available_refactoring, smell)
                 if result:
                     smell_solved += 1

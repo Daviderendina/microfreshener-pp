@@ -38,7 +38,7 @@ class AddMessageRouterRefactoring(Refactoring):
             self._refactor_model(smell.node, generated_service.typed_fullname, smell.links_cause)
 
             msgs = [change_call_to_service_msg(smell.node.name, generated_service.fullname),
-                    created_resource_msg(generated_service.fullname, exp.out_fullname)]
+                    created_resource_msg(generated_service, exp.out_fullname)]
             self._add_report_row(smell, RefactoringStatus.PARTIALLY_APPLIED, msgs)
             return True
         else:

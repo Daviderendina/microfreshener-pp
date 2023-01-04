@@ -36,7 +36,7 @@ class UseTimeoutRefactoring(Refactoring):
                     # Refactor model
                     link.set_timeout(True)
 
-                    msg = created_resource_msg(virtual_service.fullname, exp.out_fullname)
+                    msg = created_resource_msg(virtual_service, exp.out_fullname)
                     self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, msg)
                     return True
 

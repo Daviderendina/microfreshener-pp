@@ -42,7 +42,7 @@ class AddCircuitBreakerRefactoring(Refactoring):
                     # Refactor model
                     self._refactor_model(link.target)
 
-                    msg = created_resource_msg(circuit_breaker.fullname, exp.out_fullname)
+                    msg = created_resource_msg(circuit_breaker, exp.out_fullname)
                     self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, msg)
                     return True
         else:
