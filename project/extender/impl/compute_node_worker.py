@@ -23,10 +23,10 @@ class ComputeNodeWorker(KubeWorker):
             if compute_node not in not_ignored_nodes:
 
                 for container in workload.containers:
-                    service_node = model.get_node_by_name(container.typed_fullname, Service)
+                    node = model.get_node_by_name(container.typed_fullname)
 
-                    if service_node and service_node in not_ignored_nodes:
-                        model.add_deployed_on(service_node, compute_node)
+                    if node and node in not_ignored_nodes:
+                        model.add_deployed_on(node, compute_node)
 
     def _get_or_create_compute(self, model, compute_name):
         compute_node = model.get_node_by_name(compute_name, Compute)

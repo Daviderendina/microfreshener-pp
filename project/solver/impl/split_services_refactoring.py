@@ -51,6 +51,11 @@ class SplitServicesRefactoring(Refactoring):
             if not abort:
                 self.cluster.remove_object(workload)
                 self.model.delete_node(compute_node)
+
+                #TODO the deletion of the relationshipps doesn't work, so i have to do manually for the moment
+                for dep in compute_node.deploys.copy():
+                    dep.source.remove_deployed_on(dep)
+
                 report_row.add_message(resource_deleted_msg(workload))
 
                 for object in object_to_add:

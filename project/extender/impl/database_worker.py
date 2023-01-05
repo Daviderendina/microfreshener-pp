@@ -32,6 +32,10 @@ class DatabaseWorker(KubeWorker):
 
                 self._update_datastore_incoming_interactions(model, service_node, datastore_node)
 
+                # Update deployed_on
+                for dep in service_node.deployed_on.copy():
+                    datastore_node.add_deployed_on(dep.target)
+
                 model.delete_node(service_node)
                 model.rename_node(datastore_node, service_node.name)
 

@@ -27,7 +27,7 @@
 -  Testare il solver
 -  Testare lo sniffer nuovo
 -  Testare il core con le nuove modifiche
--  Controllare che tutto viene effettuato nel modo giusto, aiutandosi col report
+-  ~~Controllare che tutto viene effettuato nel modo giusto, aiutandosi col report~~
 
 ## Aggiunte successive
 -  Penso che se viene dato il nome in automatico ad es. usando generate name, si spacchi tutto!
