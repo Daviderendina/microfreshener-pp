@@ -6,6 +6,7 @@ from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, K
 from project.kmodel.kube_networking import KubeService, KubeIngress, KubeNetworking
 from project.kmodel.kube_object import KubeObject
 from project.kmodel.kube_workload import KubeWorkload
+from project.kmodel.utils import name_is_FQDN
 
 
 class KubeCluster:
@@ -68,17 +69,24 @@ class KubeCluster:
         return [s for s in self.services if s.does_expose_workload(workload)]
 
     def get_object_by_name(self, object_name: str, type: type = None):
-        #TODO potrebbe arrivarmi anche un FQDN!! da _search_for_circuit_breaker
+        if name_is_FQDN(object_name):
+            object_name = '.'.join(object_name.split('.')[:-2])
+
         objects_found = []
         for obj in self.cluster_objects:
 
-            # Case: name is <name>.<namespace>.<svc> (or instead of svc something else)
+            # Case: name is <name>.<namespace>.<shortname>
             if obj.typed_fullname == object_name:
                 if not obj in objects_found:
                     objects_found.append(obj)
 
             # Case: name is <name>.<namespace>
             if obj.fullname == object_name:
+                if not obj in objects_found:
+                    objects_found.append(obj)
+
+            # Case: name in only <name>
+            if obj.name == object_name:
                 if not obj in objects_found:
                     objects_found.append(obj)
 
@@ -93,7 +101,7 @@ class KubeCluster:
             objects_found = [o for o in objects_found if isinstance(o, type)]
 
         if len(objects_found) > 1:
-            raise AttributeError(f"More than one object found with name: {object_name}")
+            raise AttributeError(f"More than one object found with name '{object_name}'")
 
         return objects_found[0] if objects_found else None
 
