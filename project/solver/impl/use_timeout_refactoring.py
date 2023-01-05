@@ -41,9 +41,6 @@ class UseTimeoutRefactoring(Refactoring):
                         msg = created_resource_msg(virtual_service, exp.out_fullname)
                         self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, msg)
                         return True
-
-                # TODO devo assicurarmi che non ci siano già VService definiti? Potrei vedere se ci sono VService che hanno
-                # l'host come destinazione e capire in base agli hosts cosa fare. Se però funziona così è meglio
         else:
             msg = cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node)
             self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, msg)
