@@ -4,6 +4,7 @@ from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import NAME_WORKER
 from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.ignorer.ignorer import IgnoreType
+from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeNetworking
 from project.kmodel.kube_workload import KubeWorkload
 from project.kmodel.shortnames import ALL_SHORTNAMES
@@ -27,17 +28,17 @@ class NameWorker(KubeWorker):
                         raise ValueError(self.ERROR_NOT_FOUND.format(name=node.name))
 
                 else:
-                    if isinstance(node, Compute) or isinstance(node, Service) or isinstance(node, MessageBroker) or isinstance(node, Datastore):
-                        workload = cluster.get_object_by_name(node.name, KubeWorkload)
+                    # TODO Under the assumption that Service (or Datastore, MessageBorker) == Container, I can directly
+                    # research in Container in order to specify even Service only with container name
+                    if isinstance(node, Service) or isinstance(node, MessageBroker) or isinstance(node, Datastore):
+                        container = cluster.get_object_by_name(node.name, KubeContainer)
+                        if container:
+                            self._rename_node(model, node, container.typed_fullname)
 
+                    if isinstance(node, Compute):
+                        workload = cluster.get_object_by_name(node.name, KubeWorkload)
                         if workload:
                             self._rename_node(model, node, workload.typed_fullname)
-                        else:
-                            # Check for containers
-                            for workload in cluster.workloads:
-                                for container in workload.containers:
-                                    if container.fullname == node.name:
-                                        self._rename_node(model, node, container.typed_fullname)
 
                     if isinstance(node, MessageRouter):
                         k_service = cluster.get_object_by_name(node.name, KubeNetworking)
@@ -48,5 +49,6 @@ class NameWorker(KubeWorker):
         return model
 
     def _rename_node(self, model, node, new_name):
-        self.name_mapping[new_name] = node.name
-        model.rename_node(node, new_name)
+        if new_name != node.name:
+            self.name_mapping[new_name] = node.name
+            model.rename_node(node, new_name)

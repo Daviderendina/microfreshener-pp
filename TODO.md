@@ -3,7 +3,7 @@
 -  Gennaio presentazione: demo + slide
 
 ## Develop
-- Ripristinare i nomi dei nodi originali dopo che il worker li modifica
+- ~~Ripristinare i nomi dei nodi originali dopo che il worker li modifica~~
 - Il parametro output che viene passato al main non viene utilizzato
 - Usare ignore node nella demo
 - Estendere microFreshener per garantire compatiblità con i nuovi nodi
