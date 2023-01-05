@@ -14,6 +14,7 @@ from project.extender.impl.container_worker import ContainerWorker
 from project.extender.impl.database_worker import DatabaseWorker
 from project.extender.impl.ingress_worker import IngressWorker
 from project.extender.impl.service_worker import ServiceWorker
+from project.extender.worker_names import NAME_WORKER
 from project.ignorer.impl.ignore_config import IgnoreConfig
 from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.ignorer.ignorer import Ignorer
@@ -35,6 +36,11 @@ class KubeExtender(Extender):
         else:
             self.worker_list: List[KubeWorker] = worker_list
         self._check_workers_order()
+
+    @property
+    def name_mapping(self):
+        name_worker = [w for w in self.worker_list if w.name == NAME_WORKER]
+        return name_worker[0].name_mapping if name_worker else {}
 
     def _check_workers_order(self):
         for i in range(0, len(self.worker_list)):

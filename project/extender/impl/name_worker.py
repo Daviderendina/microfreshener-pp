@@ -4,6 +4,8 @@ from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import NAME_WORKER
 from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.ignorer.ignorer import IgnoreType
+from project.kmodel.kube_networking import KubeNetworking
+from project.kmodel.kube_workload import KubeWorkload
 from project.kmodel.shortnames import ALL_SHORTNAMES
 
 
@@ -14,6 +16,7 @@ class NameWorker(KubeWorker):
 
     def __init__(self):
         super().__init__(NAME_WORKER)
+        self.name_mapping = {}  # Map the new name given to the nome with the old name
 
     def refine(self, model, cluster, ignorer=IgnoreNothing()) -> MicroToscaModel:
         for node in list(model.nodes):
@@ -25,25 +28,25 @@ class NameWorker(KubeWorker):
 
                 else:
                     if isinstance(node, Compute) or isinstance(node, Service) or isinstance(node, MessageBroker) or isinstance(node, Datastore):
-                        workloads = [w for w in cluster.workloads if w.fullname == node.name]
+                        workload = cluster.get_object_by_name(node.name, KubeWorkload)
 
-                        if len(workloads) == 1:
-                            model.rename_node(node, workloads[0].typed_fullname)
-                        elif len(workloads) > 1:
-                            raise ValueError(self.MULTIPLE_FOUND.format(len(workloads), node.name))
+                        if workload:
+                            self._rename_node(model, node, workload.typed_fullname)
                         else:
                             # Check for containers
                             for workload in cluster.workloads:
                                 for container in workload.containers:
                                     if container.fullname == node.name:
-                                        model.rename_node(node, container.typed_fullname)
+                                        self._rename_node(model, node, container.typed_fullname)
 
                     if isinstance(node, MessageRouter):
-                        networkings = [n for n in cluster.networkings if n.fullname == node.name]
+                        k_service = cluster.get_object_by_name(node.name, KubeNetworking)
 
-                        if len(networkings) == 1:
-                            model.rename_node(node, networkings[0].typed_fullname)
-                        elif len(networkings) > 1:
-                            raise ValueError(self.MULTIPLE_FOUND.format(len(networkings), node.name))
+                        if k_service:
+                            self._rename_node(model, node, k_service.typed_fullname)
 
         return model
+
+    def _rename_node(self, model, node, new_name):
+        self.name_mapping[new_name] = node.name
+        model.rename_node(node, new_name)

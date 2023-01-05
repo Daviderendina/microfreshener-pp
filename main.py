@@ -1,3 +1,4 @@
+import copy
 import os.path
 
 import click
@@ -11,6 +12,7 @@ from microfreshener.core.importer import YMLImporter
 from project.constants import IGNORE_CONFIG_SCHEMA_FILE, TOSCA_OUTPUT_FOLDER
 from project.exporter.yamlkexporter import YamlKExporter
 from project.extender.extender import KubeExtender
+from project.extender.name_adjuster import NameAdjuster
 from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
 from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.importer.yamlkimporter import YamlKImporter
@@ -64,7 +66,12 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
     extender = KubeExtender()
     extender.set_all_workers()
     extender.extend(model, cluster)
-    export_extended_model(model)
+
+    # Create name adjuster for export model with original names
+    adjuster = NameAdjuster(extender.name_mapping)
+
+    # Export 'extended-only' model
+    export_extended_model(model, adjuster)
 
     smell_solved = -1
     while smell_solved != 0:
@@ -78,6 +85,7 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
         smell_solved = solver.solve(smells)
 
     # Export files
+    adjuster.adjust(model)
     exporter = YamlKExporter()
     exporter.export(cluster, model, tosca_model_filename=microtoscamodel)
 
@@ -85,9 +93,12 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
     RefactoringReport().export()
 
 
-def export_extended_model(model):
-    tosca_model_str = YMLExporter().Export(model)
-    tosca_output_filename = f"{TOSCA_OUTPUT_FOLDER}/tmp-extended-model.yml"
+def export_extended_model(model, adjuster):
+    model_copy = copy.deepcopy(model)
+    adjuster.adjust(model_copy)
+
+    tosca_model_str = YMLExporter().Export(model_copy)
+    tosca_output_filename = f"{TOSCA_OUTPUT_FOLDER}/extended-only-model.yml"
 
     create_folder(tosca_output_filename)
     with open(tosca_output_filename, "w") as f:

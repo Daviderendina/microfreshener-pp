@@ -4,16 +4,19 @@
 
 ## Develop
 - Ripristinare i nomi dei nodi originali dopo che il worker li modifica
+- Il parametro output che viene passato al main non viene utilizzato
+- Usare ignore node nella demo
+- Estendere microFreshener per garantire compatiblità con i nuovi nodi
+- 
 - microFreshener-core get_node_by_name
 -  Modificate la definizione di **microTOSCA**
 -  Fare il push del _core_
 - Fare i vari TODO
 - [Matebook] NodePort gestisce solamente il range  30000 to 32767 ?
-- Il parametro output che viene passato al main non viene utilizzato
+
+
 - ~~In split services piuttosto che usare _1, _2, etc.. posso più elegantemente usare il nome del container per differenziarli!!~~
-- [Matebook] ComputeNode non viene esportato (e importato!), bisogna cambiare le classi di microfreshener-core !!!
-
-
+- ~~ComputeNode non viene esportato (e importato!), bisogna cambiare le classi di microfreshener-core !!!~~
 - ~~Attenzione: name.ns.svc.cluster.local ma la parte in grassetto ME LA SONO INVENTATA IO!! C'È SOLO SVC PER APPUNTO I SERVICE.~~
 - ~~In MicroToscaModel.get_node_by_name devo fare che se passo un type None, prende in automatico tutti i nodi! Poi vedo di sistemare il next(iter(..)) mancante~~
 - ~~Attenzione alla _get_obj_by_name_~~
@@ -26,14 +29,15 @@
 ## Testing
 -  Testare il solver
 -  Testare lo sniffer nuovo
+- Testare YMLImporter con i nuovi nodi
 -  Testare il core con le nuove modifiche
+- Testare anche con JSON i modelli?
 -  ~~Controllare che tutto viene effettuato nel modo giusto, aiutandosi col report~~
 
 ## Aggiunte successive
 -  Penso che se viene dato il nome in automatico ad es. usando generate name, si spacchi tutto!
 - Se tutto quello definito con istio non ha il ns, devo aggiungere al nome il ns dell'oggetto che lo definisce
 - Compatibilità con microMiner
-- Estendere microFreshener per garantire compatiblità con i nuovi nodi
 
 #### Garantire compatibilità con microMiner
 microTOSCA genera:
