@@ -10,7 +10,7 @@ TOSCA_OUTPUT_FOLDER = f"{OUTPUT_FOLDER}/microtosca"
 GENERATED_DEPLOY_OUTPUT_FOLDER = f"{DEPLOY_OUTPUT_FOLDER}/auto_generated"
 
 # The path of the ignore config json schema
-IGNORE_CONFIG_SCHEMA_FILE = "../schema/ignore_config_schema.json"
+IGNORE_CONFIG_SCHEMA_FILE = "./schema/ignore_config_schema.json"
 
 
 

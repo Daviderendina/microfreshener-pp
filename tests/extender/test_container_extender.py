@@ -5,6 +5,7 @@ from microfreshener.core.model import MicroToscaModel, Service, Edge
 
 from project.extender.extender import KubeExtender
 from project.extender.impl.container_worker import ContainerWorker
+from project.extender.worker_names import CONTAINER_WORKER
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_workload import KubePod
@@ -30,7 +31,7 @@ class TestContainerExtender(TestCase):
         self.assertTrue(len(cluster.cluster_objects), 1)
         self.assertTrue(svc_node not in model.edge)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ContainerWorker()])
+        extender: KubeExtender = KubeExtender([CONTAINER_WORKER])
         extender.extend(model, cluster)
 
         self.assertTrue(len([n for n in model.nodes]), 1)
@@ -54,7 +55,7 @@ class TestContainerExtender(TestCase):
         self.assertTrue(len(cluster.cluster_objects), 1)
         self.assertTrue(svc_node not in model.edge)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ContainerWorker()])
+        extender: KubeExtender = KubeExtender([CONTAINER_WORKER])
         extender.extend(model, cluster)
 
         self.assertTrue(len([n for n in model.nodes]), 1)
@@ -78,7 +79,7 @@ class TestContainerExtender(TestCase):
         self.assertTrue(len(cluster.cluster_objects), 1)
         self.assertTrue(svc_node not in model.edge)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ContainerWorker()])
+        extender: KubeExtender = KubeExtender([CONTAINER_WORKER])
         extender.extend(model, cluster)
 
         self.assertTrue(len([n for n in model.nodes]), 1)
@@ -102,7 +103,7 @@ class TestContainerExtender(TestCase):
         self.assertTrue(len(cluster.cluster_objects), 1)
         self.assertEqual(len([n for n in model.edge.members]), 1)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ContainerWorker()])
+        extender: KubeExtender = KubeExtender([CONTAINER_WORKER])
         extender.extend(model, cluster)
 
         self.assertTrue(len([n for n in model.nodes]), 1)

@@ -1,23 +1,20 @@
 from abc import abstractmethod
 
 from microfreshener.core.model.microtosca import MicroToscaModel
-from typing import List
 
 from project.extender.impl.istio_circuit_breaker_worker import IstioCircuitBreakerWorker
 from project.extender.impl.istio_gateway_worker import IstioGatewayWorker
 from project.extender.impl.istio_timeout_worker import IstioTimeoutWorker
 from project.extender.impl.message_router_edge_worker import MessageRouterEdgeWorker
 from project.extender.impl.name_worker import NameWorker
-from project.extender.kubeworker import KubeWorker
 from project.extender.impl.compute_node_worker import ComputeNodeWorker
 from project.extender.impl.container_worker import ContainerWorker
 from project.extender.impl.database_worker import DatabaseWorker
 from project.extender.impl.ingress_worker import IngressWorker
 from project.extender.impl.service_worker import ServiceWorker
-from project.extender.worker_names import NAME_WORKER
-from project.ignorer.impl.ignore_config import IgnoreConfig
-from project.ignorer.impl.ignore_nothing import IgnoreNothing
+from project.extender.worker_names import *
 from project.ignorer.ignorer import Ignorer
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
 
 
@@ -30,11 +27,27 @@ class Extender:
 
 class KubeExtender(Extender):
 
-    def __init__(self, worker_list: List[KubeWorker] = None):
-        if worker_list is None:
+    WORKER_MAPPING = {
+        NAME_WORKER: NameWorker(),
+        CONTAINER_WORKER: ContainerWorker(),
+        SERVICE_WORKER: ServiceWorker(),
+        MESSAGE_ROUTER_EDGE_WORKER: MessageRouterEdgeWorker(),
+        INGRESS_WORKER: IngressWorker(),
+        ISTIO_GATEWAY_WORKER: IstioGatewayWorker(),
+        ISTIO_TIMEOUT_WORKER: IstioTimeoutWorker(),
+        ISTIO_CIRCUIT_BREAKER: IstioCircuitBreakerWorker(),
+        COMPUTE_NODE_WORKER: ComputeNodeWorker(),
+        DATABASE_WORKER: DatabaseWorker()
+    }
+
+    def __init__(self, worker_names_list=None):
+        self.worker_list = []
+
+        if worker_names_list is None:
             self.set_all_workers()
         else:
-            self.worker_list: List[KubeWorker] = worker_list
+            for worker_name in worker_names_list:
+                self.add_worker(worker_name)
         self._check_workers_order()
 
     @property
@@ -50,18 +63,18 @@ class KubeExtender(Extender):
                     if worker_name == next_worker.name:
                         raise AttributeError(f"Worker order does not respect execution constraints: executing worker '{worker.name}' before worker '{worker_name}'")
 
-    def add_worker(self, worker: KubeWorker):
-        self.worker_list.append(worker)
+    def add_worker(self, worker_name: str):
+        worker = self.WORKER_MAPPING.get(worker_name, None)
+        if worker:
+            self.worker_list.append(worker)
 
-    def extend(self, model: MicroToscaModel, cluster: KubeCluster, ignore: IgnoreConfig = IgnoreNothing()) -> MicroToscaModel:
+    def extend(self, model: MicroToscaModel, cluster: KubeCluster, ignorer=IgnoreNothing()) -> MicroToscaModel:
         extended_model = model
         for worker in self.worker_list:
-            extended_model = worker.refine(model, cluster, ignore)
+            extended_model = worker.refine(model, cluster, ignorer)
         return extended_model
 
-    def set_all_workers(self):
-        self.worker_list = [NameWorker(), ContainerWorker(), ServiceWorker(), MessageRouterEdgeWorker(), IngressWorker(),
-                            IstioGatewayWorker(), IstioTimeoutWorker(), IstioCircuitBreakerWorker(),
-                            ComputeNodeWorker(), DatabaseWorker()]
+    def set_all_workers(self, exclude: list = []):
+        self.worker_list = [w for w in self.WORKER_MAPPING.values() if w.name not in exclude]
 
 

@@ -15,7 +15,7 @@ spec:
         service: warehouse
     spec:
       containers:
-      - name: warehouse
+      - name: S3-warehouse
         image: generic-img
         ports:
         - containerPort: 8786

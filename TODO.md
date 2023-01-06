@@ -6,8 +6,8 @@
 - ~~Ripristinare i nomi dei nodi originali dopo che il worker li modifica~~
 - Il parametro output che viene passato al main non viene utilizzato
 - Usare ignore node nella demo
-- Estendere microFreshener per garantire compatiblità con i nuovi nodi
 - 
+- Estendere microFreshener per garantire compatiblità con i nuovi nodi
 - microFreshener-core get_node_by_name
 -  Modificate la definizione di **microTOSCA**
 -  Fare il push del _core_
@@ -28,16 +28,19 @@
 
 ## Testing
 -  Testare il solver
--  Testare lo sniffer nuovo
 - Testare YMLImporter con i nuovi nodi
--  Testare il core con le nuove modifiche
 - Testare anche con JSON i modelli?
+
+
 -  ~~Controllare che tutto viene effettuato nel modo giusto, aiutandosi col report~~
+-  ~~Testare il core con le nuove modifiche~~
+- ~~Testare lo sniffer nuovo~~
 
 ## Aggiunte successive
 -  Penso che se viene dato il nome in automatico ad es. usando generate name, si spacchi tutto!
 - Se tutto quello definito con istio non ha il ns, devo aggiungere al nome il ns dell'oggetto che lo definisce
 - Compatibilità con microMiner
+- Fare un worker che mi controlla tutti i Service e me li converte in Container, sia per quando riguarda il nome che (soprattutto) per quanto riguarda i container multipli. Se c'è un Service che è in realtà un Pod che definisce due container, genero i nodi necessari
 
 #### Garantire compatibilità con microMiner
 microTOSCA genera:

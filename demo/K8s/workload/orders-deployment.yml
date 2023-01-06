@@ -15,7 +15,7 @@ spec:
         service: orders
     spec:
       containers:
-      - name: orders
+      - name: S1-orders
         image: my-orders
         ports:
         - containerPort: 8080

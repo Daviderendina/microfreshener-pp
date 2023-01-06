@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: catalogue-edge
+  name: MR8-catalogue-edge
 spec:
   type: NodePort
   selector:

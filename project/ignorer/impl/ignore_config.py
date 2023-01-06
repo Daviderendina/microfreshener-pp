@@ -59,3 +59,8 @@ class IgnoreConfig(Ignorer):
             return False
         return True
 
+    def adjust_names(self, name_worker_mapping: dict):
+        for new_name, old_name in name_worker_mapping.items():
+            for rule in self.config.get("rules", []):
+                if rule.get("node", {}).get("name", "") == old_name:
+                    rule["node"]["name"] = new_name

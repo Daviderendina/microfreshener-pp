@@ -16,7 +16,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-      - name: mysql-catalogue
+      - name: S8-mysql-catalogue
         image: mysql-database:latest
         ports:
         - containerPort: 3306

@@ -13,6 +13,7 @@ from project.constants import IGNORE_CONFIG_SCHEMA_FILE, TOSCA_OUTPUT_FOLDER
 from project.exporter.yamlkexporter import YamlKExporter
 from project.extender.extender import KubeExtender
 from project.extender.name_adjuster import NameAdjuster
+from project.extender.worker_names import NAME_WORKER
 from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
 from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.importer.yamlkimporter import YamlKImporter
@@ -59,13 +60,21 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
     importer = YamlKImporter()
     cluster = importer.Import(kubedeploy)
 
+    # Run name worker before everything
+    name_extender = KubeExtender([NAME_WORKER])
+    name_extender.extend(model, cluster)
+
     # Read ignore config from disk
-    ignore_config = IgnoreConfig(ignore_config_path, IGNORE_CONFIG_SCHEMA_FILE) if ignore_config_path else IgnoreNothing()
+    if ignore_config_path:
+        ignorer = IgnoreConfig(ignore_config_path, IGNORE_CONFIG_SCHEMA_FILE)
+        ignorer.adjust_names(name_extender.name_mapping)
+    else:
+        ignorer = IgnoreNothing()
 
     # Run extender
     extender = KubeExtender()
-    extender.set_all_workers()
-    extender.extend(model, cluster)
+    extender.set_all_workers(exclude=[NAME_WORKER])
+    extender.extend(model, cluster, ignorer)
 
     # Create name adjuster for export model with original names
     adjuster = NameAdjuster(extender.name_mapping)
@@ -76,9 +85,11 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
     smell_solved = -1
     while smell_solved != 0:
         # Run sniffer on the model
-        analyser = build_analyser(model, ignore_config)
+        analyser = build_analyser(model, ignorer)
         analyser_result = analyser.run(smell_as_dict=False)
+
         smells = [smell for sublist in [smell.get("smells", []) for sublist in analyser_result.values() for smell in sublist] for smell in sublist]
+        smells = ignore_smells(smells, ignorer)
 
         # Run smell solver
         solver = build_solver(cluster, model, refactoring)
@@ -91,6 +102,11 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
 
     # Export report
     RefactoringReport().export()
+
+
+def ignore_smells(smells, ignorer):
+    #TODO in microfreshener-core smell ignoring appear to be commented out. For the moment I have to ignore in this way
+    return [s for s in smells if not ignorer.is_ignored(s.node, IgnoreType.SMELLS, s.name)]
 
 
 def export_extended_model(model, adjuster):

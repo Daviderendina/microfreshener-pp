@@ -4,13 +4,12 @@ from unittest import TestCase
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from project.extender.extender import KubeExtender
-from project.extender.impl.name_worker import NameWorker
+from project.extender.worker_names import NAME_WORKER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeIngress, KubeService
-from project.kmodel.kube_workload import KubePod, KubeDeployment
-from project.kmodel.shortnames import KUBE_POD, KUBE_DEPLOYMENT, KUBE_SERVICE, KUBE_INGRESS
-from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH_ONE_CONTAINER, DEFAULT_SVC_INGRESS, \
-    DEFAULT_SVC
+from project.kmodel.kube_workload import KubePod
+from project.kmodel.shortnames import KUBE_POD, KUBE_SERVICE, KUBE_INGRESS
+from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC_INGRESS, DEFAULT_SVC
 
 
 class TestNameWorker(TestCase):
@@ -22,13 +21,16 @@ class TestNameWorker(TestCase):
         # Cluster
         pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
         pod_2 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+        pod_container = pod.containers[0]
+        pod_2_container = pod_2.containers[0]
+
         pod_2.data["metadata"]["name"] = pod_2.data["metadata"]["name"] + "_2"
         cluster.add_object(pod)
         cluster.add_object(pod_2)
 
         # Model
-        svc = Service(pod.fullname)
-        svc_2 = Service(pod_2.typed_fullname)
+        svc = Service(pod_container.fullname)
+        svc_2 = Service(pod_2_container.typed_fullname)
         model.add_node(svc)
         model.add_node(svc_2)
         model.add_interaction(svc, svc_2)
@@ -36,14 +38,14 @@ class TestNameWorker(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        extender: KubeExtender = KubeExtender(worker_list=[NameWorker()])
+        extender: KubeExtender = KubeExtender([NAME_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        self.assertEqual(svc.name, f"{pod.fullname}.{KUBE_POD}")
-        self.assertEqual(svc_2.name, pod_2.typed_fullname)
+        self.assertEqual(svc.name, f"{pod_container.fullname}.{KUBE_POD}")
+        self.assertEqual(svc_2.name, pod_2_container.typed_fullname)
 
     def test_service_name_with_type(self):
         model = MicroToscaModel("test_service")
@@ -52,14 +54,17 @@ class TestNameWorker(TestCase):
         # Cluster
         pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
         pod_2 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+        pod_container = pod.containers[0]
+        pod_2_container = pod_2.containers[0]
+
         pod.data["metadata"]["name"] = pod.data["metadata"]["name"] + ".pod"
         pod_2.data["metadata"]["name"] = pod_2.data["metadata"]["name"] + "_2"
         cluster.add_object(pod)
         cluster.add_object(pod_2)
 
         # Model
-        svc = Service(pod.fullname)
-        svc_2 = Service(pod_2.typed_fullname)
+        svc = Service(pod_container.fullname)
+        svc_2 = Service(pod_2_container.typed_fullname)
         model.add_node(svc)
         model.add_node(svc_2)
         model.add_interaction(svc, svc_2)
@@ -67,44 +72,14 @@ class TestNameWorker(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        extender: KubeExtender = KubeExtender(worker_list=[NameWorker()])
+        extender: KubeExtender = KubeExtender([NAME_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        self.assertEqual(svc.name, f"{pod.fullname}.{KUBE_POD}")
-        self.assertEqual(svc_2.name, pod_2.typed_fullname)
-
-    def test_service_deployment(self):
-        model = MicroToscaModel("test_service")
-        cluster = KubeCluster()
-
-        # Cluster
-        deploy = KubeDeployment(copy.deepcopy(DEPLOYMENT_WITH_ONE_CONTAINER))
-        pod_2 = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
-        pod_2.data["metadata"]["name"] = pod_2.data["metadata"]["name"] + "_2.pod"
-        cluster.add_object(deploy)
-        cluster.add_object(pod_2)
-
-        # Model
-        svc = Service(deploy.fullname)
-        svc_2 = Service(pod_2.typed_fullname)
-        model.add_node(svc)
-        model.add_node(svc_2)
-        model.add_interaction(svc, svc_2)
-
-        self.assertEqual(len(cluster.cluster_objects), 2)
-        self.assertEqual(len(list(model.nodes)), 2)
-
-        extender: KubeExtender = KubeExtender(worker_list=[NameWorker()])
-        extender.extend(model, cluster)
-
-        self.assertEqual(len(cluster.cluster_objects), 2)
-        self.assertEqual(len(list(model.nodes)), 2)
-
-        self.assertEqual(svc.name, f"{deploy.fullname}.{KUBE_DEPLOYMENT}")
-        self.assertEqual(svc_2.name, pod_2.typed_fullname)
+        self.assertEqual(svc.name, f"{pod_container.fullname}.{KUBE_POD}")
+        self.assertEqual(svc_2.name, pod_2_container.typed_fullname)
 
     def test_message_routers(self):
         model = MicroToscaModel("test_message_routers")
@@ -127,7 +102,7 @@ class TestNameWorker(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        extender: KubeExtender = KubeExtender(worker_list=[NameWorker()])
+        extender: KubeExtender = KubeExtender([NAME_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 2)

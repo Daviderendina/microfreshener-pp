@@ -6,6 +6,7 @@ from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, E
 from project.extender.extender import KubeExtender
 from project.extender.impl.message_router_edge_worker import MessageRouterEdgeWorker
 from project.extender.impl.service_worker import ServiceWorker
+from project.extender.worker_names import SERVICE_WORKER, MESSAGE_ROUTER_EDGE_WORKER
 from tests.data.kube_objects_dict import DEFAULT_SVC, POD_WITH_ONE_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
@@ -53,7 +54,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 4)
         self.assertEqual(len(list(model.nodes)), 4)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender: KubeExtender = KubeExtender([SERVICE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len([r for r in model.message_routers]), 1)
@@ -101,7 +102,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender: KubeExtender = KubeExtender([SERVICE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(list(model.message_routers)), 0)
@@ -152,7 +153,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 4)
         self.assertEqual(len(list(model.nodes)), 3)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender: KubeExtender = KubeExtender([SERVICE_WORKER])
         extender.extend(model, cluster)
 
         count = 0
@@ -206,7 +207,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len(list(model.nodes)), 3)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender: KubeExtender = KubeExtender([SERVICE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len([m for m in model.message_routers]), 1)
@@ -245,7 +246,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 1)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender: KubeExtender = KubeExtender([SERVICE_WORKER])
         extender.extend(model, cluster)
 
         count = 0
@@ -287,7 +288,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 1)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ServiceWorker()])
+        extender: KubeExtender = KubeExtender([SERVICE_WORKER])
         extender.extend(model, cluster)
 
         count = 0
@@ -330,7 +331,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(list(model.edge.members)), 1)
 
         # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[MessageRouterEdgeWorker()])
+        extender: KubeExtender = KubeExtender([MESSAGE_ROUTER_EDGE_WORKER])
         extender.extend(model, cluster)
 
         # Check results
@@ -362,7 +363,7 @@ class TestServiceExtender(TestCase):
         self.assertEqual(len(list(model.edge.members)), 1)
 
         # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[MessageRouterEdgeWorker()])
+        extender: KubeExtender = KubeExtender([MESSAGE_ROUTER_EDGE_WORKER])
         extender.extend(model, cluster)
 
         # Check results

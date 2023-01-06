@@ -7,7 +7,7 @@ metadata:
 spec:
   hostNetwork: True
   containers:
-  - name: login
+  - name: S7-login
     image: generic-img
     ports:
     - containerPort: 8000

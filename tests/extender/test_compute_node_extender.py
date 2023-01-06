@@ -5,7 +5,7 @@ from microfreshener.core.model.microtosca import MicroToscaModel
 from microfreshener.core.model.nodes import Service, MessageRouter, Compute
 
 from project.extender.extender import KubeExtender
-from project.extender.impl.compute_node_worker import ComputeNodeWorker
+from project.extender.worker_names import COMPUTE_NODE_WORKER
 from project.kmodel.shortnames import KUBE_STATEFULSET
 
 from tests.data.kube_objects_dict import *
@@ -37,7 +37,7 @@ class TestComputeNodeExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 1)
         self.assertEqual(len(list(model.nodes)), 1)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ComputeNodeWorker()])
+        extender: KubeExtender = KubeExtender([COMPUTE_NODE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
@@ -61,7 +61,7 @@ class TestComputeNodeExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 2)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        extender: KubeExtender = KubeExtender(worker_list=[ComputeNodeWorker()])
+        extender: KubeExtender = KubeExtender([COMPUTE_NODE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 2)
@@ -93,7 +93,7 @@ class TestComputeNodeExtender(TestCase):
         self.assertEqual(len(list(model.nodes)), 3)
         self.assertFalse(Compute in list(map(type, model.nodes)))
 
-        extender: KubeExtender = KubeExtender(worker_list=[ComputeNodeWorker()])
+        extender: KubeExtender = KubeExtender([COMPUTE_NODE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 2)
@@ -117,7 +117,7 @@ class TestComputeNodeExtender(TestCase):
         self.assertEqual(len(list(model.nodes)), 1)
         self.assertFalse(Compute in list(map(type, model.nodes)))
 
-        extender: KubeExtender = KubeExtender(worker_list=[ComputeNodeWorker()])
+        extender: KubeExtender = KubeExtender([COMPUTE_NODE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
@@ -143,7 +143,7 @@ class TestComputeNodeExtender(TestCase):
         self.assertEqual(len(list(model.nodes)), 2)
         self.assertFalse(Compute in list(map(type, model.nodes)))
 
-        extender: KubeExtender = KubeExtender(worker_list=[ComputeNodeWorker()])
+        extender: KubeExtender = KubeExtender([COMPUTE_NODE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
@@ -167,7 +167,7 @@ class TestComputeNodeExtender(TestCase):
         self.assertEqual(len(list(model.nodes)), 1)
         self.assertFalse(Compute in list(map(type, model.nodes)))
 
-        extender: KubeExtender = KubeExtender(worker_list=[ComputeNodeWorker()])
+        extender: KubeExtender = KubeExtender([COMPUTE_NODE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
@@ -195,7 +195,7 @@ class TestComputeNodeExtender(TestCase):
         self.assertEqual(len(list(model.nodes)), 1)
         self.assertFalse(Compute in list(map(type, model.nodes)))
 
-        extender: KubeExtender = KubeExtender(worker_list=[ComputeNodeWorker()])
+        extender: KubeExtender = KubeExtender([COMPUTE_NODE_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 1)

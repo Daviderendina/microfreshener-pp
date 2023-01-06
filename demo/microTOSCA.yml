@@ -4,59 +4,67 @@ imports:
 topology_template:
   groups:
     edge:
-      members: [store.default.svc, orders.orders.default.deploy, login.login.default]
+      members:
+      - MR56-store.default.svc
+      - S1-orders.orders.default.deploy
+      - S7-login.login.default
+      - S4-supplier.supplier.default.pod
       type: micro.groups.Edge
   node_templates:
-    orders.orders.default.deploy:
+    S1-orders.orders.default.deploy:
       type: micro.nodes.Service
       requirements:
-        - {interaction: mysql-catalogue.catalogue.default.sts}
-        - {interaction: warehouse.default.svc}
-        - {interaction: users.default.svc}
-    users.users.default:
-      type: micro.nodes.Service
-    warehouse.warehouse-rs.default:
+        - {interaction: S8-mysql-catalogue.catalogue.default.sts}
+        - {interaction: MR3-warehouse.default.svc}
+        - {interaction: MR2-users.default.svc}
+    S2-users.users.default:
       type: micro.nodes.Service
       requirements:
-        - {interaction: supplier.supplier.default.pod}
-    supplier.supplier.default.pod:
-      type: micro.nodes.Service
-    e-commerce.store.default.deploy:
+        - interaction: Si10-mysql.users-db.default.pod
+    S3-warehouse.warehouse-rs.default:
       type: micro.nodes.Service
       requirements:
-        - {interaction: orders.default.svc}
-    shop.store.default:
+        - {interaction: S4-supplier.supplier.default.pod}
+    S4-supplier.supplier.default.pod:
+      type: micro.nodes.Service
+    S5-e-commerce.store.default.deploy:
       type: micro.nodes.Service
       requirements:
-        - {interaction: orders.default.svc}
-    login.login.default:
+        - {interaction: MR1-orders.default.svc}
+    S6-shop.store.default:
       type: micro.nodes.Service
       requirements:
-        - {interaction: users.default.svc}
-    mysql-catalogue.catalogue.default.sts:
+        - {interaction: MR1-orders.default.svc}
+    S7-login.login.default:
+      type: micro.nodes.Service
+      requirements:
+        - {interaction: MR2-users.default.svc}
+    S8-mysql-catalogue.catalogue.default.sts:
+      type: micro.nodes.Service
+    Si10-mysql.users-db.default.pod:
       type: micro.nodes.Service
 
-    orders.default.svc:
+    MR1-orders.default.svc:
       type: micro.nodes.MessageRouter
       requirements:
-        - {interaction: orders.orders.default.deploy}
-    users.default.svc:
+        - {interaction: S1-orders.orders.default.deploy}
+    MR2-users.default.svc:
       type: micro.nodes.MessageRouter
       requirements:
-        - {interaction: users.users.default}
-    warehouse.default.svc:
+        - {interaction: S2-users.users.default}
+    MR3-warehouse.default.svc:
       type: micro.nodes.MessageRouter
       requirements:
-        - {interaction: warehouse.warehouse-rs.default}
-    store.default.svc:
+        - {interaction: S3-warehouse.warehouse-rs.default}
+    MR56-store.default.svc:
       type: micro.nodes.MessageRouter
       requirements:
-        - {interaction: e-commerce.store.default.deploy}
-        - {interaction: shop.store.default}
-    catalogue-edge.default.svc:
+        - {interaction: S5-e-commerce.store.default.deploy}
+        - {interaction: S6-shop.store.default}
+    MR8-catalogue-edge.default.svc:
       type: micro.nodes.MessageRouter
       requirements:
-        - {interaction: mysql-catalogue.catalogue.default.sts}
+        - {interaction: S8-mysql-catalogue.catalogue.default.sts}
 
   relationship_templates:
     c:

@@ -1,0 +1,40 @@
+{
+  "rules" : [
+    {
+      "node" : {
+      	"name": "container.name.namespace",
+        "type": "micro.nodes.Service"
+      },
+      "ignore_worker": [
+        "all",
+        "Compute-node",
+        "Container",
+        "Database",
+        "Ingress",
+        "Istio",
+        "Service",
+        "Message-router-edge",
+        "Istio-timeout",
+        "Istio-circuit-breaker",
+        "Istio-gateway"
+      ],
+      "ignore_refactoring": [
+        "all",
+        "Add-message-router",
+        "Add-circuit-breaker",
+        "Use-timeout",
+        "Add-api-gateway",
+        "Split-service-in-two-pods"
+      ],
+      "ignore_smell": [
+        "all",
+        "Endpoint-based-service-interaction",
+        "Wobbly-service-interaction",
+        "Shared-persistency",
+        "No-api-gateway",
+        "Cross-team-data-management",
+        "Multiple-services-in-one-container"
+      ]
+    }
+  ]
+}

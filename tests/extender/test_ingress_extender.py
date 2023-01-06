@@ -5,6 +5,7 @@ from microfreshener.core.model import MicroToscaModel, Service, Edge, MessageRou
 
 from project.extender.extender import KubeExtender
 from project.extender.impl.ingress_worker import IngressWorker
+from project.extender.worker_names import INGRESS_WORKER
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC, DEFAULT_SVC_INGRESS
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService, KubeIngress
@@ -67,7 +68,7 @@ class TestIngressExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len(list(model.nodes)), 2)
 
-        extender: KubeExtender = KubeExtender(worker_list=[IngressWorker()])
+        extender: KubeExtender = KubeExtender([INGRESS_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 3)
@@ -124,7 +125,7 @@ class TestIngressExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len(list(model.nodes)), 3)
 
-        extender: KubeExtender = KubeExtender(worker_list=[IngressWorker()])
+        extender: KubeExtender = KubeExtender([INGRESS_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 3)
@@ -180,7 +181,7 @@ class TestIngressExtender(TestCase):
         self.assertEqual(len(cluster.cluster_objects), 3)
         self.assertEqual(len(list(model.nodes)), 3)
 
-        extender: KubeExtender = KubeExtender(worker_list=[IngressWorker()])
+        extender: KubeExtender = KubeExtender([INGRESS_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len(cluster.cluster_objects), 3)
@@ -280,7 +281,7 @@ class TestIngressExtender(TestCase):
         self.assertEqual(len(ing.interactions), 2)
         self.assertEqual(len(ing.incoming_interactions), 0)
 
-        extender: KubeExtender = KubeExtender(worker_list=[IngressWorker()])
+        extender: KubeExtender = KubeExtender([INGRESS_WORKER])
         extender.extend(model, cluster)
 
         # Check

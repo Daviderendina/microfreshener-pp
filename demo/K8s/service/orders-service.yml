@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: orders
+  name: MR1-orders
 spec:
   selector:
     service: orders

@@ -10,7 +10,7 @@ from microfreshener.core.model.type import MICROTOSCA_NODES_SERVICE
 from project.extender.extender import KubeExtender
 from project.extender.impl.compute_node_worker import ComputeNodeWorker
 from project.extender.impl.database_worker import DatabaseWorker
-from project.extender.worker_names import COMPUTE_NODE_WORKER
+from project.extender.worker_names import COMPUTE_NODE_WORKER, DATABASE_WORKER
 from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
 from project.ignorer.impl.manual_ignore_config import ManualIgnoreConfig
 from project.kmodel.kube_cluster import KubeCluster
@@ -174,7 +174,7 @@ class TestIgnoreConfig(TestCase):
         self.assertEqual(len(list(model.datastores)), 0)
         self.assertFalse(Compute in list(map(type, model.services)))
 
-        extender: KubeExtender = KubeExtender(worker_list=[ComputeNodeWorker(), DatabaseWorker()])
+        extender: KubeExtender = KubeExtender([COMPUTE_NODE_WORKER, DATABASE_WORKER])
         extender.extend(model, cluster, ignore_config)
 
         self.assertEqual(len(cluster.cluster_objects), 1)
@@ -202,7 +202,7 @@ class TestIgnoreConfig(TestCase):
         self.assertEqual(len(list(model.datastores)), 0)
         self.assertFalse(Compute in list(map(type, model.services)))
 
-        extender: KubeExtender = KubeExtender(worker_list=[ComputeNodeWorker(), DatabaseWorker()])
+        extender: KubeExtender = KubeExtender([COMPUTE_NODE_WORKER, DATABASE_WORKER])
         extender.extend(model, cluster, ignore_config)
 
         self.assertEqual(len(cluster.cluster_objects), 1)

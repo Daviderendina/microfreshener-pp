@@ -5,6 +5,7 @@ from microfreshener.core.model import MicroToscaModel, Service, Datastore
 
 from project.extender.extender import KubeExtender
 from project.extender.extender import DatabaseWorker
+from project.extender.worker_names import DATABASE_WORKER
 
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
@@ -36,7 +37,7 @@ class TestDatabaseExtender(TestCase):
         model.add_interaction(source_node=svc_uses_db1, target_node=database_node)
         model.add_interaction(source_node=svc_uses_db2, target_node=database_node)
 
-        extender: KubeExtender = KubeExtender(worker_list=[DatabaseWorker()])
+        extender: KubeExtender = KubeExtender([DATABASE_WORKER])
         extender.extend(model, cluster)
 
         # Check nodes present
@@ -79,7 +80,7 @@ class TestDatabaseExtender(TestCase):
         model.add_interaction(source_node=svc_uses_db1, target_node=database_node)
         model.add_interaction(source_node=svc_uses_db2, target_node=database_node)
 
-        extender: KubeExtender = KubeExtender(worker_list=[DatabaseWorker()])
+        extender: KubeExtender = KubeExtender([DATABASE_WORKER])
         extender.extend(model, cluster)
 
         # Check nodes present
@@ -115,7 +116,7 @@ class TestDatabaseExtender(TestCase):
 
         model.add_node(Service(pod.containers[0].name + "." + pod.typed_fullname))
 
-        extender: KubeExtender = KubeExtender(worker_list=[DatabaseWorker()])
+        extender: KubeExtender = KubeExtender([DATABASE_WORKER])
         extender.extend(model, cluster)
 
         # Check nodes present

@@ -15,11 +15,11 @@ spec:
         service: store
     spec:
       containers:
-      - name: shop
+      - name: S6-shop
         image: generic-image
         ports:
         - containerPort: 80
-      - name: e-commerce
+      - name: S5-e-commerce
         image: generic-image
         ports:
         - containerPort: 81

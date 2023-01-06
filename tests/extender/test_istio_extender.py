@@ -7,6 +7,7 @@ from project.extender.extender import KubeExtender
 from project.extender.impl.istio_circuit_breaker_worker import IstioCircuitBreakerWorker
 from project.extender.impl.istio_gateway_worker import IstioGatewayWorker
 from project.extender.impl.istio_timeout_worker import IstioTimeoutWorker
+from project.extender.worker_names import ISTIO_CIRCUIT_BREAKER, ISTIO_GATEWAY_WORKER, ISTIO_TIMEOUT_WORKER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC
@@ -60,7 +61,7 @@ class TestIstioExtender(TestCase):
         self.assertFalse(mr_node.incoming_interactions[1].timeout)
 
         # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[IstioTimeoutWorker()])
+        extender: KubeExtender = KubeExtender([ISTIO_TIMEOUT_WORKER])
         extender.extend(model, cluster)
 
         # Check results
@@ -118,7 +119,7 @@ class TestIstioExtender(TestCase):
     #     self.assertFalse(service_node_3.incoming_interactions[1].timeout)
     #
     #     # Run extender
-    #     extender: KubeExtender = KubeExtender(worker_list=[IstioWorker()])
+    #     extender: KubeExtender = KubeExtender([IstioWorker()])
     #     extender.extend(model, cluster)
     #
     #     # Check results
@@ -172,7 +173,7 @@ class TestIstioExtender(TestCase):
         self.assertFalse(mr_node.incoming_interactions[1].timeout)
 
         # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[IstioTimeoutWorker()])
+        extender: KubeExtender = KubeExtender([ISTIO_TIMEOUT_WORKER])
         extender.extend(model, cluster)
 
         # Check results
@@ -229,7 +230,7 @@ class TestIstioExtender(TestCase):
     #     self.assertFalse(service_node_3.incoming_interactions[1].timeout)
     #
     #     # Run extender
-    #     extender: KubeExtender = KubeExtender(worker_list=[IstioWorker()])
+    #     extender: KubeExtender = KubeExtender([IstioWorker()])
     #     extender.extend(model, cluster)
     #
     #     # Check results
@@ -290,7 +291,7 @@ class TestIstioExtender(TestCase):
         self.assertEqual(len([n for n in model.nodes]), 2)
         self.assertEqual(len(cluster.cluster_objects), 4)
 
-        extender: KubeExtender = KubeExtender(worker_list=[IstioGatewayWorker()])
+        extender: KubeExtender = KubeExtender([ISTIO_GATEWAY_WORKER])
         extender.extend(model, cluster)
 
         self.assertEqual(len([n for n in model.nodes]), 3)
@@ -344,7 +345,7 @@ class TestIstioExtender(TestCase):
         self.assertFalse(service_node_3.incoming_interactions[1].circuit_breaker)
 
         # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[IstioCircuitBreakerWorker()])
+        extender: KubeExtender = KubeExtender([ISTIO_CIRCUIT_BREAKER])
         extender.extend(model, cluster)
 
         # Check results
@@ -398,7 +399,7 @@ class TestIstioExtender(TestCase):
         self.assertFalse(mr_node.incoming_interactions[1].circuit_breaker)
 
         # Run extender
-        extender: KubeExtender = KubeExtender(worker_list=[IstioCircuitBreakerWorker()])
+        extender: KubeExtender = KubeExtender([ISTIO_CIRCUIT_BREAKER])
         extender.extend(model, cluster)
 
         # Check results

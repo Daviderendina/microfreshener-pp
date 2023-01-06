@@ -5,8 +5,9 @@ metadata:
   labels:
     service: supplier
 spec:
+  hostNetwork: True
   containers:
-  - name: supplier
+  - name: S4-supplier
     image: generic-img
     ports:
     - containerPort: 80

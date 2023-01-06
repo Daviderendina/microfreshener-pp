@@ -15,7 +15,7 @@ spec:
         service: users
     spec:
       containers:
-      - name: users
+      - name: S2-users
         image: generic-image
         ports:
         - containerPort: 80

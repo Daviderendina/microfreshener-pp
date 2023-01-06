@@ -1,0 +1,24 @@
+{
+  "rules" : [
+    {
+      "node" : {
+      	"name": "S4-supplier.supplier.default.pod",
+        "type": "micro.nodes.Service"
+      },
+      "ignore_smell": [
+        "No-api-gateway"
+      ]
+    },
+
+    {
+      "node" : {
+      	"name": "Si10-mysql.users-db.default.pod",
+        "type": "micro.nodes.Service"
+      },
+      "ignore_worker": [
+        "Database"
+      ],
+      "ignore_refactoring": []
+    }
+  ]
+}
