@@ -3,6 +3,7 @@ from microfreshener.core.analyser.smell import Smell, EndpointBasedServiceIntera
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from k8s_template.kobject_generators import generate_svc_clusterIP_for_container
+from project.ignorer.ignorer import IgnoreType
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.report.report_msg import cannot_find_container_msg, cannot_apply_refactoring_on_node_msg, \
@@ -19,10 +20,12 @@ class AddMessageRouterRefactoring(Refactoring):
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
         super().__init__(cluster, model, REFACTORING_ADD_MESSAGE_ROUTER)
 
-    def apply(self, smell: Smell):
-
+    def apply(self, smell: Smell, ignorer):
         if not isinstance(smell, EndpointBasedServiceInteractionSmell):
             raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
+
+        if ignorer.is_ignored(smell.node, IgnoreType.REFACTORING, self.name):
+            return False
 
         if isinstance(smell.node, Service):
             smell_container: KubeContainer = self.cluster.get_object_by_name(smell.node.name)

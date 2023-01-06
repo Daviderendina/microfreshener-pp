@@ -4,6 +4,7 @@ from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, M
 
 from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_svc_ports_for_container, \
     select_ports_for_node_port
+from project.ignorer.ignorer import IgnoreType
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeService
@@ -11,7 +12,7 @@ from project.kmodel.kube_workload import KubeWorkload
 from project.report.report import RefactoringReport
 from project.report.report_msg import cannot_apply_refactoring_on_node_msg, created_resource_msg, \
     resource_modified_msg, removed_exposing_params_msg, cannot_find_nodes_msg
-from project.report.report_row import RefactoringStatus, RefactoringReportRow
+from project.report.report_row import RefactoringStatus
 from project.solver.pending_ops import PENDING_OPS
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -21,8 +22,11 @@ class AddAPIGatewayRefactoring(Refactoring):
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
         super().__init__(cluster, model, REFACTORING_ADD_API_GATEWAY)
 
-    def apply(self, smell: NoApiGatewaySmell):
+    def apply(self, smell: NoApiGatewaySmell, ignorer):
         report_row = RefactoringReport().add_row(smell=smell, refactoring_name=self.name)
+
+        if ignorer.is_ignored(smell.node, IgnoreType.REFACTORING, self.name):
+            return False
 
         if not isinstance(smell, NoApiGatewaySmell):
             raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")

@@ -93,7 +93,7 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
 
         # Run smell solver
         solver = build_solver(cluster, model, refactoring)
-        smell_solved = solver.solve(smells)
+        smell_solved = solver.solve(smells, ignorer)
 
     # Export files
     adjuster.adjust(model)

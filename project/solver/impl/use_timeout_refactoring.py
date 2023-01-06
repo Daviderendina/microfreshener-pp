@@ -3,6 +3,7 @@ from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell, Sm
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from k8s_template.kobject_generators import generate_timeout_virtualsvc_for_svc
+from project.ignorer.ignorer import IgnoreType
 from project.kmodel.kube_cluster import KubeCluster
 from project.report.report_msg import cannot_apply_refactoring_on_node_msg, created_resource_msg
 from project.report.report_row import RefactoringStatus
@@ -15,9 +16,12 @@ class UseTimeoutRefactoring(Refactoring):
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
         super().__init__(cluster, model, REFACTORING_USE_TIMEOUT)
 
-    def apply(self, smell: Smell):
+    def apply(self, smell: Smell, ignorer):
         if not isinstance(smell, WobblyServiceInteractionSmell):
             raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
+
+        if ignorer.is_ignored(smell.node, IgnoreType.REFACTORING, self.name):
+            return False
 
         if isinstance(smell.node, Service):
             for link in smell.links_cause:

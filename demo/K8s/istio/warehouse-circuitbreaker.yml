@@ -3,7 +3,7 @@ kind: DestinationRule
 metadata:
   name: warehouse-service-cb
 spec:
-  host: warehouse
+  host: MR3-warehouse
   trafficPolicy:
     connectionPool:
       tcp:

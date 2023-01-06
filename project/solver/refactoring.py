@@ -4,6 +4,7 @@ from microfreshener.core.analyser.smell import Smell
 from microfreshener.core.model import MicroToscaModel
 
 from project.exporter.export_object import ExportObject
+from project.ignorer.ignorer import Ignorer
 from project.kmodel.kube_cluster import KubeCluster
 from project.report.report import RefactoringReport
 from project.report.report_row import RefactoringStatus
@@ -18,7 +19,7 @@ class Refactoring:
         self.name = name
 
     @abstractmethod
-    def apply(self, smell: Smell) -> bool:
+    def apply(self, smell: Smell, ignorer: Ignorer) -> bool:
         pass
 
     def set_solver_pending_ops(self, solver_pending_ops):

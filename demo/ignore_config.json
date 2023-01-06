@@ -17,8 +17,17 @@
       },
       "ignore_worker": [
         "Database"
-      ],
-      "ignore_refactoring": []
+      ]
+    },
+
+    {
+      "node": {
+        "name": "S1-orders.orders.default.deploy",
+        "type": "micro.nodes.Service"
+      },
+      "ignore_refactoring": [
+        "Use-timeout"
+      ]
     }
   ]
 }

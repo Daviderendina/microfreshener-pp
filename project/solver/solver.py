@@ -9,6 +9,7 @@ from typing import List
 from microfreshener.core.analyser.smell import Smell, NodeSmell, GroupSmell
 from microfreshener.core.model import MicroToscaModel
 
+from project.ignorer.ignorer import Ignorer
 from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
 from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
@@ -47,21 +48,21 @@ class KubeSolver(Solver):
 
         self.set_refactoring(refactoring_list)
 
-    def apply_refactoring(self, refactoring_list, smell):
+    def apply_refactoring(self, refactoring_list, smell, ignorer):
         i = 0
         refactoring_res = False
         while i < len(refactoring_list) and not refactoring_res:
-            refactoring_res = refactoring_list[i].apply(smell)
+            refactoring_res = refactoring_list[i].apply(smell, ignorer)
             i += 1
         return refactoring_res
 
-    def solve(self, smells):
+    def solve(self, smells, ignorer: Ignorer):
         smell_solved = 0
         for smell in [s for s in smells if s]:
             available_refactoring = self.get_available_refactoring(smell)
 
             if available_refactoring:
-                result = self.apply_refactoring(available_refactoring, smell)
+                result = self.apply_refactoring(available_refactoring, smell, ignorer)
                 if result:
                     smell_solved += 1
 

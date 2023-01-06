@@ -7,7 +7,7 @@ spec:
   http:
   - route:
     - destination:
-        host: users.default.svc
+        host: MR2-users.default.svc
     timeout: 2s
   hosts:
-  - users.default.svc
+  - MR2-users.default.svc
