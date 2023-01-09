@@ -32,7 +32,7 @@ REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "ad
 @click.option("--kubedeploy", "--deploy", required=True, type=str, help="Folder containing Kubernetes deploy files of the system")
 @click.option("--microtoscamodel", "--model", required=True, type=str, help="MicroTosca file containing the description of the system")
 @click.option("--output", "--out", default="./out", type=str, help="Output folder of the tool")
-@click.option("--impl", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one impl. This option can be used multiple times, for adding more than one impl", multiple=True)
+@click.option("--refactoring", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one refactoring. This option can be used multiple times, for adding more than one impl", multiple=True)
 @click.option("--ignore_config", "--ig", type=str, help="The file that specifies which smell, refactoring or worker ignore")
 def main(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config):
     run(kubedeploy, microtoscamodel, output, refactoring, ignore_config)
