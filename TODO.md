@@ -36,6 +36,7 @@
 - ~~Testare lo sniffer nuovo~~
 
 ## Aggiunte successive
+- Migliorare l'ignorer: lo importo, e poi in ogni classe (solver, etc..) setto cosa c'è da ignorare: in questo modo, tolgo la dipendenza diretta tra Ignorer e Worker
 -  Penso che se viene dato il nome in automatico ad es. usando generate name, si spacchi tutto!
 - Se tutto quello definito con istio non ha il ns, devo aggiungere al nome il ns dell'oggetto che lo definisce
 - Compatibilità con microMiner
