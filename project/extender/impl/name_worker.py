@@ -31,9 +31,20 @@ class NameWorker(KubeWorker):
                     # TODO Under the assumption that Service (or Datastore, MessageBorker) == Container, I can directly
                     # research in Container in order to specify even Service only with container name
                     if isinstance(node, Service) or isinstance(node, MessageBroker) or isinstance(node, Datastore):
+                        # Node is directly name as a container
                         container = cluster.get_object_by_name(node.name, KubeContainer)
                         if container:
                             self._rename_node(model, node, container.typed_fullname)
+
+                        # Node is named as the pod
+                        workload = cluster.get_object_by_name(node.name, KubeWorkload)
+                        if workload:
+                            if len(workload.containers) == 1:
+                                self._rename_node(model, node, workload.containers[0].typed_fullname)
+                            else:
+                                raise ValueError(f"Cannot determine which container is represented by node {node.name}. "
+                                                 f"Please change its name in the model following the format "
+                                                 f"container-name.name.namespace.type or ignore it")
 
                     if isinstance(node, Compute):
                         workload = cluster.get_object_by_name(node.name, KubeWorkload)

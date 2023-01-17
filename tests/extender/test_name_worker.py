@@ -9,7 +9,8 @@ from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeIngress, KubeService
 from project.kmodel.kube_workload import KubePod
 from project.kmodel.shortnames import KUBE_POD, KUBE_SERVICE, KUBE_INGRESS
-from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC_INGRESS, DEFAULT_SVC
+from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC_INGRESS, DEFAULT_SVC, \
+    POD_WITH_TWO_CONTAINER
 
 
 class TestNameWorker(TestCase):
@@ -46,6 +47,59 @@ class TestNameWorker(TestCase):
 
         self.assertEqual(svc.name, f"{pod_container.fullname}.{KUBE_POD}")
         self.assertEqual(svc_2.name, pod_2_container.typed_fullname)
+
+    def test_service_name_is_pod_one_container(self):
+        model = MicroToscaModel("test_service")
+        cluster = KubeCluster()
+
+        # Cluster
+        pod = KubePod(copy.deepcopy(POD_WITH_ONE_CONTAINER))
+        pod_container = pod.containers[0]
+        cluster.add_object(pod)
+
+        # Model
+        svc = Service(pod.fullname)
+        model.add_node(svc)
+
+        self.assertEqual(len(cluster.cluster_objects), 1)
+        self.assertEqual(len(list(model.nodes)), 1)
+
+        extender: KubeExtender = KubeExtender([NAME_WORKER])
+        extender.extend(model, cluster)
+
+        self.assertEqual(len(cluster.cluster_objects), 1)
+        self.assertEqual(len(list(model.nodes)), 1)
+
+        self.assertEqual(svc.name, f"{pod_container.fullname}.{KUBE_POD}")
+
+    def test_service_name_is_pod_two_container(self):
+        model = MicroToscaModel("test_service")
+        cluster = KubeCluster()
+
+        # Cluster
+        pod = KubePod(copy.deepcopy(POD_WITH_TWO_CONTAINER))
+        pod_container = pod.containers[0]
+        cluster.add_object(pod)
+
+        # Model
+        svc = Service(pod.fullname)
+        model.add_node(svc)
+
+        self.assertEqual(len(cluster.cluster_objects), 1)
+        self.assertEqual(len(list(model.nodes)), 1)
+
+        error = False
+        try:
+            extender: KubeExtender = KubeExtender([NAME_WORKER])
+            extender.extend(model, cluster)
+        except:
+            error = True
+
+        self.assertEqual(len(cluster.cluster_objects), 1)
+        self.assertEqual(len(list(model.nodes)), 1)
+
+        self.assertTrue(error)
+
 
     def test_service_name_with_type(self):
         model = MicroToscaModel("test_service")
