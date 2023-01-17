@@ -3,15 +3,16 @@ from microfreshener.core.analyser.smell import NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, MessageBroker
 
 from k8s_template.kobject_generators import generate_svc_NodePort_for_container, generate_svc_ports_for_container, \
-    select_ports_for_node_port
+    select_ports_for_node_port, convert_port_to_nodeport
 from project.ignorer.ignorer import IgnoreType
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeService
 from project.kmodel.kube_workload import KubeWorkload
 from project.report.report import RefactoringReport
 from project.report.report_msg import cannot_apply_refactoring_on_node_msg, created_resource_msg, \
-    resource_modified_msg, removed_exposing_params_msg, cannot_find_nodes_msg
+    resource_modified_msg, removed_exposing_params_msg, cannot_find_nodes_msg, exposed_node_port_change
 from project.report.report_row import RefactoringStatus
 from project.solver.pending_ops import PENDING_OPS
 from project.solver.refactoring import RefactoringNotSupportedError, Refactoring
@@ -22,7 +23,7 @@ class AddAPIGatewayRefactoring(Refactoring):
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
         super().__init__(cluster, model, REFACTORING_ADD_API_GATEWAY)
 
-    def apply(self, smell: NoApiGatewaySmell, ignorer):
+    def apply(self, smell: NoApiGatewaySmell, ignorer=IgnoreNothing()):
         report_row = RefactoringReport().add_row(smell=smell, refactoring_name=self.name)
 
         if ignorer.is_ignored(smell.node, IgnoreType.REFACTORING, self.name):
@@ -43,7 +44,9 @@ class AddAPIGatewayRefactoring(Refactoring):
 
                 # Case: exists a Service that can expose this object
                 if expose_svc and expose_svc.is_reachable_from_outside():
-                    expose_svc.ports.extend(ports_to_expose)
+                    for port in ports_to_expose:
+                        port["node_port"] = convert_port_to_nodeport(expose_svc, port["node_port"])
+                        expose_svc.ports.append(port)
                     self._refactor_model(expose_svc, smell.node, service_exists=True)
 
                     # Update report row
@@ -55,14 +58,16 @@ class AddAPIGatewayRefactoring(Refactoring):
 
                 # Case: need to create a new Service
                 else:
-                    node_port_service = generate_svc_NodePort_for_container(workload, container, workload.host_network)
+                    node_port_service, port_mapping = generate_svc_NodePort_for_container(workload, container, workload.host_network)
 
                     exp = self._add_to_cluster(node_port_service)
                     self._refactor_model(node_port_service, smell.node, service_exists=False)
 
                     # Update report row
                     report_row.add_message(created_resource_msg(node_port_service, exp.out_fullname))
-                    report_row.status = RefactoringStatus.SUCCESSFULLY_APPLIED
+                    for new_port, old_port in port_mapping.items():
+                        report_row.add_message(exposed_node_port_change(workload.fullname, old_port, new_port))
+                    report_row.status = RefactoringStatus.PARTIALLY_APPLIED
 
                     result = True
 

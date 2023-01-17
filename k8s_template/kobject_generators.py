@@ -10,7 +10,8 @@ from project.kmodel.kube_workload import KubePod, KubeWorkload
 from config.kube_config import CIRCUIT_BREAKER_CONFIG as CB
 
 MF_NAME_SUFFIX = "mf"
-MF_SERVICE_SUFFIX = f"svc-{MF_NAME_SUFFIX}"
+MF_NODEPORT_SERVICE_SUFFIX = f"nodeport-svc-{MF_NAME_SUFFIX}"
+MF_CLUSTERIP_SERVICE_SUFFIX = f"clusterip-svc-{MF_NAME_SUFFIX}"
 MF_VIRTUALSERVICE_TIMEOUT_NAME = "vs-timeout"
 MF_CIRCUITBREAKER_NAME = "circuitbreaker"
 
@@ -61,7 +62,7 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
 
     # Generate service
     service_dict = copy.deepcopy(SERVICE_CLUSTERIP_TEMPLATE)
-    service_dict["metadata"]["name"] = f"{defining_obj.name}-clusterip-{MF_SERVICE_SUFFIX}"
+    service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_CLUSTERIP_SERVICE_SUFFIX}"
     service_dict["metadata"]["namespace"] = defining_obj.namespace
     service_dict["spec"]["ports"] = container_ports
     service_dict["spec"]["selector"] = service_selector
@@ -75,6 +76,25 @@ def generate_svc_clusterIP_for_container(defining_obj: KubeWorkload, container: 
 
     return service
 
+def convert_port_to_nodeport(service, port_to_expose):
+    LOWER_BOUND = 30000
+    UPPER_BOUND = 32767
+
+    new_port = LOWER_BOUND
+
+    if port_to_expose >= LOWER_BOUND and port_to_expose <= UPPER_BOUND:
+        return None
+
+    defined_node_ports = [p.get("node_port", -1) for p in service.ports]
+    while new_port in defined_node_ports and new_port <= LOWER_BOUND:
+        new_port += 1
+
+    if new_port > UPPER_BOUND:
+        return None
+
+    return new_port
+
+
 
 def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: KubeContainer,
                                         is_host_network: bool) -> KubeService:
@@ -86,11 +106,17 @@ def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: K
 
     # Generate service
     service_dict = copy.deepcopy(SERVICE_NODEPORT_TEMPLATE)
-    service_dict["metadata"]["name"] = f"{defining_obj.name}-nodeport-{MF_SERVICE_SUFFIX}"
+    service_dict["metadata"]["name"] = f"{defining_obj.name}-{MF_NODEPORT_SERVICE_SUFFIX}"
     service_dict["metadata"]["namespace"] = defining_obj.namespace
     service_dict["spec"]["ports"] = service_ports
     service_dict["spec"]["selector"] = service_selector
     service = KubeService(service_dict)
+
+    port_mapping = {}
+    for port in service.ports:
+        new_port = convert_port_to_nodeport(service, port["node_port"])
+        port_mapping[new_port] = port["node_port"]
+        port["node_port"] = new_port
 
     # Set labels to exposed object
     if isinstance(defining_obj, KubePod):
@@ -98,7 +124,7 @@ def generate_svc_NodePort_for_container(defining_obj: KubeWorkload, container: K
     else:
         defining_obj.add_pod_labels(service_selector)
 
-    return service
+    return service, port_mapping
 
 
 def generate_random_label(label_key: str):

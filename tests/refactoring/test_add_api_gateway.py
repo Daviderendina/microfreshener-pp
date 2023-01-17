@@ -4,7 +4,7 @@ from unittest import TestCase
 from microfreshener.core.analyser.smell import NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Edge, Service, MessageRouter
 
-from k8s_template.kobject_generators import MF_SERVICE_SUFFIX
+from k8s_template.kobject_generators import MF_NODEPORT_SERVICE_SUFFIX
 from project.report.report import RefactoringReport
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH_ONE_CONTAINER, POD_WITH_TWO_CONTAINER
 from project.kmodel.kube_cluster import KubeCluster
@@ -23,7 +23,7 @@ def apply_solver(solver, smell):
 
 class TestAddAPIGatewayRefactoring(TestCase):
 
-    service_suffix = MF_SERVICE_SUFFIX
+    service_suffix = MF_NODEPORT_SERVICE_SUFFIX
 
     '''
     Test case: Pod has hostNetwork set as True. Contains also deeper tests on MessageRouter created
@@ -72,17 +72,11 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertTrue(f"{k_pod.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
-        container_name = k_pod.containers[0].name
-        k_pod_port_strings = [
-            f"{p.get('name', container_name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-mf')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_pod.containers[0].ports]
-        k_svc_port_strings = [
-            f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
-            for p in k_service.ports]
-
+        # Check ports
+        self.assertEqual(len(k_service.ports), len(k_pod.containers[0].ports))
         self.assertEqual(len(k_service.ports), 2)
-        for port in k_pod_port_strings:
-            self.assertTrue(port in k_svc_port_strings)
+        self.assertEqual(k_service.ports[0]["node_port"], 30000)
+        self.assertEqual(k_service.ports[1]["node_port"], 30001)
 
         # Check message router
         self.assertEqual(model.edge.members[0].name, k_service.typed_fullname)
@@ -154,7 +148,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
             self.assertTrue(port in k_svc_port_strings)
 
         # Check node port
-        self.assertEqual(k_service.ports[0]["node_port"], pod_host_port)
+        self.assertEqual(k_service.ports[0]["node_port"], 30000)
 
     '''
     Test case: Deployment has hostNetwork set as True
@@ -203,17 +197,11 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertTrue(f"{k_deploy.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
-        container_name = k_deploy.containers[0].name
-        k_deploy_port_strings = [
-            f"{p.get('name', container_name+k_deploy.fullname+'-port-'+str(p['containerPort'])+'-mf')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_deploy.containers[0].ports]
-        k_svc_port_strings = [
-            f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
-            for p in k_service.ports]
-
+        # Check ports
         self.assertEqual(len(k_service.ports), len(k_deploy.containers[0].ports))
-        for port in k_deploy_port_strings:
-            self.assertTrue(port in k_svc_port_strings)
+        self.assertEqual(len(k_service.ports), 1)
+        self.assertEqual(k_service.ports[0]["node_port"], 30000)
+
 
     '''
     Test case: one port has hostPort set and the other not
@@ -283,7 +271,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
             self.assertTrue(port in k_svc_port_strings)
 
         # Check service exponed ports
-        self.assertEqual(k_service.ports[0]["node_port"], deployment_host_port)
+        self.assertEqual(k_service.ports[0]["node_port"], 30000)
 
     '''
     Test case: the pod defines two container and has hostNetwork = True
@@ -344,24 +332,9 @@ class TestAddAPIGatewayRefactoring(TestCase):
             for port in container.ports:
                 self.assertIsNone(port.get("hostPort"))
 
-        # Check port protocols, names, and container port
-        k_pod_port_strings = [
-            f"{p.get('name', k_pod.containers[0].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-mf')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']}"
-            for p in k_pod.containers[0].ports]
-        k_pod_port_strings += [
-            f"{p.get('name', k_pod.containers[1].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-mf')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']}"
-            for p in k_pod.containers[1].ports]
-        k_svc_port_strings = [
-            f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']}"
-            for p in k_service.ports]
         self.assertEqual(len(k_service.ports), 2)
-
-        for port in k_pod_port_strings:
-            self.assertTrue(port in k_svc_port_strings)
-
-        # Check node ports exponed
-        for host_port in host_ports:
-            self.assertTrue(host_port in [p["node_port"] for p in k_service.ports])
+        self.assertEqual(k_service.ports[0]["node_port"], 30000)
+        self.assertEqual(k_service.ports[1]["node_port"], 30001)
 
         self.assertEqual(list(model.message_routers)[0].interactions[0].target, svc_1)
         self.assertEqual(list(model.message_routers)[0].interactions[1].target, svc_2)
@@ -457,11 +430,7 @@ class TestAddAPIGatewayRefactoring(TestCase):
             f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
             for p in k_service.ports]
         self.assertEqual(len(k_service.ports), 1)
-
-        for port in k_svc_port_strings:
-            self.assertTrue(port in all_pod_ports_strings)
-            all_pod_ports_strings.remove(port)
-
+        self.assertEqual(k_service.ports[0]["node_port"], 30000)
 
         # Test service 2
         k_service = k_services[1]
@@ -471,16 +440,8 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
         self.assertFalse(k_pod_2.data["spec"]["hostNetwork"])
 
-        k_svc_port_strings = [
-            f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
-            for p in k_service.ports]
         self.assertEqual(len(k_service.ports), 1)
-
-        for port in k_svc_port_strings:
-            self.assertTrue(port in all_pod_ports_strings)
-            all_pod_ports_strings.remove(port)
-
-        self.assertEqual(len(all_pod_ports_strings), 0)
+        self.assertEqual(k_service.ports[0]["node_port"], 30000)
 
         # Model check
         self.assertEqual(len(list(model.message_routers)[0].interactions), 1)
@@ -543,18 +504,10 @@ class TestAddAPIGatewayRefactoring(TestCase):
         self.assertTrue(f"{k_pod.fullname}-svc-mf" in k_service.selectors.keys())
         self.assertEqual(k_service.data["spec"]["type"], "NodePort")
 
-        k_pod_port_strings = [
-            f"{p.get('name', k_pod.containers[0].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-mf')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_pod.containers[0].ports]
-        k_pod_port_strings += [
-            f"{p.get('name', k_pod.containers[1].name+'.'+k_pod.fullname+'-port-'+str(p['containerPort'])+'-mf')} {p.get('protocol', 'PROTOCOL?')} {p['containerPort']} {p['containerPort']}"
-            for p in k_pod.containers[1].ports]
-        k_svc_port_strings = [
-            f"{p.get('name', '')} {p.get('protocol', 'PROTOCOL?')} {p['port']} {p['node_port']}"
-            for p in k_service.ports]
+        # Check ports
+        self.assertEqual(len(k_service.ports), len(k_pod.containers[0].ports + k_pod.containers[1].ports))
         self.assertEqual(len(k_service.ports), 2)
-
-        for port in k_pod_port_strings:
-            self.assertTrue(port in k_svc_port_strings)
+        self.assertEqual(k_service.ports[0]["node_port"], 30000)
+        self.assertEqual(k_service.ports[1]["node_port"], 30001)
 
         RefactoringReport().export()

@@ -48,6 +48,9 @@ def removed_exposing_params_msg(workload_fullname, resource_outfile):
 def cannot_find_nodes_msg(node_names: list):
     return "Cannot find cluster object related to nodes: " + ''.join(node_names)
 
+def exposed_node_port_change(old_exposed_object_name, expected_port, new_port):
+    return f"The object {old_exposed_object_name} was exposed on port {expected_port}, but now is exposed on {new_port}." \
+           f"Make sure to forward calls to the new port"
 
 def _extract_kubernetes_name(resource):
     istio = ""

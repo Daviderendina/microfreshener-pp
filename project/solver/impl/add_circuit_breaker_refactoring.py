@@ -4,6 +4,7 @@ from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from k8s_template.kobject_generators import generate_circuit_breaker_for_svc
 from project.ignorer.ignorer import IgnoreType
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_networking import KubeService
 from project.report.report_msg import cannot_apply_refactoring_on_node_msg, found_wrong_type_object_msg, \
@@ -17,7 +18,7 @@ class AddCircuitBreakerRefactoring(Refactoring):
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
         super().__init__(cluster, model, REFACTORING_ADD_CIRCUIT_BREAKER)
 
-    def apply(self, smell: Smell, ignorer):
+    def apply(self, smell: Smell, ignorer=IgnoreNothing()):
         if not isinstance(smell, WobblyServiceInteractionSmell):
             raise RefactoringNotSupportedError(f"Refactoring {self.name} not supported for smell {smell.name}")
 

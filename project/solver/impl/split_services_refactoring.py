@@ -7,6 +7,7 @@ from microfreshener.core.model.nodes import Compute, Service
 
 from project.exporter.export_object import ExportObject
 from project.ignorer.ignorer import IgnoreType
+from project.ignorer.impl.ignore_nothing import IgnoreNothing
 from project.kmodel.kube_cluster import KubeCluster
 from project.report.report import RefactoringReport
 from project.report.report_msg import compute_object_not_found_msg, cannot_refactor_model_msg, created_resource_msg, \
@@ -20,7 +21,7 @@ class SplitServicesRefactoring(Refactoring):
     def __init__(self, cluster: KubeCluster, model: MicroToscaModel):
         super().__init__(cluster, model, REFACTORING_SPLIT_SERVICES)
 
-    def apply(self, smell: Smell, ignorer):
+    def apply(self, smell: Smell, ignorer=IgnoreNothing()):
         object_to_add = []
         export_object_to_add = []
         abort = False

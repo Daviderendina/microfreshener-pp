@@ -56,7 +56,7 @@ class KubeSolver(Solver):
             i += 1
         return refactoring_res
 
-    def solve(self, smells, ignorer: Ignorer):
+    def solve(self, smells, ignorer=IgnoreNothing()):
         smell_solved = 0
         for smell in [s for s in smells if s]:
             available_refactoring = self.get_available_refactoring(smell)
