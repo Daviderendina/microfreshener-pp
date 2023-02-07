@@ -7,31 +7,27 @@ topology_template:
       members: [front-end.sock-shop]
       type: micro.groups.Edge
   node_templates:
-    carts-db.sock-shop:
+    carts-db.catalogue-carts-db.sock-shop:
       requirements: []
       type: micro.nodes.Datastore
-    carts-db.sock-shop.svc:
-      requirements:
-      - {interaction: carts-db.sock-shop}
-      type: micro.nodes.MessageRouter
     carts.sock-shop:
       requirements:
-      - {interaction: carts-db.sock-shop.svc}
+      - {interaction: catalogue-carts-db.sock-shop.svc}
       type: micro.nodes.Service
     carts.sock-shop.svc:
       requirements:
       - {interaction: carts.sock-shop}
       type: micro.nodes.MessageRouter
-    catalogue-db.sock-shop:
+    catalogue-db.catalogue-carts-db.sock-shop:
       requirements: []
       type: micro.nodes.Service
-    catalogue-db.sock-shop.svc:
+    catalogue-carts-db.sock-shop.svc:
       requirements:
-      - {interaction: catalogue-db.sock-shop}
+      - {interaction: catalogue-db.catalogue-carts-db.sock-shop}
       type: micro.nodes.MessageRouter
     catalogue.sock-shop:
       requirements:
-      - {interaction: catalogue-db.sock-shop.svc}
+      - {interaction: catalogue-carts-db.sock-shop.svc}
       type: micro.nodes.Service
     catalogue.sock-shop.svc:
       requirements:
