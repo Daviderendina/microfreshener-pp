@@ -1,0 +1,126 @@
+description: sock-shop
+imports:
+- {micro: 'https://di-unipi-socc.github.io/microTOSCA/1.1/microTOSCA.yaml'}
+topology_template:
+  groups:
+    edge:
+      members: [front-end.sock-shop]
+      type: micro.groups.Edge
+  node_templates:
+    carts-db.sock-shop:
+      requirements: []
+      type: micro.nodes.Datastore
+    carts-db.sock-shop.svc:
+      requirements:
+      - {interaction: carts-db.sock-shop}
+      type: micro.nodes.MessageRouter
+    carts.sock-shop:
+      requirements:
+      - {interaction: carts-db.sock-shop.svc}
+      type: micro.nodes.Service
+    carts.sock-shop.svc:
+      requirements:
+      - {interaction: carts.sock-shop}
+      type: micro.nodes.MessageRouter
+    catalogue-db.sock-shop:
+      requirements: []
+      type: micro.nodes.Service
+    catalogue-db.sock-shop.svc:
+      requirements:
+      - {interaction: catalogue-db.sock-shop}
+      type: micro.nodes.MessageRouter
+    catalogue.sock-shop:
+      requirements:
+      - {interaction: catalogue-db.sock-shop.svc}
+      type: micro.nodes.Service
+    catalogue.sock-shop.svc:
+      requirements:
+      - {interaction: catalogue.sock-shop}
+      type: micro.nodes.MessageRouter
+    front-end.sock-shop:
+      requirements:
+      - {interaction: catalogue.sock-shop.svc}
+      - {interaction: user.sock-shop.svc}
+      - {interaction: carts.sock-shop.svc}
+      - {interaction: orders.sock-shop.svc}
+      type: micro.nodes.Service
+    orders-db.sock-shop:
+      requirements: []
+      type: micro.nodes.Datastore
+    orders-db.sock-shop.svc:
+      requirements:
+      - {interaction: orders-db.sock-shop}
+      type: micro.nodes.MessageRouter
+    orders.sock-shop:
+      requirements:
+      - {interaction: orders-db.sock-shop.svc}
+      - {interaction: carts.sock-shop.svc}
+      - {interaction: user.sock-shop.svc}
+      - {interaction: payment.sock-shop}
+      - {interaction: shipping.sock-shop.svc}
+      type: micro.nodes.Service
+    orders.sock-shop.svc:
+      requirements:
+      - {interaction: orders.sock-shop}
+      type: micro.nodes.MessageRouter
+    payment.sock-shop:
+      requirements: []
+      type: micro.nodes.Service
+    queue-master.sock-shop:
+      requirements:
+      - {interaction: rabbitmq.sock-shop}
+      type: micro.nodes.Service
+    queue-master.sock-shop.svc:
+      requirements:
+      - {interaction: queue-master.sock-shop}
+      type: micro.nodes.MessageRouter
+    rabbitmq.rabbitmq.sock-shop:
+      requirements: []
+      type: micro.nodes.MessageBroker
+    shipping.sock-shop:
+      requirements:
+      - {interaction: rabbitmq.sock-shop}
+      type: micro.nodes.Service
+    shipping.sock-shop.svc:
+      requirements:
+      - {interaction: shipping.sock-shop}
+      type: micro.nodes.MessageRouter
+    user-db.sock-shop:
+      requirements: []
+      type: micro.nodes.Service
+    user-db.sock-shop.svc:
+      requirements:
+      - {interaction: user-db.sock-shop}
+      type: micro.nodes.MessageRouter
+    user.sock-shop:
+      requirements:
+      - {interaction: user-db.sock-shop.svc}
+      type: micro.nodes.Service
+    user.sock-shop.svc:
+      requirements:
+      - {interaction: user.sock-shop}
+      type: micro.nodes.MessageRouter
+  relationship_templates:
+    c:
+      properties: {circuit_breaker: true}
+      type: micro.relationships.InteractsWith
+    cd:
+      properties: {circuit_breaker: true, dynamic_discovery: true}
+      type: micro.relationships.InteractsWith
+    d:
+      properties: {dynamic_discovery: true}
+      type: micro.relationships.InteractsWith
+    t:
+      properties: {timeout: true}
+      type: micro.relationships.InteractsWith
+    tc:
+      properties: {circuit_breaker: true, timeout: true}
+      type: micro.relationships.InteractsWith
+    tcd:
+      properties: {circuit_breaker: true, dynamic_discovery: true, timeout: true}
+      type: micro.relationships.InteractsWith
+    td:
+      properties: {dynamic_discovery: true, timeout: true}
+      type: micro.relationships.InteractsWith
+tosca_definitions_version: micro_tosca_yaml_1.1
+
