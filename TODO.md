@@ -8,10 +8,10 @@
 -  Modificate la definizione di **microTOSCA**
 -  Fare il push del _core_ (lo modifiche sono sull'altro branch)
 - Fare i vari TODO
-- [Matebook] NodePort gestisce solamente il range  30000 to 32767 ?
 - [Matebook] Estendere microFreshener per garantire compatiblità con i nuovi nodi
 
 
+- ~~[Matebook] NodePort gestisce solamente il range  30000 to 32767~~
 - ~~Usare ignore node nella demo~~
 - ~~Ripristinare i nomi dei nodi originali dopo che il worker li modifica~~
 - ~~In split services piuttosto che usare _1, _2, etc.. posso più elegantemente usare il nome del container per differenziarli!!~~
