@@ -96,8 +96,10 @@ class KubeSolver(Solver):
             self.refactoring[SMELL_WOBBLY_SERVICE_INTERACTION_SMELL] = [UseTimeoutRefactoring(self.kube_cluster, self.model)]
 
         if REFACTORING_ADD_CIRCUIT_BREAKER in refactoring_list:
-            if SMELL_WOBBLY_SERVICE_INTERACTION_SMELL not in self.refactoring.keys():
+            if SMELL_WOBBLY_SERVICE_INTERACTION_SMELL in self.refactoring.keys():
                 self.refactoring[SMELL_WOBBLY_SERVICE_INTERACTION_SMELL] += [AddCircuitBreakerRefactoring(self.kube_cluster, self.model)]
+            else:
+                self.refactoring[SMELL_WOBBLY_SERVICE_INTERACTION_SMELL] = [AddCircuitBreakerRefactoring(self.kube_cluster, self.model)]
 
         if REFACTORING_ADD_API_GATEWAY in refactoring_list:
             refactoring = AddAPIGatewayRefactoring(self.kube_cluster, self.model)
