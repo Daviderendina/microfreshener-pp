@@ -24,6 +24,7 @@ topology_template:
     catalogue-carts-db.sock-shop.svc:
       requirements:
       - {interaction: catalogue-db.catalogue-carts-db.sock-shop}
+      - {interaction: carts-db.catalogue-carts-db.sock-shop}
       type: micro.nodes.MessageRouter
     catalogue.sock-shop:
       requirements:
@@ -47,24 +48,28 @@ topology_template:
       requirements:
       - {interaction: orders-db.sock-shop}
       type: micro.nodes.MessageRouter
-    orders.sock-shop:
+    test.orders.sock-shop:
+      requirements: []
+      type: micro.nodes.Service
+    orders.orders.sock-shop:
       requirements:
       - {interaction: orders-db.sock-shop.svc}
       - {interaction: carts.sock-shop.svc}
       - {interaction: user.sock-shop.svc}
       - {interaction: payment.sock-shop}
-      - {interaction: shipping.sock-shop.svc}
+      - {interaction: shipping.sock-shop}
       type: micro.nodes.Service
     orders.sock-shop.svc:
       requirements:
-      - {interaction: orders.sock-shop}
+      - {interaction: test.orders.sock-shop}
+      - {interaction: orders.orders.sock-shop}
       type: micro.nodes.MessageRouter
     payment.sock-shop:
       requirements: []
       type: micro.nodes.Service
     queue-master.sock-shop:
       requirements:
-      - {interaction: rabbitmq.sock-shop}
+      - {interaction: rabbitmq.rabbitmq.sock-shop}
       type: micro.nodes.Service
     queue-master.sock-shop.svc:
       requirements:
@@ -75,12 +80,8 @@ topology_template:
       type: micro.nodes.MessageBroker
     shipping.sock-shop:
       requirements:
-      - {interaction: rabbitmq.sock-shop}
+      - {interaction: rabbitmq.rabbitmq.sock-shop}
       type: micro.nodes.Service
-    shipping.sock-shop.svc:
-      requirements:
-      - {interaction: shipping.sock-shop}
-      type: micro.nodes.MessageRouter
     user-db.sock-shop:
       requirements: []
       type: micro.nodes.Service

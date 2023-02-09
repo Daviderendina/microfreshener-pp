@@ -218,6 +218,7 @@ spec:
       labels:
         name: front-end
     spec:
+      hostNetwork: true
       containers:
       - name: front-end
         image: weaveworksdemos/front-end:0.3.12
@@ -274,6 +275,12 @@ spec:
         name: orders
     spec:
       containers:
+      - name: test
+        image: nginx
+        command: ["/bin/sh","-c"]
+        args: ["sed -i 's/listen  .*/listen 81;/g' /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
+        ports:
+        - containerPort: 81
       - name: orders
         image: weaveworksdemos/orders:0.4.7
         env:
@@ -321,6 +328,8 @@ spec:
     # the port that this service should serve on
   - port: 80
     targetPort: 80
+  - port: 81
+    targetPort: 81
   selector:
     name: orders
 ---

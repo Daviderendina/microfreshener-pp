@@ -12,13 +12,13 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: store
+            name: MR56-store
             port:
               number: 80
       - path: /store/e-commerce
         pathType: Prefix
         backend:
           service:
-            name: store
+            name: MR56-store
             port:
               number: 81

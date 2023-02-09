@@ -1,9 +1,14 @@
 from main import run
 
-microtoscamodel = './demo/microTOSCA.yml'
+#microtoscamodel = './demo/microTOSCA.yml'
+microtoscamodel = './demo/sock-shop/injected/microTOSCA.yml'
 
-kubedeploy = './demo/K8s'
-ignore_config_path = './demo/ignore_config.json'
+#kubedeploy = './demo/K8s'
+kubedeploy = './demo/sock-shop/injected'
+
+#ignore_config_path = './demo/ignore_config.json'
+ignore_config_path = None
+
 
 # Then we run selecting all refactoring
 output = "./out/demo"
