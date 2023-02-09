@@ -2,6 +2,7 @@
 from typing import List
 
 from project.exporter.export_object import ExportObject
+from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
 from project.kmodel.kube_networking import KubeService, KubeIngress, KubeNetworking
 from project.kmodel.kube_object import KubeObject
@@ -91,6 +92,13 @@ class KubeCluster:
                     objects_found.append(obj)
 
         objects_found = [o for o in objects_found if isinstance(o, type)]
+
+        #TODO questo controllo non mi convince
+        if len(objects_found) == 0 and type == KubeContainer:
+            for wl in self.workloads:
+                if wl.fullname == object_name or wl.typed_fullname == object_name:
+                    if len(wl.containers) == 1:
+                        return wl.containers[0]
 
         if len(objects_found) > 1:
             raise AttributeError(f"More than one object found with name '{object_name}'")
