@@ -23,6 +23,14 @@ class KubeContainer(KubeObject):
     def typed_fullname(self):
         return f"{self.name}.{self.defining_workload.typed_fullname}"
 
-    def get_container_ports_numbers(self):
-        result = [p.get("containerPort", None) for p in self.ports]
+    @property
+    def image(self):
+        return self.data.get("image", "")
+
+    def get_container_ports(self):
+        result = []
+        for p in self.ports:
+            result.append(p.get("containerPort", None))
+            result.append(p.get("name", None))
+
         return [p for p in result if p is not None]

@@ -23,13 +23,19 @@ class IstioGatewayWorker(KubeWorker):
         self._search_for_gateways(model, cluster, ignorer)
         return model
 
+    def _create_gateway_node(self, model, gateway):
+        gateway_node = MessageRouter(gateway.typed_fullname)
+        model.add_node(gateway_node)
+        model.edge.add_member(gateway_node)
+
+        return gateway_node
+
+
     def _search_for_gateways(self, model, cluster, ignorer):
         not_ignored_nodes = self._get_nodes_not_ignored(model.message_routers, ignorer)
 
         for gateway in cluster.istio_gateways:
-            gateway_node = MessageRouter(gateway.typed_fullname)
-            model.add_node(gateway_node)
-            model.edge.add_member(gateway_node)
+            gateway_node = self._create_gateway_node(model, gateway)
 
             for virtual_service in cluster.virtual_services:
                 if self._check_gateway_virtualservice_match(gateway, virtual_service):
@@ -38,16 +44,12 @@ class IstioGatewayWorker(KubeWorker):
                         if service.fullname in virtual_service.destinations \
                                 or service.typed_fullname in virtual_service.destinations:
 
-                            is_one_pod_exposed = self._has_pod_exposed(service, gateway, cluster)
-                            if is_one_pod_exposed:
-                                kube_service_node = model.get_node_by_name(service.fullname, MessageRouter)
+                            kube_service_node = model.get_node_by_name(service.fullname, MessageRouter)
 
-                                if kube_service_node is not None and kube_service_node in not_ignored_nodes:
+                            if kube_service_node is not None and kube_service_node in not_ignored_nodes:
+                                if kube_service_node in model.edge.members:
                                     model.edge.remove_member(kube_service_node)
-                                    model.add_interaction(source_node=gateway_node, target_node=kube_service_node)
-
-            #if len(gateway_node.interactions) + len(gateway_node.incoming_interactions) == 0:
-            #    model.delete_node(gateway_node)
+                                model.add_interaction(source_node=gateway_node, target_node=kube_service_node)
 
     def _has_pod_exposed(self, service: KubeService, gateway: KubeIstioGateway, cluster):
         for workload in cluster.find_workload_exposed_by_svc(service):
@@ -58,26 +60,27 @@ class IstioGatewayWorker(KubeWorker):
     def _check_gateway_virtualservice_match(self, gateway: KubeIstioGateway, virtual_service: KubeVirtualService):
         gateway_check = gateway.fullname in virtual_service.gateways
 
-        # New check
-        for host in gateway.hosts_exposed:
-            # Divide hostname and ns
-            if "/" in host:
-                namespace, name = host.split("/")[0], host.split("/")[1:]
-                if namespace == ".":
-                    namespace = gateway.namespace
-            else:
-                namespace, name = "*", host
+        if gateway_check:
+            # New check
+            for host in gateway.hosts_exposed:
+                # Divide hostname and ns
+                if "/" in host:
+                    namespace, name = host.split("/")[0], host.split("/")[1:]
+                    if namespace == ".":
+                        namespace = gateway.namespace
+                else:
+                    namespace, name = "*", host
 
-            # Check namespace
-            namespace_check = namespace == "*" or namespace == virtual_service.namespace
+                # Check namespace
+                namespace_check = namespace == "*" or namespace == virtual_service.namespace
 
-            # Check name
-            regex = ""
-            for c in name:
-                regex += "[.]" if c == "." else c if c != "*" else "[a-zA-Z0-9_.]+"
+                # Check name
+                regex = ""
+                for c in name:
+                    regex += "[.]" if c == "." else c if c != "*" else "[a-zA-Z0-9_.]+"
 
-            for svc_host in virtual_service.hosts:
-                if re.match(regex, svc_host).string == svc_host:
-                    return True and namespace_check and gateway_check
+                for svc_host in virtual_service.hosts:
+                    if re.match(regex, svc_host).string == svc_host:
+                        return True and namespace_check and gateway_check
 
-            return False
+                return False

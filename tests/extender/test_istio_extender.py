@@ -4,9 +4,6 @@ from unittest import TestCase
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, Edge
 
 from project.extender.extender import KubeExtender
-from project.extender.impl.istio_circuit_breaker_worker import IstioCircuitBreakerWorker
-from project.extender.impl.istio_gateway_worker import IstioGatewayWorker
-from project.extender.impl.istio_timeout_worker import IstioTimeoutWorker
 from project.extender.worker_names import ISTIO_CIRCUIT_BREAKER, ISTIO_GATEWAY_WORKER, ISTIO_TIMEOUT_WORKER
 from project.kmodel.kube_cluster import KubeCluster
 from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway

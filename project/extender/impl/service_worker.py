@@ -5,6 +5,7 @@ from microfreshener.core.model.nodes import Service, MessageRouter
 from project.extender.kubeworker import KubeWorker
 from project.extender.worker_names import SERVICE_WORKER, NAME_WORKER
 from project.ignorer.impl.ignore_nothing import IgnoreNothing
+from project.kmodel.kube_container import KubeContainer
 from project.kmodel.kube_networking import KubeService
 
 
@@ -84,15 +85,15 @@ class ServiceWorker(KubeWorker):
             if k_service.does_expose_workload(workload):
 
                 for container in workload.containers:
+                    container_exposed = k_service.does_match_ports(container.ports)
                     service_node = model.get_node_by_name(container.typed_fullname, Service)
 
-                    if service_node:
+                    if service_node and container_exposed:
                         if service_node not in [n.target for n in mr_node.interactions].copy():
                             model.add_interaction(mr_node, service_node)
 
                         for incoming_link in [l for l in service_node.incoming_interactions if isinstance(l.source, Service)]:
                             model.add_interaction(incoming_link.source, mr_node)
                             model.delete_relationship(incoming_link)
-
 
 

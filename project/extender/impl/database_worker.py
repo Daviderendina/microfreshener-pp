@@ -24,7 +24,7 @@ class DatabaseWorker(KubeWorker):
         not_ignored_services = self._get_nodes_not_ignored(model.services, ignorer)
 
         for service_node in [s for s in not_ignored_services if len(s.interactions) == 0]:
-            container = cluster.get_object_by_name(service_node.name)
+            container = cluster.get_object_by_name(service_node.name, KubeContainer)
 
             if container and self._is_database(container):
                 datastore_node = Datastore("TEMPORARY_DATASTORE_NAME")
@@ -51,7 +51,8 @@ class DatabaseWorker(KubeWorker):
             model.delete_relationship(relation)
 
     def _is_database(self, container: KubeContainer):
-        ports_check = len([v for v in container.get_container_ports_numbers() if v in self.DATABASE_PORTS]) > 0
+        ports_check = len([v for v in container.get_container_ports() if v in self.DATABASE_PORTS]) > 0
+        image_check = len([n for n in self.DATABASE_NAMES if n.upper() in container.image.upper()]) > 0
         name_check = len([n for n in self.DATABASE_NAMES if n.upper() in container.name.upper()]) > 0
 
-        return ports_check or name_check
+        return ports_check or name_check or image_check

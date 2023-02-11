@@ -34,15 +34,15 @@ class KubeService(KubeNetworking):
 
     def does_expose_workload(self, workload: KubeWorkload):
         return does_selectors_labels_match(self.selectors, workload.labels) and \
-               self._does_match_ports([item for sublist in [c.ports for c in workload.containers] for item in sublist])
+               self.does_match_ports([item for sublist in [c.ports for c in workload.containers] for item in sublist])
 
     def can_expose_workload(self, workload: KubeWorkload, only_ports: list = None):
         label_match = does_selectors_labels_match(self.selectors, workload.labels)
         ports_to_consider = only_ports if only_ports else workload.all_defined_ports
 
-        return label_match and not self._does_match_ports(ports_to_consider)
+        return label_match and not self.does_match_ports(ports_to_consider)
 
-    def _does_match_ports(self, ports_to_check):
+    def does_match_ports(self, ports_to_check):
         for svc_port in self.ports:
             for w_port in ports_to_check:
                 # If targetPort is not defined, port is considered
