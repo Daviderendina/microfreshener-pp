@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: N
+  labels:
+    service: N
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: N
+  template:
+    metadata:
+      labels:
+        service: N
+    spec:
+      containers:
+      - name: N
+        image: generic-image
+        ports:
+        - containerPort: 80

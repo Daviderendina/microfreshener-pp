@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: FG
+  labels:
+    service: FG
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: FG
+  template:
+    metadata:
+      labels:
+        service: FG
+    spec:
+      containers:
+      - name: F
+        image: generic-image
+        ports:
+        - containerPort: 80
+      - name: G
+        image: generic-image
+        ports:
+        - containerPort: 81

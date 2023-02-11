@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-FG
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /F
+        pathType: Prefix
+        backend:
+          service:
+            name: F.default.svc
+            port:
+              number: 80
+      - path: /G
+        pathType: Prefix
+        backend:
+          service:
+            name: G.default.svc
+            port:
+              number: 80

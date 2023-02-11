@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: D
+  labels:
+    service: D
+spec:
+  containers:
+  - name: D
+    image: my-image:latest
+    ports:
+    - containerPort: 3306

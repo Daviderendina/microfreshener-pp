@@ -4,7 +4,7 @@ imports:
 topology_template:
   groups:
     edge:
-      members: [test.orders.sock-shop, queue-master.sock-shop.svc]
+      members: [front-end.sock-shop]
       type: micro.groups.Edge
   node_templates:
     carts-db.catalogue-carts-db.sock-shop:
@@ -55,7 +55,7 @@ topology_template:
       requirements:
       - {interaction: orders-db.sock-shop.svc}
       - {interaction: carts.sock-shop.svc}
-      - {interaction: user.sock-shop}
+      - {interaction: user.sock-shop.svc}
       - {interaction: payment.sock-shop}
       - {interaction: shipping.sock-shop}
       type: micro.nodes.Service
@@ -69,7 +69,7 @@ topology_template:
       type: micro.nodes.Service
     queue-master.sock-shop:
       requirements:
-      - {interaction: rabbitmq.rabbitmq.sock-shop}
+      - {interaction: rabbitmq.sock-shop.svc}
       type: micro.nodes.Service
     queue-master.sock-shop.svc:
       requirements:
@@ -78,9 +78,13 @@ topology_template:
     rabbitmq.rabbitmq.sock-shop:
       requirements: []
       type: micro.nodes.MessageBroker
-    shipping.sock-shop:
+    rabbitmq.sock-shop.svc:
       requirements:
       - {interaction: rabbitmq.rabbitmq.sock-shop}
+      type: micro.nodes.MessageRouter
+    shipping.sock-shop:
+      requirements:
+      - {interaction: rabbitmq.sock-shop.svc}
       type: micro.nodes.Service
     user-db.sock-shop:
       requirements: []
@@ -88,7 +92,7 @@ topology_template:
     user-db.sock-shop.svc:
       requirements:
       - {interaction: user-db.sock-shop}
-      type: micro.nodes.Service
+      type: micro.nodes.MessageRouter
     user.sock-shop:
       requirements:
       - {interaction: user-db.sock-shop.svc}

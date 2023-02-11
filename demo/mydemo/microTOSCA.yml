@@ -1,92 +1,101 @@
-description: robot-shop-v2
+description: mydemo 2.0
+tosca_definitions_version: micro_tosca_yaml_1.4
 imports:
-- {micro: 'https://di-unipi-socc.github.io/microTOSCA/1.1/microTOSCA.yaml'}
+- {micro: 'https://di-unipi-socc.github.io/microTOSCA/1.4/microTOSCA.yaml'}
 topology_template:
   groups:
     edge:
-      members:
-      - MR56-store.default.svc
-      - S1-orders.orders.default.deploy
-      - S7-login.login.default
-      - S4-supplier.supplier.default.pod
+      members: [M.default, A.default.svc, B.default.svc, C.default.svc, ingress-FG.default]
       type: micro.groups.Edge
   node_templates:
-    S1-orders.orders.default.deploy:
+    A.default:
       type: micro.nodes.Service
+    B.default:
       requirements:
-        - {interaction: S8-mysql-catalogue.catalogue.default.sts}
-        - {interaction: MR3-warehouse.default.svc}
-        - {interaction: MR2-users.default.svc}
-    S2-users.users.default:
+        - {interaction: A.default.svc}
+        - {interaction: F.default.svc}
+        - {interaction: H.default}
+        - {interaction: M.default}
       type: micro.nodes.Service
+    C.default:
       requirements:
-        - interaction: Si10-mysql.users-db.default.pod
-    S3-warehouse.warehouse-rs.default:
+      - {interaction: D.default.svc}
       type: micro.nodes.Service
+    D.default:
+      type: micro.nodes.Service
+    E.default:
       requirements:
-        - {interaction: S4-supplier.supplier.default.pod}
-    S4-supplier.supplier.default.pod:
+      - {interaction: D.default.svc}
       type: micro.nodes.Service
-    S5-e-commerce.store.default.deploy:
+    F.FG.default:
       type: micro.nodes.Service
+    G.FG.default:
+      type: micro.nodes.Service
+    H.default:
       requirements:
-        - {interaction: MR1-orders.default.svc}
-    S6-shop.store.default:
+      - {interaction: L.default}
       type: micro.nodes.Service
+    L.default:
+      type: micro.nodes.Service
+    M.default:
+      type: micro.nodes.Service
+    N.default:
       requirements:
-        - {interaction: MR1-orders.default.svc}
-    S7-login.login.default:
+      - {interaction: L.default}
       type: micro.nodes.Service
+    A.default.svc:
+      type: micro.nodes.MessageRouter
       requirements:
-        - {interaction: MR2-users.default.svc}
-    S8-mysql-catalogue.catalogue.default.sts:
-      type: micro.nodes.Service
-    Si10-mysql.users-db.default.pod:
-      type: micro.nodes.Service
+        - {interaction: A.default}
+    B.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: B.default}
+    C.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: C.default}
+    D.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: D.default}
+    F.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: F.FG.default}
+    G.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: G.FG.default}
+    N.default.svc:
+      type: micro.nodes.MessageRouter
+      requirements:
+        - {interaction: N.default}
 
-    MR1-orders.default.svc:
+    ingress-FG.default:
       type: micro.nodes.MessageRouter
       requirements:
-        - {interaction: S1-orders.orders.default.deploy}
-    MR2-users.default.svc:
-      type: micro.nodes.MessageRouter
-      requirements:
-        - {interaction: S2-users.users.default}
-    MR3-warehouse.default.svc:
-      type: micro.nodes.MessageRouter
-      requirements:
-        - {interaction: S3-warehouse.warehouse-rs.default}
-    MR56-store.default.svc:
-      type: micro.nodes.MessageRouter
-      requirements:
-        - {interaction: S5-e-commerce.store.default.deploy}
-        - {interaction: S6-shop.store.default}
-    MR8-catalogue-edge.default.svc:
-      type: micro.nodes.MessageRouter
-      requirements:
-        - {interaction: S8-mysql-catalogue.catalogue.default.sts}
-
+        - {interaction: F.default.svc}
   relationship_templates:
     c:
-      properties: { circuit_breaker: true }
+      properties: {circuit_breaker: true}
       type: micro.relationships.InteractsWith
     cd:
-      properties: { circuit_breaker: true, dynamic_discovery: true }
+      properties: {circuit_breaker: true, dynamic_discovery: true}
       type: micro.relationships.InteractsWith
     d:
-      properties: { dynamic_discovery: true }
+      properties: {dynamic_discovery: true}
       type: micro.relationships.InteractsWith
     t:
-      properties: { timeout: true }
+      properties: {timeout: true}
       type: micro.relationships.InteractsWith
     tc:
-      properties: { circuit_breaker: true, timeout: true }
+      properties: {circuit_breaker: true, timeout: true}
       type: micro.relationships.InteractsWith
     tcd:
-      properties: { circuit_breaker: true, dynamic_discovery: true, timeout: true }
+      properties: {circuit_breaker: true, dynamic_discovery: true, timeout: true}
       type: micro.relationships.InteractsWith
     td:
-      properties: { dynamic_discovery: true, timeout: true }
+      properties: {dynamic_discovery: true, timeout: true}
       type: micro.relationships.InteractsWith
 
-tosca_definitions_version: micro_tosca_yaml_1.1

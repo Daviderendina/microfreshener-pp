@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: M
+  labels:
+    service: M
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      service: M
+  template:
+    metadata:
+      labels:
+        service: M
+    spec:
+      containers:
+      - name: M
+        image: generic-img
+        ports:
+        - containerPort: 80
