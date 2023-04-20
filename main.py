@@ -9,18 +9,18 @@ from microfreshener.core.analyser.costants import REFACTORING_NAMES, REFACTORING
 from microfreshener.core.exporter import YMLExporter
 from microfreshener.core.importer import YMLImporter
 
-from project.constants import IGNORE_CONFIG_SCHEMA_FILE, TOSCA_OUTPUT_FOLDER
-from project.exporter.yamlkexporter import YamlKExporter
-from project.extender.extender import KubeExtender
-from project.extender.name_adjuster import NameAdjuster
-from project.extender.worker_names import NAME_WORKER
-from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
-from project.ignorer.impl.ignore_nothing import IgnoreNothing
-from project.importer.yamlkimporter import YamlKImporter
-from project.report.report import RefactoringReport
+from microfreshenerpp.constants import IGNORE_CONFIG_SCHEMA_FILE, TOSCA_OUTPUT_FOLDER
+from microfreshenerpp.exporter.yamlkexporter import YamlKExporter
+from microfreshenerpp.extender.extender import KubeExtender
+from microfreshenerpp.extender.name_adjuster import NameAdjuster
+from microfreshenerpp.extender.worker_names import NAME_WORKER
+from microfreshenerpp.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
+from microfreshenerpp.ignorer.impl.ignore_nothing import IgnoreNothing
+from microfreshenerpp.importer.yamlkimporter import YamlKImporter
+from microfreshenerpp.report.report import RefactoringReport
 
-from project.solver.solver import Solver, KubeSolver
-from project.utils.utils import create_folder
+from microfreshenerpp.solver.solver import Solver, KubeSolver
+from microfreshenerpp.utils.utils import create_folder
 
 SELECT_ALL = "all"
 

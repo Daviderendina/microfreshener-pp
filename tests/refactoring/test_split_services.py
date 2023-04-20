@@ -6,9 +6,9 @@ from microfreshener.core.model import MicroToscaModel, Service
 from microfreshener.core.model.nodes import Compute
 
 from tests.data.kube_objects_dict import POD_WITH_TWO_CONTAINER, DEPLOYMENT_WITH_TWO_CONTAINER
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_workload import KubePod, KubeDeployment
-from project.solver.impl.split_services_refactoring import SplitServicesRefactoring
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_workload import KubePod, KubeDeployment
+from microfreshenerpp.solver.impl.split_services_refactoring import SplitServicesRefactoring
 
 
 class TestRefactoringSplitServices(TestCase):

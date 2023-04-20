@@ -4,14 +4,14 @@ from unittest import TestCase
 from microfreshener.core.analyser.smell import EndpointBasedServiceInteractionSmell
 from microfreshener.core.model import Service, MicroToscaModel, MessageRouter
 
-from k8s_template.kobject_generators import MF_NODEPORT_SERVICE_SUFFIX, MF_CLUSTERIP_SERVICE_SUFFIX
+from microfreshenerpp.template.kobject_generators import MF_CLUSTERIP_SERVICE_SUFFIX
 from tests.data.kube_objects_dict import POD_WITH_TWO_CONTAINER, POD_WITH_ONE_CONTAINER, DEFAULT_SVC, \
     DEPLOYMENT_WITH_ONE_CONTAINER
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_networking import KubeService
-from project.kmodel.kube_workload import KubePod, KubeDeployment
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_networking import KubeService
+from microfreshenerpp.kmodel.kube_workload import KubePod, KubeDeployment
 
-from project.solver.impl.add_message_router_refactoring import AddMessageRouterRefactoring
+from microfreshenerpp.solver.impl.add_message_router_refactoring import AddMessageRouterRefactoring
 
 
 class TestRefactoringAddMessageRouter(TestCase):

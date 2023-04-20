@@ -3,12 +3,12 @@ from unittest import TestCase
 
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
-from project.extender.extender import KubeExtender
-from project.extender.worker_names import NAME_WORKER
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_networking import KubeIngress, KubeService
-from project.kmodel.kube_workload import KubePod
-from project.kmodel.shortnames import KUBE_POD, KUBE_SERVICE, KUBE_INGRESS
+from microfreshenerpp.extender.extender import KubeExtender
+from microfreshenerpp.extender.worker_names import NAME_WORKER
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_networking import KubeIngress, KubeService
+from microfreshenerpp.kmodel.kube_workload import KubePod
+from microfreshenerpp.kmodel.shortnames import KUBE_POD, KUBE_SERVICE, KUBE_INGRESS
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC_INGRESS, DEFAULT_SVC, \
     POD_WITH_TWO_CONTAINER
 

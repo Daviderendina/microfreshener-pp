@@ -7,15 +7,13 @@ from microfreshener.core.analyser.smell import NoApiGatewaySmell, WobblyServiceI
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, Edge, Compute
 from microfreshener.core.model.type import MICROTOSCA_NODES_SERVICE
 
-from project.extender.extender import KubeExtender
-from project.extender.impl.compute_node_worker import ComputeNodeWorker
-from project.extender.impl.database_worker import DatabaseWorker
-from project.extender.worker_names import COMPUTE_NODE_WORKER, DATABASE_WORKER
-from project.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
-from project.ignorer.impl.manual_ignore_config import ManualIgnoreConfig
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_workload import KubePod, KubeDeployment
-from project.solver.solver import KubeSolver
+from microfreshenerpp.extender.extender import KubeExtender
+from microfreshenerpp.extender.worker_names import COMPUTE_NODE_WORKER, DATABASE_WORKER
+from microfreshenerpp.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
+from microfreshenerpp.ignorer.impl.manual_ignore_config import ManualIgnoreConfig
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_workload import KubePod, KubeDeployment
+from microfreshenerpp.solver.solver import KubeSolver
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH_ONE_CONTAINER
 
 

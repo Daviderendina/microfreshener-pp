@@ -3,15 +3,15 @@ from unittest import TestCase
 
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, Edge
 
-from project.extender.extender import KubeExtender
-from project.extender.worker_names import ISTIO_CIRCUIT_BREAKER, ISTIO_GATEWAY_WORKER, ISTIO_TIMEOUT_WORKER
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
+from microfreshenerpp.extender.extender import KubeExtender
+from microfreshenerpp.extender.worker_names import ISTIO_CIRCUIT_BREAKER, ISTIO_GATEWAY_WORKER, ISTIO_TIMEOUT_WORKER
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC
 from tests.data.istio_objects_dict import VIRTUAL_SERVICE_TIMEOUT, DESTINATION_RULE_TIMEOUT, \
     DESTINATION_RULE_CIRCUIT_BREAKER, GATEWAY
-from project.kmodel.kube_networking import KubeService
-from project.kmodel.kube_workload import KubePod
+from microfreshenerpp.kmodel.kube_networking import KubeService
+from microfreshenerpp.kmodel.kube_workload import KubePod
 
 
 class TestIstioExtender(TestCase):

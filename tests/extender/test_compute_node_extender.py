@@ -4,14 +4,14 @@ from unittest import TestCase
 from microfreshener.core.model.microtosca import MicroToscaModel
 from microfreshener.core.model.nodes import Service, MessageRouter, Compute
 
-from project.extender.extender import KubeExtender
-from project.extender.worker_names import COMPUTE_NODE_WORKER
-from project.kmodel.shortnames import KUBE_STATEFULSET
+from microfreshenerpp.extender.extender import KubeExtender
+from microfreshenerpp.extender.worker_names import COMPUTE_NODE_WORKER
+from microfreshenerpp.kmodel.shortnames import KUBE_STATEFULSET
 
 from tests.data.kube_objects_dict import *
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_networking import KubeService
-from project.kmodel.kube_workload import KubePod, KubeDeployment, KubeReplicaSet, KubeStatefulSet
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_networking import KubeService
+from microfreshenerpp.kmodel.kube_workload import KubePod, KubeDeployment, KubeReplicaSet, KubeStatefulSet
 
 
 def _check_for_compute_added(model) -> (int, int):

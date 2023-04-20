@@ -3,14 +3,12 @@ from unittest import TestCase
 
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter, Edge
 
-from project.extender.extender import KubeExtender
-from project.extender.impl.message_router_edge_worker import MessageRouterEdgeWorker
-from project.extender.impl.service_worker import ServiceWorker
-from project.extender.worker_names import SERVICE_WORKER, MESSAGE_ROUTER_EDGE_WORKER
+from microfreshenerpp.extender.extender import KubeExtender
+from microfreshenerpp.extender.worker_names import SERVICE_WORKER, MESSAGE_ROUTER_EDGE_WORKER
 from tests.data.kube_objects_dict import DEFAULT_SVC, POD_WITH_ONE_CONTAINER
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_networking import KubeService
-from project.kmodel.kube_workload import KubePod
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_networking import KubeService
+from microfreshenerpp.kmodel.kube_workload import KubePod
 
 
 class TestServiceExtender(TestCase):

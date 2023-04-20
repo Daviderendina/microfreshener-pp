@@ -3,14 +3,13 @@ from unittest import TestCase
 
 from microfreshener.core.model import MicroToscaModel, Service, Datastore
 
-from project.extender.extender import KubeExtender
-from project.extender.extender import DatabaseWorker
-from project.extender.worker_names import DATABASE_WORKER
+from microfreshenerpp.extender.extender import KubeExtender
+from microfreshenerpp.extender.worker_names import DATABASE_WORKER
 
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_container import KubeContainer
-from project.kmodel.kube_workload import KubePod
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_container import KubeContainer
+from microfreshenerpp.kmodel.kube_workload import KubePod
 
 
 class TestDatabaseExtender(TestCase):

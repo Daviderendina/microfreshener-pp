@@ -1,15 +1,14 @@
 import copy
 from unittest import TestCase
 
-from microfreshener.core.model import MicroToscaModel, Service, Edge, MessageRouter, KIngress
+from microfreshener.core.model import MicroToscaModel, Service, Edge, MessageRouter
 
-from project.extender.extender import KubeExtender
-from project.extender.impl.ingress_worker import IngressWorker
-from project.extender.worker_names import INGRESS_WORKER
+from microfreshenerpp.extender.extender import KubeExtender
+from microfreshenerpp.extender.worker_names import INGRESS_WORKER
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC, DEFAULT_SVC_INGRESS
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_networking import KubeService, KubeIngress
-from project.kmodel.kube_workload import KubePod
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_networking import KubeService, KubeIngress
+from microfreshenerpp.kmodel.kube_workload import KubePod
 
 
 def _get_ingress_rule_dict(path, name, port):

@@ -4,12 +4,12 @@ from unittest import TestCase
 from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
-from k8s_template.kobject_generators import MF_VIRTUALSERVICE_TIMEOUT_NAME, MF_NAME_SUFFIX
+from microfreshenerpp.template.kobject_generators import MF_VIRTUALSERVICE_TIMEOUT_NAME, MF_NAME_SUFFIX
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_networking import KubeService
-from project.kmodel.kube_workload import KubePod
-from project.solver.impl.use_timeout_refactoring import UseTimeoutRefactoring
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_networking import KubeService
+from microfreshenerpp.kmodel.kube_workload import KubePod
+from microfreshenerpp.solver.impl.use_timeout_refactoring import UseTimeoutRefactoring
 
 
 class TestRefactoringUseTimeout(TestCase):

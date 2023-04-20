@@ -4,12 +4,12 @@ from unittest import TestCase
 from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
-from k8s_template.kobject_generators import MF_NAME_SUFFIX, MF_CIRCUITBREAKER_NAME
-from project.kmodel.kube_cluster import KubeCluster
-from project.kmodel.kube_networking import KubeService
-from project.kmodel.kube_workload import KubePod
+from microfreshenerpp.template.kobject_generators import MF_NAME_SUFFIX, MF_CIRCUITBREAKER_NAME
+from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microfreshenerpp.kmodel.kube_networking import KubeService
+from microfreshenerpp.kmodel.kube_workload import KubePod
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEFAULT_SVC
-from project.solver.impl.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
+from microfreshenerpp.solver.impl.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
 
 
 class TestRefactoringAddCircuitBreaker(TestCase):
