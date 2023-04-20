@@ -33,7 +33,7 @@ REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "ad
 @click.option("--modelpath", "--model", required=True, type=str, help="MicroTosca file containing the description of the system")
 @click.option("--refactoring", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one refactoring. This option can be used multiple times, for executing multiple refactoring", multiple=True)
 @click.option("--ignore_config", "-ig", type=str, help="The file that specifies which smell, refactoring or worker ignore")
-def run(kubepath, modelpath, out, refactoring: list, ignore_config):
+def run(kubepath, modelpath, refactoring: list, ignore_config):
 
     if not os.path.exists(kubepath):
         raise ValueError(f"Kubernetes deployment path passed as 'kube' parameter ({kubepath}) not found")
