@@ -29,44 +29,40 @@ REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "ad
 
 
 @click.command()
-@click.option("--kubedeploy", "--deploy", required=True, type=str, help="Folder containing Kubernetes deploy files of the system")
-@click.option("--microtoscamodel", "--model", required=True, type=str, help="MicroTosca file containing the description of the system")
-@click.option("--output", "--out", default="./out", type=str, help="Output folder of the tool")
-@click.option("--refactoring", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one refactoring. This option can be used multiple times, for adding more than one impl", multiple=True)
-@click.option("--ignore_config", "--ig", type=str, help="The file that specifies which smell, refactoring or worker ignore")
-def main(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config):
-    run(kubedeploy, microtoscamodel, output, refactoring, ignore_config)
+@click.option("--kubepath", "--kube", required=True, type=str, help="Folder containing Kubernetes deploy files of the system")
+@click.option("--modelpath", "--model", required=True, type=str, help="MicroTosca file containing the description of the system")
+@click.option("--out", default="./out", type=str, help="Output folder of the tool")
+@click.option("--refactoring", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one refactoring. This option can be used multiple times, for executing multiple refactoring", multiple=True)
+@click.option("--ignore_config", "-ig", type=str, help="The file that specifies which smell, refactoring or worker ignore")
+def run(kubepath, modelpath, out, refactoring: list, ignore_config):
 
+    if not os.path.exists(kubepath):
+        raise ValueError(f"Kubernetes deployment path passed as 'kube' parameter ({kubepath}) not found")
 
-def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_path):
+    if not os.path.exists(modelpath):
+        raise ValueError(f"MicroTosca model path passed as 'model' parameter ({modelpath}) not found")
 
-    if not os.path.exists(kubedeploy):
-        raise ValueError(f"Kubedeploy path passed as parameter ({kubedeploy}) not found")
+    if not os.path.exists(modelpath):
+        raise ValueError(f"File passed as ignore config ({ignore_config}) not found")
 
-    if not os.path.exists(microtoscamodel):
-        raise ValueError(f"File passed as MicroTosca model ({microtoscamodel}) not found")
-
-    if not os.path.exists(microtoscamodel):
-        raise ValueError(f"File passed as ignore config ({ignore_config_path}) not found")
-
-    if not os.path.exists(output):
-        os.makedirs(output, 0o777)
-        click.echo("Created output folder at: "+output)
+    if not os.path.exists(out):
+        os.makedirs(out, 0o777)
+        click.echo("Created output folder at: " + out)
 
     # Import model
-    model = YMLImporter().Import(microtoscamodel)
+    model = YMLImporter().Import(modelpath)
 
     # Import Kubernetes Cluster
     importer = YamlKImporter()
-    cluster = importer.Import(kubedeploy)
+    cluster = importer.Import(kubepath)
 
     # Run name worker before everything
     name_extender = KubeExtender([NAME_WORKER])
     name_extender.extend(model, cluster)
 
     # Read ignore config from disk
-    if ignore_config_path:
-        ignorer = IgnoreConfig(ignore_config_path, IGNORE_CONFIG_SCHEMA_FILE)
+    if ignore_config:
+        ignorer = IgnoreConfig(ignore_config, IGNORE_CONFIG_SCHEMA_FILE)
         ignorer.adjust_names(name_extender.name_mapping)
     else:
         ignorer = IgnoreNothing()
@@ -98,7 +94,7 @@ def run(kubedeploy, microtoscamodel, output, refactoring: list, ignore_config_pa
     # Export files
     adjuster.adjust(model)
     exporter = YamlKExporter()
-    exporter.export(cluster, model, tosca_model_filename=microtoscamodel)
+    exporter.export(cluster, model, tosca_model_filename=modelpath)
 
     # Export report
     RefactoringReport().export()
@@ -157,10 +153,4 @@ def build_solver(cluster, model, refactoring) -> Solver:
 
 
 if __name__ == '__main__':
-    run(
-        microtoscamodel='./tests/data/robot-shop-v2/microTOSCA.yml',
-        kubedeploy='./tests/data/robot-shop-v2/deployment',
-        output="./out",
-        refactoring=["all"],
-        ignore_config_path=None
-    )
+    run()
