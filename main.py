@@ -31,7 +31,6 @@ REFACTORING = ["add_api_gateway", "add_ag", "add_circuit_breaker", "add_cb", "ad
 @click.command()
 @click.option("--kubepath", "--kube", required=True, type=str, help="Folder containing Kubernetes deploy files of the system")
 @click.option("--modelpath", "--model", required=True, type=str, help="MicroTosca file containing the description of the system")
-@click.option("--out", default="./out", type=str, help="Output folder of the tool")
 @click.option("--refactoring", "-r", default=["all"], type=click.Choice(REFACTORING), help="Select and apply one refactoring. This option can be used multiple times, for executing multiple refactoring", multiple=True)
 @click.option("--ignore_config", "-ig", type=str, help="The file that specifies which smell, refactoring or worker ignore")
 def run(kubepath, modelpath, out, refactoring: list, ignore_config):
@@ -44,10 +43,6 @@ def run(kubepath, modelpath, out, refactoring: list, ignore_config):
 
     if not os.path.exists(modelpath):
         raise ValueError(f"File passed as ignore config ({ignore_config}) not found")
-
-    if not os.path.exists(out):
-        os.makedirs(out, 0o777)
-        click.echo("Created output folder at: " + out)
 
     # Import model
     model = YMLImporter().Import(modelpath)
@@ -88,8 +83,8 @@ def run(kubepath, modelpath, out, refactoring: list, ignore_config):
         smells = ignore_smells(smells, ignorer)
 
         # Run smell solver
-        solver = build_solver(cluster, model, refactoring)
-        smell_solved = solver.solve(smells, ignorer)
+        solver = build_solver(cluster, model, refactoring, ignorer)
+        smell_solved = solver.solve(smells)
 
     # Export files
     adjuster.adjust(model)
@@ -128,7 +123,7 @@ def build_analyser(model, ignore_config):
     return analyser
 
 
-def build_solver(cluster, model, refactoring) -> Solver:
+def build_solver(cluster, model, refactoring, ignorer) -> Solver:
     if SELECT_ALL in refactoring:
         return KubeSolver(cluster, model, REFACTORING_NAMES)
 
@@ -149,7 +144,7 @@ def build_solver(cluster, model, refactoring) -> Solver:
         if r in ["split_services", "split_svcs"]:
             selected_refactoring.append(REFACTORING_SPLIT_SERVICES)
 
-    return KubeSolver(cluster, model, selected_refactoring)
+    return KubeSolver(cluster, model, selected_refactoring, ignorer)
 
 
 if __name__ == '__main__':
