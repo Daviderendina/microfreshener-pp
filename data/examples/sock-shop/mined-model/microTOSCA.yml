@@ -9,7 +9,7 @@ topology_template:
   node_templates:
     carts-db.sock-shop:
       requirements: []
-      type: micro.nodes.Datastore
+      type: micro.nodes.DataStore
     carts-db.sock-shop.svc:
       requirements:
       - {interaction: carts-db.sock-shop}
@@ -50,7 +50,7 @@ topology_template:
       type: micro.nodes.MessageRouter
     orders-db.sock-shop:
       requirements: []
-      type: micro.nodes.Datastore
+      type: micro.nodes.DataStore
     orders-db.sock-shop.svc:
       requirements:
       - {interaction: orders-db.sock-shop}
@@ -82,12 +82,12 @@ topology_template:
       requirements:
       - {interaction: queue-master.sock-shop}
       type: micro.nodes.MessageRouter
-    rabbitmq.rabbitmq.sock-shop:
+    rabbitmq.sock-shop:
       requirements: []
       type: micro.nodes.MessageBroker
     rabbitmq.sock-shop.svc:
       requirements:
-      - {interaction: rabbitmq.rabbitmq.sock-shop}
+      - {interaction: rabbitmq.sock-shop}
       type: micro.nodes.MessageRouter
     shipping.sock-shop:
       requirements:
@@ -135,4 +135,3 @@ topology_template:
       properties: {dynamic_discovery: true, timeout: true}
       type: micro.relationships.InteractsWith
 tosca_definitions_version: micro_tosca_yaml_1.1
-
