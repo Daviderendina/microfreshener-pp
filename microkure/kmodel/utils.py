@@ -1,7 +1,7 @@
 import re
 
-from microfreshenerpp.kmodel.kube_container import KubeContainer
-from microfreshenerpp.kmodel.shortnames import ALL_SHORTNAMES
+from microkure.kmodel.kube_container import KubeContainer
+from microkure.kmodel.shortnames import ALL_SHORTNAMES
 
 
 def cast_container_list(container_list, workload):

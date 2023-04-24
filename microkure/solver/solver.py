@@ -9,16 +9,16 @@ from typing import List
 from microfreshener.core.analyser.smell import Smell, NodeSmell, GroupSmell
 from microfreshener.core.model import MicroToscaModel
 
-from microfreshenerpp.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
-from microfreshenerpp.ignorer.impl.ignore_nothing import IgnoreNothing
-from microfreshenerpp.kmodel.kube_cluster import KubeCluster
-from microfreshenerpp.kmodel.kube_object import KubeObject
-from microfreshenerpp.solver.impl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
-from microfreshenerpp.solver.impl.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
-from microfreshenerpp.solver.impl.add_message_router_refactoring import AddMessageRouterRefactoring
-from microfreshenerpp.solver.pending_ops import PENDING_OPS
-from microfreshenerpp.solver.impl.split_services_refactoring import SplitServicesRefactoring
-from microfreshenerpp.solver.impl.use_timeout_refactoring import UseTimeoutRefactoring
+from microkure.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
+from microkure.ignorer.impl.ignore_nothing import IgnoreNothing
+from microkure.kmodel.kube_cluster import KubeCluster
+from microkure.kmodel.kube_object import KubeObject
+from microkure.solver.impl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
+from microkure.solver.impl.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
+from microkure.solver.impl.add_message_router_refactoring import AddMessageRouterRefactoring
+from microkure.solver.pending_ops import PENDING_OPS
+from microkure.solver.impl.split_services_refactoring import SplitServicesRefactoring
+from microkure.solver.impl.use_timeout_refactoring import UseTimeoutRefactoring
 
 
 class Solver:

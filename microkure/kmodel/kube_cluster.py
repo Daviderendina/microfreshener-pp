@@ -1,13 +1,13 @@
 
 from typing import List
 
-from microfreshenerpp.exporter.export_object import ExportObject
-from microfreshenerpp.kmodel.kube_container import KubeContainer
-from microfreshenerpp.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
-from microfreshenerpp.kmodel.kube_networking import KubeService, KubeIngress, KubeNetworking
-from microfreshenerpp.kmodel.kube_object import KubeObject
-from microfreshenerpp.kmodel.kube_workload import KubeWorkload
-from microfreshenerpp.kmodel.utils import name_is_FQDN
+from microkure.exporter.export_object import ExportObject
+from microkure.kmodel.kube_container import KubeContainer
+from microkure.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
+from microkure.kmodel.kube_networking import KubeService, KubeIngress, KubeNetworking
+from microkure.kmodel.kube_object import KubeObject
+from microkure.kmodel.kube_workload import KubeWorkload
+from microkure.kmodel.utils import name_is_FQDN
 
 
 class KubeCluster:

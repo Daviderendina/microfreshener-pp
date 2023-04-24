@@ -1,10 +1,10 @@
 from abc import abstractmethod
 from typing import List
 
-from microfreshenerpp.kmodel.kube_container import KubeContainer
-from microfreshenerpp.kmodel.kube_object import KubeObject
-from microfreshenerpp.kmodel.shortnames import KUBE_POD, KUBE_DEPLOYMENT, KUBE_REPLICASET, KUBE_STATEFULSET
-from microfreshenerpp.kmodel.utils import cast_container_list, container_to_dict
+from microkure.kmodel.kube_container import KubeContainer
+from microkure.kmodel.kube_object import KubeObject
+from microkure.kmodel.shortnames import KUBE_POD, KUBE_DEPLOYMENT, KUBE_REPLICASET, KUBE_STATEFULSET
+from microkure.kmodel.utils import cast_container_list, container_to_dict
 
 
 class KubeWorkload(KubeObject):

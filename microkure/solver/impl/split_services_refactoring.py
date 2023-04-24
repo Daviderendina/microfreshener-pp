@@ -13,7 +13,7 @@ from microkure.report.report import RefactoringReport
 from microkure.report.report_msg import compute_object_not_found_msg, cannot_refactor_model_msg, created_resource_msg, \
     resource_deleted_msg
 from microkure.report.report_row import RefactoringStatus
-from microfreshenerpp.solver.refactoring import RefactoringNotSupportedError, Refactoring
+from microkure.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
 class SplitServicesRefactoring(Refactoring):

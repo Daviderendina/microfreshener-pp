@@ -13,9 +13,9 @@ from microkure.extender.impl.database_worker import DatabaseWorker
 from microkure.extender.impl.ingress_worker import IngressWorker
 from microkure.extender.impl.service_worker import ServiceWorker
 from microkure.extender.worker_names import *
-from microfreshenerpp.ignorer.ignorer import Ignorer
-from microfreshenerpp.ignorer.impl.ignore_nothing import IgnoreNothing
-from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microkure.ignorer.ignorer import Ignorer
+from microkure.ignorer.impl.ignore_nothing import IgnoreNothing
+from microkure.kmodel.kube_cluster import KubeCluster
 
 
 class Extender:

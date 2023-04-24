@@ -1,7 +1,7 @@
 from microfreshener.core.analyser.smell import NodeSmell, GroupSmell
 
-from microfreshenerpp.constants import REPORT_OUTPUT_FOLDER
-from microfreshenerpp.utils.utils import create_folder
+from microkure.constants import REPORT_OUTPUT_FOLDER
+from microkure.utils.utils import create_folder
 
 
 class ReportExporter:

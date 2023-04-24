@@ -5,9 +5,9 @@ from microfreshener.core.model import MicroToscaModel
 
 from microkure.exporter.export_object import ExportObject
 from microkure.ignorer.ignorer import Ignorer
-from microfreshenerpp.kmodel.kube_cluster import KubeCluster
-from microfreshenerpp.report.report import RefactoringReport
-from microfreshenerpp.report.report_row import RefactoringStatus
+from microkure.kmodel.kube_cluster import KubeCluster
+from microkure.report.report import RefactoringReport
+from microkure.report.report_row import RefactoringStatus
 
 
 class Refactoring:

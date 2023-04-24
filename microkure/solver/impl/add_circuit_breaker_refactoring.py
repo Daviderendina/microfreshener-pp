@@ -3,14 +3,14 @@ from microfreshener.core.analyser.smell import WobblyServiceInteractionSmell, Sm
 from microfreshener.core.model import MicroToscaModel, Service, MessageRouter
 
 from microkure.template.kobject_generators import generate_circuit_breaker_for_svc
-from microfreshenerpp.ignorer.ignorer import IgnoreType
-from microfreshenerpp.ignorer.impl.ignore_nothing import IgnoreNothing
-from microfreshenerpp.kmodel.kube_cluster import KubeCluster
-from microfreshenerpp.kmodel.kube_networking import KubeService
-from microfreshenerpp.report.report_msg import cannot_apply_refactoring_on_node_msg, found_wrong_type_object_msg, \
+from microkure.ignorer.ignorer import IgnoreType
+from microkure.ignorer.impl.ignore_nothing import IgnoreNothing
+from microkure.kmodel.kube_cluster import KubeCluster
+from microkure.kmodel.kube_networking import KubeService
+from microkure.report.report_msg import cannot_apply_refactoring_on_node_msg, found_wrong_type_object_msg, \
     created_resource_msg
-from microfreshenerpp.report.report_row import RefactoringStatus
-from microfreshenerpp.solver.refactoring import RefactoringNotSupportedError, Refactoring
+from microkure.report.report_row import RefactoringStatus
+from microkure.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
 class AddCircuitBreakerRefactoring(Refactoring):

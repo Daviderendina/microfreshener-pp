@@ -1,6 +1,6 @@
-from microfreshenerpp.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
-from microfreshenerpp.kmodel.kube_networking import KubeService, KubeIngress
-from microfreshenerpp.kmodel.kube_workload import KubePod, KubeDeployment, KubeReplicaSet, KubeStatefulSet
+from microkure.kmodel.kube_istio import KubeVirtualService, KubeDestinationRule, KubeIstioGateway
+from microkure.kmodel.kube_networking import KubeService, KubeIngress
+from microkure.kmodel.kube_workload import KubePod, KubeDeployment, KubeReplicaSet, KubeStatefulSet
 
 
 class KubeObjectFactory:

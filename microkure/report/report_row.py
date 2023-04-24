@@ -1,6 +1,6 @@
 from microfreshener.core.analyser.smell import Smell
 
-from microfreshenerpp.report.costants import RefactoringStatus
+from microkure.report.costants import RefactoringStatus
 
 
 class ReportRow:

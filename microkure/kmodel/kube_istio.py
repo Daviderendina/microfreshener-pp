@@ -1,9 +1,9 @@
 import re
 from typing import List, Dict
 
-from microfreshenerpp.kmodel.kube_object import KubeObject
-from microfreshenerpp.kmodel.utils import name_has_namespace
-from microfreshenerpp.kmodel.shortnames import ISTIO_VIRTUAL_SERVICE, ISTIO_DESTINATION_RULE, ISTIO_GATEWAY
+from microkure.kmodel.kube_object import KubeObject
+from microkure.kmodel.utils import name_has_namespace
+from microkure.kmodel.shortnames import ISTIO_VIRTUAL_SERVICE, ISTIO_DESTINATION_RULE, ISTIO_GATEWAY
 
 
 class KubeIstio(KubeObject):

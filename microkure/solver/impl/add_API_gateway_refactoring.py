@@ -7,15 +7,15 @@ from microkure.template.kobject_generators import generate_svc_NodePort_for_cont
 from microkure.ignorer.ignorer import IgnoreType
 from microkure.ignorer.impl.ignore_nothing import IgnoreNothing
 from microkure.kmodel.kube_cluster import KubeCluster
-from microfreshenerpp.kmodel.kube_container import KubeContainer
-from microfreshenerpp.kmodel.kube_networking import KubeService
-from microfreshenerpp.kmodel.kube_workload import KubeWorkload
-from microfreshenerpp.report.report import RefactoringReport
-from microfreshenerpp.report.report_msg import cannot_apply_refactoring_on_node_msg, created_resource_msg, \
+from microkure.kmodel.kube_container import KubeContainer
+from microkure.kmodel.kube_networking import KubeService
+from microkure.kmodel.kube_workload import KubeWorkload
+from microkure.report.report import RefactoringReport
+from microkure.report.report_msg import cannot_apply_refactoring_on_node_msg, created_resource_msg, \
     resource_modified_msg, removed_exposing_params_msg, cannot_find_nodes_msg, exposed_node_port_change
-from microfreshenerpp.report.report_row import RefactoringStatus
-from microfreshenerpp.solver.pending_ops import PENDING_OPS
-from microfreshenerpp.solver.refactoring import RefactoringNotSupportedError, Refactoring
+from microkure.report.report_row import RefactoringStatus
+from microkure.solver.pending_ops import PENDING_OPS
+from microkure.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
 
 class AddAPIGatewayRefactoring(Refactoring):

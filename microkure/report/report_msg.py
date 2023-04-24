@@ -1,6 +1,6 @@
 import os
 
-from microfreshenerpp.kmodel.kube_istio import KubeIstio
+from microkure.kmodel.kube_istio import KubeIstio
 
 
 def cannot_apply_refactoring_on_node_msg(refactoring_name, smell_name, node):

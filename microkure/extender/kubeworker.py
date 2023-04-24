@@ -3,9 +3,9 @@ from abc import abstractmethod
 from microfreshener.core.model import MicroToscaModel
 
 from microkure.ignorer.impl.ignore_config import IgnoreType
-from microfreshenerpp.ignorer.impl.ignore_nothing import IgnoreNothing
-from microfreshenerpp.ignorer.ignorer import Ignorer
-from microfreshenerpp.kmodel.kube_cluster import KubeCluster
+from microkure.ignorer.impl.ignore_nothing import IgnoreNothing
+from microkure.ignorer.ignorer import Ignorer
+from microkure.kmodel.kube_cluster import KubeCluster
 
 
 class KubeWorker:

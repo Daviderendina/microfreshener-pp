@@ -4,9 +4,9 @@ from unittest import TestCase
 
 from microfreshener.core.importer import YMLImporter
 
-from microfreshenerpp.constants import OUTPUT_FOLDER, DEPLOY_OUTPUT_FOLDER, TOSCA_OUTPUT_FOLDER
-from microfreshenerpp.exporter.yamlkexporter import YamlKExporter
-from microfreshenerpp.importer.yamlkimporter import YamlKImporter
+from microkure.constants import OUTPUT_FOLDER, DEPLOY_OUTPUT_FOLDER, TOSCA_OUTPUT_FOLDER
+from microkure.exporter.yamlkexporter import YamlKExporter
+from microkure.importer.yamlkimporter import YamlKImporter
 
 
 class TestImporterExporter(TestCase):

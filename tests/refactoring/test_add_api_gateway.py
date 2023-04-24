@@ -4,13 +4,13 @@ from unittest import TestCase
 from microfreshener.core.analyser.smell import NoApiGatewaySmell
 from microfreshener.core.model import MicroToscaModel, Edge, Service, MessageRouter
 
-from microfreshenerpp.template.kobject_generators import MF_NODEPORT_SERVICE_SUFFIX
-from microfreshenerpp.report.report import RefactoringReport
+from microkure.template.kobject_generators import MF_NODEPORT_SERVICE_SUFFIX
+from microkure.report.report import RefactoringReport
 from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH_ONE_CONTAINER, POD_WITH_TWO_CONTAINER
-from microfreshenerpp.kmodel.kube_cluster import KubeCluster
-from microfreshenerpp.kmodel.kube_workload import KubePod, KubeDeployment
+from microkure.kmodel.kube_cluster import KubeCluster
+from microkure.kmodel.kube_workload import KubePod, KubeDeployment
 
-from microfreshenerpp.solver.impl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
+from microkure.solver.impl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
 
 
 def apply_solver(solver, smell):

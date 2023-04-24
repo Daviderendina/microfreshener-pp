@@ -1,7 +1,7 @@
-from microfreshenerpp.kmodel.kube_object import KubeObject
-from microfreshenerpp.kmodel.utils import does_selectors_labels_match, name_has_namespace
-from microfreshenerpp.kmodel.kube_workload import KubeWorkload
-from microfreshenerpp.kmodel.shortnames import KUBE_INGRESS, KUBE_SERVICE
+from microkure.kmodel.kube_object import KubeObject
+from microkure.kmodel.utils import does_selectors_labels_match, name_has_namespace
+from microkure.kmodel.kube_workload import KubeWorkload
+from microkure.kmodel.shortnames import KUBE_INGRESS, KUBE_SERVICE
 
 
 class KubeNetworking(KubeObject):

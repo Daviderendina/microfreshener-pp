@@ -1,4 +1,4 @@
-from microfreshenerpp.kmodel.kube_object import KubeObject
+from microkure.kmodel.kube_object import KubeObject
 
 
 class KubeContainer(KubeObject):

@@ -1,7 +1,7 @@
 from microfreshener.core.analyser.smell import Smell
 
-from microfreshenerpp.report.report_row import RefactoringReportRow, RefactoringStatus
-from microfreshenerpp.report.report_exporter import RefactoringCSVReportExporter
+from microkure.report.report_row import RefactoringReportRow, RefactoringStatus
+from microkure.report.report_exporter import RefactoringCSVReportExporter
 
 
 class Report(object):
