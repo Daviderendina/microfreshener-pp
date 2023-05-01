@@ -10,7 +10,7 @@ from tests.data.kube_objects_dict import POD_WITH_ONE_CONTAINER, DEPLOYMENT_WITH
 from microkure.kmodel.kube_cluster import KubeCluster
 from microkure.kmodel.kube_workload import KubePod, KubeDeployment
 
-from microkure.solver.impl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
+from microkure.solver.impl.add_api_gateway_refactoring import AddAPIGatewayRefactoring
 
 
 def apply_solver(solver, smell):

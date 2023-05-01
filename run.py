@@ -8,6 +8,7 @@ from microfreshener.core.analyser.costants import REFACTORING_NAMES, REFACTORING
     REFACTORING_SPLIT_SERVICES, SMELLS_NAME
 from microfreshener.core.exporter import YMLExporter
 from microfreshener.core.importer import YMLImporter
+from microfreshener.core.logging import MyLogger
 
 from microkure.constants import IGNORE_CONFIG_SCHEMA_FILE, TOSCA_OUTPUT_FOLDER
 from microkure.exporter.yamlkexporter import YamlKExporter
@@ -92,6 +93,8 @@ def run(kubepath, modelpath, refactoring: list, ignore_config):
         smell_solved = solver.solve(smells)
 
         run_count += 1
+
+    MyLogger().get_logger().info("There are no other smells to refactor")
 
     # Export files
     adjuster.adjust(model)

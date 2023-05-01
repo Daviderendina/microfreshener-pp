@@ -7,7 +7,7 @@ from microkure.ignorer.ignorer import IgnoreType
 from microkure.ignorer.impl.ignore_nothing import IgnoreNothing
 from microkure.kmodel.kube_cluster import KubeCluster
 from microkure.kmodel.kube_container import KubeContainer
-from microkure.report.report_msg import cannot_find_container_msg, cannot_apply_refactoring_on_node_msg, \
+from microkure.report.messages import cannot_find_container_msg, cannot_apply_refactoring_on_node_msg, \
     change_call_to_service_msg, created_resource_msg
 from microkure.report.report_row import RefactoringStatus
 from microkure.solver.refactoring import RefactoringNotSupportedError, Refactoring

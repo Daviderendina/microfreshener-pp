@@ -52,6 +52,11 @@ def exposed_node_port_change(old_exposed_object_name, expected_port, new_port):
     return f"The object {old_exposed_object_name} was exposed on port {expected_port}, but now is exposed on {new_port}." \
            f"Make sure to forward calls to the new port"
 
+def handle_error_on_microservice(resource_type, invoker_microservice):
+    return f"The newly introduced {resource_type} can raise an error that must be handled properly in the invoker " \
+           f"microservice ({invoker_microservice})"
+#TODO trovare un messaggio che vada bene
+
 def _extract_kubernetes_name(resource):
     istio = ""
     if isinstance(resource, KubeIstio):

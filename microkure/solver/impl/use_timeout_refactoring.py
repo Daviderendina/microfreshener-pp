@@ -6,7 +6,8 @@ from microkure.template.kobject_generators import generate_timeout_virtualsvc_fo
 from microkure.ignorer.ignorer import IgnoreType
 from microkure.ignorer.impl.ignore_nothing import IgnoreNothing
 from microkure.kmodel.kube_cluster import KubeCluster
-from microkure.report.report_msg import cannot_apply_refactoring_on_node_msg, created_resource_msg
+from microkure.report.report import RefactoringReport
+from microkure.report.messages import cannot_apply_refactoring_on_node_msg, created_resource_msg, handle_error_on_microservice
 from microkure.report.report_row import RefactoringStatus
 from microkure.solver.refactoring import RefactoringNotSupportedError, Refactoring
 
@@ -26,8 +27,8 @@ class UseTimeoutRefactoring(Refactoring):
 
         if isinstance(smell.node, Service):
             for link in smell.links_cause:
-
                 if not link.timeout:
+
                     if isinstance(link.target, Service):
                         pass
                         # This tool execute the whole process of finding smell ad refactoring multiple times, so this case
@@ -43,10 +44,14 @@ class UseTimeoutRefactoring(Refactoring):
                         for up_interaction in link.target.incoming_interactions:
                             up_interaction.set_timeout(True)
 
-                        msg = created_resource_msg(virtual_service, exp.out_fullname)
-                        self._add_report_row(smell, RefactoringStatus.SUCCESSFULLY_APPLIED, msg)
-                        return True
+                        report_row = RefactoringReport().add_row(smell=smell, refactoring_name=self.name)
+                        report_row.add_message(created_resource_msg(virtual_service, exp.out_fullname))
+                        report_row.add_message(handle_error_on_microservice("timeout", smell.node.name))
+                        report_row.status = RefactoringStatus.PARTIALLY_APPLIED
+
+            return True
         else:
-            msg = cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node)
-            self._add_report_row(smell, RefactoringStatus.NOT_APPLIED, msg)
+            report_row = RefactoringReport().add_row(smell=smell, refactoring_name=self.name)
+            report_row.add_message(cannot_apply_refactoring_on_node_msg(self.name, smell.name, smell.node))
+            report_row.status = RefactoringStatus.NOT_APPLIED
             return False

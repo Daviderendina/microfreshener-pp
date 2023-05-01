@@ -11,7 +11,7 @@ from microkure.kmodel.kube_container import KubeContainer
 from microkure.kmodel.kube_networking import KubeService
 from microkure.kmodel.kube_workload import KubeWorkload
 from microkure.report.report import RefactoringReport
-from microkure.report.report_msg import cannot_apply_refactoring_on_node_msg, created_resource_msg, \
+from microkure.report.messages import cannot_apply_refactoring_on_node_msg, created_resource_msg, \
     resource_modified_msg, removed_exposing_params_msg, cannot_find_nodes_msg, exposed_node_port_change
 from microkure.report.report_row import RefactoringStatus
 from microkure.solver.pending_ops import PENDING_OPS

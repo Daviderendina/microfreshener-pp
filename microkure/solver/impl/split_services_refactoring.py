@@ -10,7 +10,7 @@ from microkure.ignorer.ignorer import IgnoreType
 from microkure.ignorer.impl.ignore_nothing import IgnoreNothing
 from microkure.kmodel.kube_cluster import KubeCluster
 from microkure.report.report import RefactoringReport
-from microkure.report.report_msg import compute_object_not_found_msg, cannot_refactor_model_msg, created_resource_msg, \
+from microkure.report.messages import compute_object_not_found_msg, cannot_refactor_model_msg, created_resource_msg, \
     resource_deleted_msg
 from microkure.report.report_row import RefactoringStatus
 from microkure.solver.refactoring import RefactoringNotSupportedError, Refactoring
