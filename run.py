@@ -74,7 +74,12 @@ def run(kubepath, modelpath, refactoring: list, ignore_config):
     export_extended_model(model, adjuster)
 
     smell_solved = -1
+    run_count = 1
     while smell_solved != 0:
+        print()
+        print(f"Run number: {run_count}")
+        print("-----------------------")
+
         # Run sniffer on the model
         analyser = build_analyser(model, ignorer)
         analyser_result = analyser.run(smell_as_dict=False)
@@ -85,6 +90,8 @@ def run(kubepath, modelpath, refactoring: list, ignore_config):
         # Run smell solver
         solver = build_solver(cluster, model, refactoring, ignorer)
         smell_solved = solver.solve(smells)
+
+        run_count += 1
 
     # Export files
     adjuster.adjust(model)

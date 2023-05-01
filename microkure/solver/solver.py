@@ -7,13 +7,14 @@ from microfreshener.core.analyser.costants import REFACTORING_ADD_MESSAGE_ROUTER
 from typing import List
 
 from microfreshener.core.analyser.smell import Smell, NodeSmell, GroupSmell
+from microfreshener.core.logging import MyLogger
 from microfreshener.core.model import MicroToscaModel
 
 from microkure.ignorer.impl.ignore_config import IgnoreConfig, IgnoreType
 from microkure.ignorer.impl.ignore_nothing import IgnoreNothing
 from microkure.kmodel.kube_cluster import KubeCluster
 from microkure.kmodel.kube_object import KubeObject
-from microkure.solver.impl.add_API_gateway_refactoring import AddAPIGatewayRefactoring
+from microkure.solver.impl.add_api_gateway_refactoring import AddAPIGatewayRefactoring
 from microkure.solver.impl.add_circuit_breaker_refactoring import AddCircuitBreakerRefactoring
 from microkure.solver.impl.add_message_router_refactoring import AddMessageRouterRefactoring
 from microkure.solver.pending_ops import PENDING_OPS
@@ -51,7 +52,10 @@ class KubeSolver(Solver):
         i = 0
         refactoring_res = False
         while i < len(refactoring_list) and not refactoring_res:
-            refactoring_res = refactoring_list[i].apply(smell, ignorer)
+            refactoring = refactoring_list[i]
+
+            MyLogger().get_logger().info(f"Running {refactoring.name} refactoring for solving {smell.name} on node {smell.node}")
+            refactoring_res = refactoring.apply(smell, ignorer)
             i += 1
         return refactoring_res
 
