@@ -46,7 +46,7 @@ An example of ignore configuration can be observed in _./config/ignore_config_ex
 The workflow of microkure is the following:
 
 <p align="center">
-  <img src="./docs/MFDemo/workflow.png"/>
+  <img src="./docs/workflow.png"/>
 </p>
 
 The Importer module takes as input the _microTOSCA model_ (microFreshener-core Importer) and the _Kubernetes deployment_ (microkure Importer).
@@ -83,19 +83,19 @@ For defining timeouts and circuit breakers microkure generates Istio resources, 
 This is an example of execution of this tool on the MFDemo project. The execution starts from the following microTOSCA model:
 
 <p align="center">
-  <img src="./docs/MFDemo/injected.png"/>
+  <img src="./docs/MFDemo/injected.png" width="70%"/>
 </p>
 
 
 After performing the extension step, this model is corrected and enriched and is modified as follows (yellow nodes are modified of created during the extension):
 
 <p align="center">
-  <img src="./docs/MFDemo/extended.png"/>
+  <img src="./docs/MFDemo/extended.png" width="70%"/>
 </p>
 
 
 Then, on this model is executed the refactoring of the architectural smells found, which corrects the model and creates a new microTOSCA architecture representation:
 
 <p align="center">
-  <img src="./docs/MFDemo/refactored.png"/>
+  <img src="./docs/MFDemo/refactored.png" width="70%"/>
 </p>
